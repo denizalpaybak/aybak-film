@@ -5,296 +5,320 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>AYBAK — Film</title>
+<title>Denizalp Aybak — Film</title>
 
 <style>
 
-* {
-    box-sizing: border-box;
-}
+    * {
+        box-sizing: border-box;
+    }
 
-html,
-body {
-    margin: 0;
-    padding: 0;
+    html,
+    body {
+        margin: 0;
+        padding: 0;
 
-    width: 100%;
-    height: 100%;
+        width: 100%;
+        height: 100%;
 
-    background: transparent;
+        background: transparent;
+        overflow: hidden;
+    }
 
-    overflow: hidden;
-}
+    body {
+        cursor: pointer;
+    }
 
-body {
-    cursor: pointer;
-}
 
-
-/* =====================================================
-   LEFT INFORMATION
-   ===================================================== */
-
-.info {
-    position: fixed;
-
-    top: 32px;
-    left: 48px;
-
-    z-index: 20;
-
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
-    font-size: 15px;
-    font-weight: 400;
-    line-height: 1.15;
-}
-
-
-/* =====================================================
-   LOGO
-   ===================================================== */
-
-.logo {
-    position: relative;
-
-    display: block;
-
-    width: 190px;
-    height: 52px;
-
-    margin: 0;
-    padding: 0;
-
-    color: inherit;
-    text-decoration: none;
-
-    cursor: pointer;
-}
-
-.logo-name {
-    position: absolute;
-
-    top: 0;
-    left: 0;
-
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
-    font-size: 15px;
-    font-weight: 400;
-    line-height: 1.15;
-
-    white-space: nowrap;
-}
-
-.logo-aybak {
-    position: absolute;
-
-    top: 17px;
-    left: 0;
-
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
-    font-size: 15px;
-    font-weight: 400;
-    line-height: 1.15;
-
-    letter-spacing: normal;
-
-    white-space: nowrap;
-}
-
-.logo-aybak span {
-    display: inline;
-}
-
-
-/* =====================================================
-   CONTACT
-   ===================================================== */
-
-.contact {
-    margin: 0;
-    padding: 0;
-}
-
-.info a {
-    color: inherit;
-    text-decoration: none;
-    font-weight: 400;
-}
-
-.info a:hover {
-    text-decoration: underline;
-}
-
-
-/* =====================================================
-   SOCIAL
-   ===================================================== */
-
-.social {
-    display: flex;
-
-    flex-direction: column;
-    gap: 0;
-
-    margin: 0;
-    padding: 0;
-}
-
-
-/* =====================================================
-   VIDEO CONTAINER
-   ===================================================== */
-
-#video-container {
-    position: fixed;
-
-    inset: 0;
-
-    width: 100vw;
-    height: 100vh;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    z-index: 1;
-
-    /*
-       Leave enough visual space around
-       the left information column.
-    */
-    padding-left: 180px;
-    padding-right: 48px;
-}
-
-
-/* =====================================================
-   VIDEO WRAPPER
-   ===================================================== */
-
-#video-wrapper {
-    position: relative;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    width: 100%;
-    height: 100%;
-}
-
-
-/* =====================================================
-   VIDEO
-   ===================================================== */
-
-#film-video {
-    display: block;
-
-    width: auto;
-    height: auto;
-
-    /*
-       Slightly smaller than before.
-       Keeps the video comfortably away
-       from the left information.
-    */
-
-    max-width: 78vw;
-    max-height: 78vh;
-
-    object-fit: contain;
-
-    user-select: none;
-    -webkit-user-select: none;
-
-    cursor: pointer;
-}
-
-
-/* =====================================================
-   MOBILE
-   ===================================================== */
-
-@media (max-width: 600px) {
+    /* =========================
+       LEFT INFORMATION
+       ========================= */
 
     .info {
-        top: 20px;
-        left: 24px;
+        position: fixed;
 
-        font-size: 13px;
+        top: 32px;
+        left: 48px;
+
+        z-index: 10;
+
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 15px;
+        font-weight: 400;
+        line-height: 1.15;
     }
+
+
+    /* =========================
+       LOGO
+       ========================= */
 
     .logo {
-        width: 160px;
-        height: 45px;
+        position: relative;
+        display: block;
+
+        width: 190px;
+        height: 52px;
+
+        margin: 0;
+        padding: 0;
+
+        color: inherit;
+        text-decoration: none;
+
+        cursor: pointer;
     }
+
 
     .logo-name {
-        font-size: 13px;
+        position: absolute;
+
+        top: 0;
+        left: 0;
+
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 15px;
+        font-weight: 400;
+        line-height: 1.15;
+
+        white-space: nowrap;
     }
+
 
     .logo-aybak {
-        top: 15px;
+        position: absolute;
 
-        font-size: 13px;
+        top: 17px;
+        left: 0;
+
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 15px;
+        font-weight: 400;
+        line-height: 1.15;
+
+        letter-spacing: normal;
+
+        white-space: nowrap;
     }
 
 
-    #video-container {
+    .logo-aybak span {
+        display: inline;
+    }
 
-        padding-left: 24px;
-        padding-right: 24px;
 
-        padding-top: 110px;
-        padding-bottom: 40px;
+    /* =========================
+       CONTACT / SOCIAL
+       ========================= */
 
+    .contact {
+        margin: 0;
+        padding: 0;
+    }
+
+
+    .social {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+
+        margin: 0;
+        padding: 0;
+    }
+
+
+    .info a {
+        color: inherit;
+        text-decoration: none;
+        font-weight: 400;
+    }
+
+
+    .info a:hover {
+        text-decoration: underline;
+    }
+
+
+    /* =========================
+       VIDEO
+       ========================= */
+
+    #video-stage {
+        position: fixed;
+        inset: 0;
+
+        width: 100vw;
+        height: 100vh;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        z-index: 1;
+
+        pointer-events: none;
+    }
+
+
+    #video-block {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        width: auto;
+        height: auto;
+
+        pointer-events: none;
     }
 
 
     #film-video {
+        display: block;
 
-        max-width: 100%;
-        max-height: 72vh;
+        width: auto;
+        height: auto;
 
+        /*
+            Slightly smaller than Photography
+            so it cannot collide with the
+            left information block.
+        */
+
+        max-width: 64vw;
+        max-height: 78vh;
+
+        object-fit: contain;
+
+        cursor: pointer;
+
+        user-select: none;
+        -webkit-user-select: none;
+
+        pointer-events: auto;
     }
 
-}
 
+    /* =========================
+       MOBILE CONTROLS
+       ========================= */
 
-/* =====================================================
-   VERY SMALL MOBILE
-   ===================================================== */
-
-@media (max-width: 380px) {
-
-    #video-container {
-
-        padding-top: 100px;
-
+    #mobile-controls {
+        display: none;
     }
 
-    #film-video {
 
-        max-height: 68vh;
+    /* =========================
+       MOBILE
+       ========================= */
+
+    @media (max-width: 600px) {
+
+        .info {
+            top: 20px;
+            left: 24px;
+
+            font-size: 13px;
+        }
+
+
+        .logo {
+            width: 160px;
+            height: 45px;
+
+            margin-bottom: 0;
+        }
+
+
+        .logo-name {
+            font-size: 13px;
+        }
+
+
+        .logo-aybak {
+            top: 15px;
+
+            font-size: 13px;
+
+            letter-spacing: normal;
+        }
+
+
+        #video-stage {
+            /*
+                Use the available space below
+                the information block instead of
+                pushing the video too far down.
+            */
+
+            top: 92px;
+            bottom: 18px;
+
+            height: auto;
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 0 24px;
+        }
+
+
+        #video-block {
+            width: 100%;
+            max-width: 84vw;
+        }
+
+
+        #film-video {
+            max-width: 84vw;
+            max-height: 62vh;
+
+            pointer-events: auto;
+        }
+
+
+        #mobile-controls {
+            display: flex;
+
+            width: 84vw;
+
+            align-items: center;
+            justify-content: space-between;
+
+            margin-top: 10px;
+
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 13px;
+            font-weight: 400;
+            line-height: 1.15;
+
+            white-space: nowrap;
+
+            pointer-events: auto;
+        }
+
+
+        #mobile-controls button {
+            appearance: none;
+            -webkit-appearance: none;
+
+            margin: 0;
+            padding: 0;
+
+            border: 0;
+            background: transparent;
+
+            color: #000;
+
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 13px;
+            font-weight: 400;
+            line-height: 1.15;
+
+            cursor: pointer;
+        }
 
     }
-
-}
 
 </style>
 
@@ -304,14 +328,12 @@ body {
 <body>
 
 
-<!-- =====================================================
+<!-- =========================
      LEFT INFORMATION
-     ===================================================== -->
+     ========================= -->
 
 <div class="info">
 
-
-    <!-- LOGO -->
 
     <a
         class="logo"
@@ -326,6 +348,7 @@ body {
             Denizalp
         </span>
 
+
         <span class="logo-aybak">
 
             <span id="letter-a">a</span><span id="letter-y">y</span><span id="letter-b">b</span><span id="letter-a2">a</span><span id="letter-k">k</span>
@@ -334,8 +357,6 @@ body {
 
     </a>
 
-
-    <!-- CONTACT -->
 
     <div class="contact">
 
@@ -350,8 +371,6 @@ body {
     </div>
 
 
-    <!-- SOCIAL -->
-
     <div class="social">
 
         <a
@@ -361,6 +380,7 @@ body {
         >
             instagram @denizalpaybak
         </a>
+
 
         <a
             href="https://models.com/people/denizalp-aybak"
@@ -376,13 +396,13 @@ body {
 </div>
 
 
-<!-- =====================================================
+<!-- =========================
      VIDEO
-     ===================================================== -->
+     ========================= -->
 
-<div id="video-container">
+<div id="video-stage">
 
-    <div id="video-wrapper">
+    <div id="video-block">
 
         <video
             id="film-video"
@@ -392,6 +412,44 @@ body {
             preload="auto"
         ></video>
 
+
+        <!-- MOBILE ONLY -->
+
+        <div id="mobile-controls">
+
+            <button
+                id="previous-button"
+                type="button"
+            >
+                &lt; previous
+            </button>
+
+
+            <button
+                id="play-button"
+                type="button"
+            >
+                pause
+            </button>
+
+
+            <button
+                id="sound-button"
+                type="button"
+            >
+                sound on
+            </button>
+
+
+            <button
+                id="next-button"
+                type="button"
+            >
+                next &gt;
+            </button>
+
+        </div>
+
     </div>
 
 </div>
@@ -400,347 +458,340 @@ body {
 <script>
 
 
-/* =====================================================
-   R2
-   ===================================================== */
+    /* =====================================================
+       R2
+       ===================================================== */
 
-const R2_BASE =
-    "https://pub-14d397941aeb40e5bd3f66ac028fef80.r2.dev/";
-
-
-/*
-   Temporary list.
-
-   This will later be replaced by films.json.
-*/
-
-const films = [
-    "001.mp4"
-];
-
-
-let currentFilm = 0;
-
-
-/*
-   IMPORTANT:
-
-   `hoverMuted` controls ONLY the sound state
-   caused by hovering.
-
-   Clicking the video does NOT change this.
-*/
-
-let hoverMuted = true;
-
-
-/* =====================================================
-   ELEMENTS
-   ===================================================== */
-
-const video =
-    document.getElementById(
-        "film-video"
-    );
-
-
-/* =====================================================
-   LOAD FILM
-   ===================================================== */
-
-function loadFilm(
-    index,
-    autoplay = true
-) {
-
-    if (
-        films.length === 0
-    ) {
-        return;
-    }
-
-
-    if (
-        index < 0
-    ) {
-
-        index =
-            films.length - 1;
-
-    }
-
-
-    if (
-        index >= films.length
-    ) {
-
-        index = 0;
-
-    }
-
-
-    currentFilm = index;
-
-
-    video.pause();
-
-
-    video.src =
-        R2_BASE +
-        films[currentFilm];
-
-
-    video.load();
+    const R2_BASE =
+        "https://pub-14d397941aeb40e5bd3f66ac028fef80.r2.dev/";
 
 
     /*
-       Every new film starts muted.
+        Temporary list.
+
+        films.json comes next.
     */
 
-    video.muted = true;
+    const films = [
+        "001.mp4"
+    ];
 
-    hoverMuted = true;
+
+    /* =====================================================
+       STATE
+       ===================================================== */
+
+    let currentFilm = 0;
 
 
-    if (
-        autoplay
-    ) {
+    /*
+        Desktop browsers usually refuse to
+        enable audio from hover before the
+        page has received a genuine click.
 
-        const promise =
-            video.play();
+        After the first click, hover audio
+        becomes active.
+    */
 
+    let desktopAudioUnlocked = false;
+
+    let desktopHoveringVideo = false;
+
+
+    /*
+        Mobile sound is controlled explicitly
+        by the visible sound button.
+    */
+
+    let mobileSoundEnabled = false;
+
+
+    /*
+        Used so a swipe does not also trigger
+        the normal mobile tap/click action.
+    */
+
+    let suppressMobileClickUntil = 0;
+
+
+    /* =====================================================
+       ELEMENTS
+       ===================================================== */
+
+    const video =
+        document.getElementById(
+            "film-video"
+        );
+
+
+    const previousButton =
+        document.getElementById(
+            "previous-button"
+        );
+
+
+    const playButton =
+        document.getElementById(
+            "play-button"
+        );
+
+
+    const soundButton =
+        document.getElementById(
+            "sound-button"
+        );
+
+
+    const nextButton =
+        document.getElementById(
+            "next-button"
+        );
+
+
+    /* =====================================================
+       DEVICE
+       ===================================================== */
+
+    function isMobile() {
+
+        return window.matchMedia(
+            "(max-width: 600px)"
+        ).matches;
+
+    }
+
+
+    /* =====================================================
+       SOUND STATE
+       ===================================================== */
+
+    function applySoundState() {
+
+        /*
+            MOBILE
+
+            Sound is determined only by
+            the visible sound button.
+        */
+
+        if (isMobile()) {
+
+            video.muted =
+                !mobileSoundEnabled;
+
+            return;
+
+        }
+
+
+        /*
+            DESKTOP
+
+            Before the first click:
+            always muted.
+
+            Afterwards:
+            hover = sound on
+            outside = sound off.
+        */
 
         if (
-            promise !== undefined
+            desktopAudioUnlocked &&
+            desktopHoveringVideo
         ) {
 
-            promise.catch(
-                () => {}
-            );
+            video.muted = false;
+
+        }
+
+        else {
+
+            video.muted = true;
 
         }
 
     }
 
-}
+
+    /* =====================================================
+       MOBILE LABELS
+       ===================================================== */
+
+    function updateMobileControls() {
+
+        playButton.textContent =
+            video.paused
+                ? "play"
+                : "pause";
 
 
-/* =====================================================
-   NEXT
-   ===================================================== */
-
-function nextFilm() {
-
-    currentFilm++;
-
-    if (
-        currentFilm >= films.length
-    ) {
-
-        currentFilm = 0;
+        soundButton.textContent =
+            mobileSoundEnabled
+                ? "sound off"
+                : "sound on";
 
     }
 
 
-    loadFilm(
-        currentFilm,
-        true
+    video.addEventListener(
+        "play",
+        updateMobileControls
     );
 
-}
 
-
-/* =====================================================
-   PREVIOUS
-   ===================================================== */
-
-function previousFilm() {
-
-    currentFilm--;
-
-    if (
-        currentFilm < 0
-    ) {
-
-        currentFilm =
-            films.length - 1;
-
-    }
-
-
-    loadFilm(
-        currentFilm,
-        true
+    video.addEventListener(
+        "pause",
+        updateMobileControls
     );
 
-}
+
+    /* =====================================================
+       LOAD FILM
+       ===================================================== */
+
+    function loadFilm(
+        index,
+        autoplay = true
+    ) {
+
+        if (
+            films.length === 0
+        ) {
+            return;
+        }
 
 
-/* =====================================================
-   VIDEO END
-   ===================================================== */
+        if (
+            index < 0
+        ) {
 
-video.addEventListener(
-    "ended",
-    () => {
+            index =
+                films.length - 1;
 
-        nextFilm();
+        }
+
+
+        if (
+            index >= films.length
+        ) {
+
+            index = 0;
+
+        }
+
+
+        currentFilm = index;
+
+
+        video.pause();
+
+
+        video.src =
+            R2_BASE +
+            films[currentFilm];
+
+
+        video.load();
+
+
+        /*
+            Preserve the user's sound state.
+
+            Desktop:
+            depends on hover + audio unlock.
+
+            Mobile:
+            depends on sound button.
+        */
+
+        applySoundState();
+
+
+        if (
+            autoplay
+        ) {
+
+            const promise =
+                video.play();
+
+
+            if (
+                promise !== undefined
+            ) {
+
+                promise.catch(
+                    () => {}
+                );
+
+            }
+
+        }
+
+
+        updateMobileControls();
 
     }
-);
 
 
-/* =====================================================
-   DESKTOP HOVER
-   ===================================================== */
+    /* =====================================================
+       NEXT
+       ===================================================== */
 
+    function nextFilm() {
 
-/*
-   IMPORTANT:
+        currentFilm++;
 
-   These events are attached directly
-   to the VIDEO.
-
-   Therefore:
-
-   video area       = no hover
-   white space      = no hover
-   actual video     = hover
-*/
-
-
-video.addEventListener(
-    "mouseenter",
-    () => {
 
         if (
-            window.innerWidth <= 600
+            currentFilm >=
+            films.length
         ) {
-            return;
+
+            currentFilm = 0;
+
         }
 
 
-        /*
-           HOVER ON
-           SOUND ON
-
-           Nothing happens to playback.
-        */
-
-        hoverMuted = false;
-
-        video.muted = false;
+        loadFilm(
+            currentFilm,
+            true
+        );
 
     }
-);
 
 
-video.addEventListener(
-    "mouseleave",
-    () => {
+    /* =====================================================
+       PREVIOUS
+       ===================================================== */
+
+    function previousFilm() {
+
+        currentFilm--;
+
 
         if (
-            window.innerWidth <= 600
+            currentFilm < 0
         ) {
-            return;
+
+            currentFilm =
+                films.length - 1;
+
         }
 
 
-        /*
-           HOVER OFF
-           SOUND OFF
-
-           Playback continues.
-        */
-
-        hoverMuted = true;
-
-        video.muted = true;
+        loadFilm(
+            currentFilm,
+            true
+        );
 
     }
-);
 
 
-/* =====================================================
-   DESKTOP CLICK ZONES
-   ===================================================== */
+    /* =====================================================
+       PLAY / PAUSE
+       ===================================================== */
 
-
-/*
-   LEFT 25%
-       → PREVIOUS
-
-   CENTER 50%
-       → PLAY / PAUSE
-
-   RIGHT 25%
-       → NEXT
-
-   IMPORTANT:
-
-   CLICKING DOES NOT TOUCH `video.muted`.
-*/
-
-
-video.addEventListener(
-    "click",
-    (event) => {
-
-        if (
-            window.innerWidth <= 600
-        ) {
-            return;
-        }
-
-
-        const rect =
-            video.getBoundingClientRect();
-
-
-        const x =
-            event.clientX -
-            rect.left;
-
-
-        const percentage =
-            x / rect.width;
-
-
-        /*
-           LEFT 25%
-        */
-
-        if (
-            percentage < 0.25
-        ) {
-
-            previousFilm();
-
-            return;
-
-        }
-
-
-        /*
-           RIGHT 25%
-        */
-
-        if (
-            percentage > 0.75
-        ) {
-
-            nextFilm();
-
-            return;
-
-        }
-
-
-        /*
-           CENTER 50%
-
-           ONLY PLAY / PAUSE.
-        */
+    function togglePlayback() {
 
         if (
             video.paused
@@ -768,504 +819,723 @@ video.addEventListener(
 
         }
 
+
+        updateMobileControls();
+
     }
-);
 
 
-/* =====================================================
-   MOBILE TOUCH
-   ===================================================== */
+    /* =====================================================
+       VIDEO END
+       ===================================================== */
 
-let touchStartX = 0;
-let touchStartY = 0;
+    video.addEventListener(
+        "ended",
+        () => {
 
+            nextFilm();
 
-video.addEventListener(
-    "touchstart",
-    (event) => {
-
-        if (
-            window.innerWidth > 600
-        ) {
-            return;
         }
+    );
 
 
-        const touch =
-            event.changedTouches[0];
+    /* =====================================================
+       DESKTOP HOVER — SOUND ONLY
+       ===================================================== */
+
+    video.addEventListener(
+        "mouseenter",
+        () => {
+
+            if (
+                isMobile()
+            ) {
+                return;
+            }
 
 
-        touchStartX =
-            touch.clientX;
+            desktopHoveringVideo =
+                true;
 
-        touchStartY =
-            touch.clientY;
-
-    },
-    {
-        passive: true
-    }
-);
-
-
-video.addEventListener(
-    "touchend",
-    (event) => {
-
-        if (
-            window.innerWidth > 600
-        ) {
-            return;
-        }
-
-
-        const touch =
-            event.changedTouches[0];
-
-
-        const deltaX =
-            touch.clientX -
-            touchStartX;
-
-
-        const deltaY =
-            touch.clientY -
-            touchStartY;
-
-
-        const threshold = 50;
-
-
-        /*
-           SWIPE
-        */
-
-        if (
-            Math.abs(deltaX) >
-                threshold &&
-            Math.abs(deltaX) >
-                Math.abs(deltaY)
-        ) {
 
             /*
-               SWIPE LEFT
-               NEXT
+                Do NOT attempt to unmute before
+                a genuine click has unlocked audio.
+
+                This fixes the first-hover issue
+                where some browsers stop playback.
+            */
+
+            applySoundState();
+
+        }
+    );
+
+
+    video.addEventListener(
+        "mouseleave",
+        () => {
+
+            if (
+                isMobile()
+            ) {
+                return;
+            }
+
+
+            desktopHoveringVideo =
+                false;
+
+
+            /*
+                Mouse leaves actual video:
+                sound immediately off.
+
+                Playback is untouched.
+            */
+
+            applySoundState();
+
+        }
+    );
+
+
+    /* =====================================================
+       DESKTOP CLICK ZONES
+       ===================================================== */
+
+    video.addEventListener(
+        "click",
+        (event) => {
+
+            if (
+                isMobile()
+            ) {
+
+                /*
+                    Mobile click is handled separately.
+                */
+
+                return;
+
+            }
+
+
+            /*
+                The first real click grants the page
+                permission to use audio.
+
+                Because the pointer is currently over
+                the video, hover sound becomes active.
+            */
+
+            desktopAudioUnlocked =
+                true;
+
+
+            applySoundState();
+
+
+            const rect =
+                video.getBoundingClientRect();
+
+
+            const x =
+                event.clientX -
+                rect.left;
+
+
+            const percentage =
+                x /
+                rect.width;
+
+
+            /*
+                LEFT 25%
+                PREVIOUS
             */
 
             if (
-                deltaX < 0
+                percentage < 0.25
+            ) {
+
+                previousFilm();
+
+                return;
+
+            }
+
+
+            /*
+                RIGHT 25%
+                NEXT
+            */
+
+            if (
+                percentage > 0.75
             ) {
 
                 nextFilm();
 
+                return;
+
             }
 
 
             /*
-               SWIPE RIGHT
-               PREVIOUS
+                CENTER 50%
+
+                ONLY PLAY / PAUSE.
+
+                It does not change sound.
             */
 
-            else {
+            togglePlayback();
 
-                previousFilm();
+        }
+    );
+
+
+    /* =====================================================
+       MOBILE BUTTONS
+       ===================================================== */
+
+    previousButton.addEventListener(
+        "click",
+        (event) => {
+
+            event.stopPropagation();
+
+            previousFilm();
+
+        }
+    );
+
+
+    nextButton.addEventListener(
+        "click",
+        (event) => {
+
+            event.stopPropagation();
+
+            nextFilm();
+
+        }
+    );
+
+
+    playButton.addEventListener(
+        "click",
+        (event) => {
+
+            event.stopPropagation();
+
+            togglePlayback();
+
+        }
+    );
+
+
+    soundButton.addEventListener(
+        "click",
+        (event) => {
+
+            event.stopPropagation();
+
+
+            mobileSoundEnabled =
+                !mobileSoundEnabled;
+
+
+            /*
+                This click is a genuine user
+                gesture, so browsers can safely
+                enable audio here.
+            */
+
+            applySoundState();
+
+
+            /*
+                If sound is enabled while the
+                video was paused, do NOT force
+                it to play.
+
+                Sound and playback remain separate.
+            */
+
+            updateMobileControls();
+
+        }
+    );
+
+
+    /* =====================================================
+       MOBILE VIDEO TAP
+       ===================================================== */
+
+    video.addEventListener(
+        "click",
+        () => {
+
+            if (
+                !isMobile()
+            ) {
+                return;
+            }
+
+
+            /*
+                Ignore the synthetic click that
+                follows a swipe.
+            */
+
+            if (
+                Date.now() <
+                suppressMobileClickUntil
+            ) {
+
+                return;
 
             }
 
+
+            /*
+                Simple tap on the image itself
+                = play / pause.
+
+                Sound remains controlled by
+                the visible sound button.
+            */
+
+            togglePlayback();
+
+        }
+    );
+
+
+    /* =====================================================
+       MOBILE SWIPE
+       ===================================================== */
+
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+
+    video.addEventListener(
+        "touchstart",
+        (event) => {
+
+            if (
+                !isMobile()
+            ) {
+                return;
+            }
+
+
+            const touch =
+                event.changedTouches[0];
+
+
+            touchStartX =
+                touch.clientX;
+
+
+            touchStartY =
+                touch.clientY;
+
+        },
+        {
+            passive: true
+        }
+    );
+
+
+    video.addEventListener(
+        "touchend",
+        (event) => {
+
+            if (
+                !isMobile()
+            ) {
+                return;
+            }
+
+
+            const touch =
+                event.changedTouches[0];
+
+
+            const deltaX =
+                touch.clientX -
+                touchStartX;
+
+
+            const deltaY =
+                touch.clientY -
+                touchStartY;
+
+
+            const threshold = 50;
+
+
+            if (
+                Math.abs(deltaX) >
+                    threshold &&
+                Math.abs(deltaX) >
+                    Math.abs(deltaY)
+            ) {
+
+                /*
+                    Stop the click generated
+                    immediately after this swipe.
+                */
+
+                suppressMobileClickUntil =
+                    Date.now() + 450;
+
+
+                /*
+                    SWIPE LEFT
+                    NEXT
+                */
+
+                if (
+                    deltaX < 0
+                ) {
+
+                    nextFilm();
+
+                }
+
+
+                /*
+                    SWIPE RIGHT
+                    PREVIOUS
+                */
+
+                else {
+
+                    previousFilm();
+
+                }
+
+            }
+
+        },
+        {
+            passive: true
+        }
+    );
+
+
+    /* =====================================================
+       LOGO ANIMATION
+       Same logic as Photography
+       ===================================================== */
+
+    const logo =
+        document.querySelector(
+            ".logo"
+        );
+
+
+    const logoName =
+        document.getElementById(
+            "logo-name"
+        );
+
+
+    const letters = [
+
+        document.getElementById(
+            "letter-a"
+        ),
+
+        document.getElementById(
+            "letter-y"
+        ),
+
+        document.getElementById(
+            "letter-b"
+        ),
+
+        document.getElementById(
+            "letter-a2"
+        ),
+
+        document.getElementById(
+            "letter-k"
+        )
+
+    ];
+
+
+    const lowercase = [
+        "a",
+        "y",
+        "b",
+        "a",
+        "k"
+    ];
+
+
+    const uppercase = [
+        "A",
+        "Y",
+        "B",
+        "A",
+        "K"
+    ];
+
+
+    let logoState = 0;
+
+    let logoTarget = 0;
+
+    let logoTimer = null;
+
+
+    function setLogoState(
+        state
+    ) {
+
+        logoState = state;
+
+
+        if (
+            state === 0
+        ) {
+
+            logoName.textContent =
+                "Denizalp";
+
+        }
+
+        else {
+
+            logoName.textContent =
+                "denizalp";
+
+        }
+
+
+        for (
+            let i = 0;
+            i < letters.length;
+            i++
+        ) {
+
+            if (
+                i < state
+            ) {
+
+                letters[i]
+                    .textContent =
+                    uppercase[i];
+
+            }
+
+            else {
+
+                letters[i]
+                    .textContent =
+                    lowercase[i];
+
+            }
+
+        }
+
+    }
+
+
+    function cancelLogoAnimation() {
+
+        if (
+            logoTimer !== null
+        ) {
+
+            clearTimeout(
+                logoTimer
+            );
+
+
+            logoTimer = null;
+
+        }
+
+    }
+
+
+    function moveLogo() {
+
+        if (
+            logoState ===
+            logoTarget
+        ) {
+
+            logoTimer = null;
 
             return;
 
         }
 
 
-        /*
-           TAP
-
-           Mobile'da hover olmadığı için
-           tap play/pause olarak çalışıyor.
-
-           Ses durumuna burada dokunmuyoruz.
-        */
-
         if (
-            video.paused
+            logoState <
+            logoTarget
         ) {
 
-            const promise =
-                video.play();
+            setLogoState(
+                logoState + 1
+            );
 
+        }
+
+        else {
+
+            setLogoState(
+                logoState - 1
+            );
+
+        }
+
+
+        logoTimer =
+            setTimeout(
+                moveLogo,
+                120
+            );
+
+    }
+
+
+    function animateTo(
+        target
+    ) {
+
+        logoTarget =
+            target;
+
+
+        cancelLogoAnimation();
+
+
+        moveLogo();
+
+    }
+
+
+    /* =====================================================
+       DESKTOP LOGO
+       ===================================================== */
+
+    logo.addEventListener(
+        "mouseenter",
+        () => {
 
             if (
-                promise !== undefined
+                window.matchMedia(
+                    "(min-width: 601px)"
+                ).matches
             ) {
 
-                promise.catch(
-                    () => {}
-                );
+                animateTo(5);
 
             }
 
         }
-
-        else {
-
-            video.pause();
-
-        }
-
-    },
-    {
-        passive: true
-    }
-);
-
-
-/* =====================================================
-   PREVENT DOUBLE TAP ZOOM
-   ===================================================== */
-
-let lastTouchEnd = 0;
-
-
-document.addEventListener(
-    "touchend",
-    (event) => {
-
-        const now =
-            Date.now();
-
-
-        if (
-            now -
-            lastTouchEnd <=
-            300
-        ) {
-
-            event.preventDefault();
-
-        }
-
-
-        lastTouchEnd = now;
-
-    },
-    {
-        passive: false
-    }
-);
-
-
-/* =====================================================
-   LOGO ANIMATION
-   ===================================================== */
-
-const logo =
-    document.querySelector(
-        ".logo"
     );
 
 
-const logoName =
-    document.getElementById(
-        "logo-name"
+    logo.addEventListener(
+        "mouseleave",
+        () => {
+
+            if (
+                window.matchMedia(
+                    "(min-width: 601px)"
+                ).matches
+            ) {
+
+                animateTo(0);
+
+            }
+
+        }
     );
 
 
-const letters = [
+    /* =====================================================
+       MOBILE LOGO
+       ===================================================== */
 
-    document.getElementById(
-        "letter-a"
-    ),
-
-    document.getElementById(
-        "letter-y"
-    ),
-
-    document.getElementById(
-        "letter-b"
-    ),
-
-    document.getElementById(
-        "letter-a2"
-    ),
-
-    document.getElementById(
-        "letter-k"
-    )
-
-];
+    let mobileCycleTimer =
+        null;
 
 
-const lowercase = [
-    "a",
-    "y",
-    "b",
-    "a",
-    "k"
-];
+    function startMobileCycle() {
+
+        mobileCycleTimer =
+            setTimeout(
+                () => {
+
+                    animateTo(5);
 
 
-const uppercase = [
-    "A",
-    "Y",
-    "B",
-    "A",
-    "K"
-];
+                    mobileCycleTimer =
+                        setTimeout(
+                            () => {
+
+                                animateTo(0);
 
 
-let logoState = 0;
+                                mobileCycleTimer =
+                                    setTimeout(
+                                        () => {
 
-let logoTarget = 0;
+                                            startMobileCycle();
 
-let logoTimer = null;
+                                        },
+                                        600 + 2000
+                                    );
 
+                            },
+                            600 + 2000
+                        );
 
-/* =====================================================
-   SET LOGO STATE
-   ===================================================== */
-
-function setLogoState(
-    state
-) {
-
-    logoState = state;
-
-
-    /*
-       Denizalp stays capitalized
-       throughout the animation.
-    */
-
-    logoName.textContent =
-        "Denizalp";
-
-
-    for (
-        let i = 0;
-        i < letters.length;
-        i++
-    ) {
-
-        if (
-            i < state
-        ) {
-
-            letters[i]
-                .textContent =
-                uppercase[i];
-
-        }
-
-        else {
-
-            letters[i]
-                .textContent =
-                lowercase[i];
-
-        }
-
-    }
-
-}
-
-
-/* =====================================================
-   CANCEL LOGO ANIMATION
-   ===================================================== */
-
-function cancelLogoAnimation() {
-
-    if (
-        logoTimer !== null
-    ) {
-
-        clearTimeout(
-            logoTimer
-        );
-
-        logoTimer = null;
-
-    }
-
-}
-
-
-/* =====================================================
-   MOVE LOGO
-   ===================================================== */
-
-function moveLogo() {
-
-    if (
-        logoState ===
-        logoTarget
-    ) {
-
-        logoTimer = null;
-
-        return;
+                },
+                2000
+            );
 
     }
 
 
     if (
-        logoState <
-        logoTarget
+        window.matchMedia(
+            "(max-width: 600px)"
+        ).matches
     ) {
 
-        setLogoState(
-            logoState + 1
-        );
+        setLogoState(0);
 
-    }
-
-    else {
-
-        setLogoState(
-            logoState - 1
-        );
+        startMobileCycle();
 
     }
 
 
-    logoTimer =
-        setTimeout(
-            moveLogo,
-            120
-        );
-
-}
-
-
-/* =====================================================
-   ANIMATE LOGO
-   ===================================================== */
-
-function animateTo(
-    target
-) {
-
-    logoTarget =
-        target;
-
-
-    cancelLogoAnimation();
-
-
-    moveLogo();
-
-}
-
-
-/* =====================================================
-   DESKTOP LOGO
-   ===================================================== */
-
-logo.addEventListener(
-    "mouseenter",
-    () => {
-
-        if (
-            window.matchMedia(
-                "(min-width: 601px)"
-            ).matches
-        ) {
-
-            animateTo(5);
-
-        }
-
-    }
-);
-
-
-logo.addEventListener(
-    "mouseleave",
-    () => {
-
-        if (
-            window.matchMedia(
-                "(min-width: 601px)"
-            ).matches
-        ) {
-
-            animateTo(0);
-
-        }
-
-    }
-);
-
-
-/* =====================================================
-   MOBILE LOGO
-   ===================================================== */
-
-let mobileCycleTimer =
-    null;
-
-
-function startMobileCycle() {
-
-    mobileCycleTimer =
-        setTimeout(
-            () => {
-
-                animateTo(5);
-
-
-                mobileCycleTimer =
-                    setTimeout(
-                        () => {
-
-                            animateTo(0);
-
-
-                            mobileCycleTimer =
-                                setTimeout(
-                                    () => {
-
-                                        startMobileCycle();
-
-                                    },
-                                    2600
-                                );
-
-                        },
-                        2600
-                    );
-
-            },
-            2000
-        );
-
-}
-
-
-if (
-    window.matchMedia(
-        "(max-width: 600px)"
-    ).matches
-) {
+    /* =====================================================
+       START
+       ===================================================== */
 
     setLogoState(0);
 
-    startMobileCycle();
+    updateMobileControls();
 
-}
-
-
-/* =====================================================
-   START
-   ===================================================== */
-
-setLogoState(0);
-
-loadFilm(
-    0,
-    true
-);
+    loadFilm(
+        0,
+        true
+    );
 
 
 </script>
