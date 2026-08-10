@@ -455,14 +455,12 @@
         "https://pub-14d397941aeb40e5bd3f66ac028fef80.r2.dev/";
 
 
-    /*
-        Temporary film list.
-        films.json comes next.
-    */
+    /* =====================================================
+       FILM LIST
+       Loaded from films.json
+       ===================================================== */
 
-    const films = [
-        "001.mp4"
-    ];
+    let films = [];
 
 
     /* =====================================================
@@ -506,6 +504,97 @@
         document.getElementById(
             "next-button"
         );
+
+
+    /* =====================================================
+       LOAD FILMS.JSON
+       ===================================================== */
+
+    async function loadFilmList() {
+
+        try {
+
+            const response =
+                await fetch(
+                    "./films.json",
+                    {
+                        cache: "no-store"
+                    }
+                );
+
+
+            if (
+                !response.ok
+            ) {
+
+                throw new Error(
+                    "films.json could not be loaded."
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            if (
+                !Array.isArray(data) ||
+                data.length === 0
+            ) {
+
+                throw new Error(
+                    "films.json contains no films."
+                );
+
+            }
+
+
+            /*
+                Only keep valid strings.
+            */
+
+            films =
+                data.filter(
+                    item =>
+                        typeof item === "string" &&
+                        item.trim() !== ""
+                );
+
+
+            if (
+                films.length === 0
+            ) {
+
+                throw new Error(
+                    "films.json contains no valid film filenames."
+                );
+
+            }
+
+
+            /*
+                Start with the first film
+                listed in films.json.
+            */
+
+            loadFilm(
+                0,
+                true
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Could not load film list:",
+                error
+            );
+
+        }
+
+    }
 
 
     /* =====================================================
@@ -603,7 +692,9 @@
         if (
             films.length === 0
         ) {
+
             return;
+
         }
 
 
@@ -626,7 +717,8 @@
         }
 
 
-        currentFilm = index;
+        currentFilm =
+            index;
 
 
         video.pause();
@@ -641,8 +733,8 @@
 
 
         /*
-            Preserve sound state
-            when changing films.
+            Preserve sound state when
+            moving between films.
         */
 
         applySoundState();
@@ -680,6 +772,15 @@
 
     function nextFilm() {
 
+        if (
+            films.length === 0
+        ) {
+
+            return;
+
+        }
+
+
         currentFilm++;
 
 
@@ -706,6 +807,15 @@
        ===================================================== */
 
     function previousFilm() {
+
+        if (
+            films.length === 0
+        ) {
+
+            return;
+
+        }
+
 
         currentFilm--;
 
@@ -788,6 +898,11 @@
     );
 
 
+    /*
+        When a film finishes naturally,
+        automatically move to the next film.
+    */
+
     video.addEventListener(
         "ended",
         () => {
@@ -800,7 +915,6 @@
 
     /* =====================================================
        LOGO ANIMATION
-       Same logic as Photography
        ===================================================== */
 
     const logo =
@@ -869,7 +983,8 @@
         state
     ) {
 
-        logoState = state;
+        logoState =
+            state;
 
 
         if (
@@ -928,7 +1043,9 @@
                 logoTimer
             );
 
-            logoTimer = null;
+
+            logoTimer =
+                null;
 
         }
 
@@ -942,7 +1059,9 @@
             logoTarget
         ) {
 
-            logoTimer = null;
+            logoTimer =
+                null;
+
 
             return;
 
@@ -1065,11 +1184,11 @@
                                             startMobileCycle();
 
                                         },
-                                        600 + 2000
+                                        2600
                                     );
 
                             },
-                            600 + 2000
+                            2600
                         );
 
                 },
@@ -1102,10 +1221,13 @@
 
     updateControls();
 
-    loadFilm(
-        0,
-        true
-    );
+
+    /*
+        Fetch films.json and start
+        the first film.
+    */
+
+    loadFilmList();
 
 
 </script>
