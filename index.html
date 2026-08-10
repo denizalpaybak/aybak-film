@@ -1,17 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>AYBAK — Film</title>
-
 <style>
-
-@font-face {
-    font-family: "Helvetica Neue";
-    src: local("Helvetica Neue");
-}
 
 * {
     box-sizing: border-box;
@@ -21,344 +15,412 @@ html,
 body {
     margin: 0;
     padding: 0;
+
     width: 100%;
     height: 100%;
-    background: #fff;
-    color: #000;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
 
-body {
+    background: transparent;
+
     overflow: hidden;
 }
 
-/* --------------------------------------------------
-   LAYOUT
--------------------------------------------------- */
-
-.page {
-    position: relative;
-    width: 100%;
-    height: 100vh;
+body {
+    cursor: pointer;
 }
 
-/* --------------------------------------------------
-   LEFT
--------------------------------------------------- */
 
-.left {
-    position: absolute;
-    top: 0;
-    left: 0;
+/* =========================
+   LEFT INFORMATION
+   ========================= */
 
-    width: 25%;
-    height: 100%;
+.info {
+    position: fixed;
 
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    top: 32px;
+    left: 48px;
 
     z-index: 10;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.15;
 }
+
+
+/* =========================
+   LOGO
+   ========================= */
 
 .logo {
-    font-size: 22px;
-    line-height: 0.92;
-    letter-spacing: -0.04em;
-    font-weight: 400;
+    position: relative;
 
-    user-select: none;
-}
-
-.logo-line {
     display: block;
-    height: 20px;
-}
 
-/* --------------------------------------------------
-   NAVIGATION
--------------------------------------------------- */
+    width: 190px;
+    height: 52px;
 
-.navigation {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-}
+    margin: 0;
+    padding: 0;
 
-.navigation a {
-    color: #000;
+    color: inherit;
     text-decoration: none;
-
-    font-size: 22px;
-    line-height: 0.92;
-    letter-spacing: -0.04em;
-
-    display: block;
-    width: fit-content;
 
     cursor: pointer;
 }
 
-/* --------------------------------------------------
-   CONTACT
--------------------------------------------------- */
-
-.contact {
-    font-size: 22px;
-    line-height: 0.92;
-    letter-spacing: -0.04em;
-}
-
-.contact a {
-    color: #000;
-    text-decoration: none;
-}
-
-/* --------------------------------------------------
-   VIDEO
--------------------------------------------------- */
-
-.video-area {
+.logo-name {
     position: absolute;
 
-    left: 25%;
     top: 0;
+    left: 0;
 
-    width: 75%;
-    height: 100%;
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.15;
+
+    white-space: nowrap;
+}
+
+.logo-aybak {
+    position: absolute;
+
+    top: 17px;
+    left: 0;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.15;
+
+    letter-spacing: normal;
+
+    white-space: nowrap;
+}
+
+.logo-aybak span {
+    display: inline;
+}
+
+
+/* =========================
+   NAVIGATION
+   ========================= */
+
+.navigation {
+    margin: 0;
+    padding: 0;
+}
+
+.navigation a {
+    display: block;
+
+    color: inherit;
+    text-decoration: none;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.15;
+}
+
+.navigation a:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================
+   CONTACT / SOCIAL
+   ========================= */
+
+.contact {
+    margin: 0;
+    padding: 0;
+}
+
+.social {
+    display: flex;
+
+    flex-direction: column;
+    gap: 0;
+
+    margin: 0;
+    padding: 0;
+}
+
+.info a {
+    color: inherit;
+    text-decoration: none;
+    font-weight: 400;
+}
+
+.info a:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================
+   VIDEO
+   ========================= */
+
+#video-container {
+    position: fixed;
+
+    inset: 0;
+
+    width: 100vw;
+    height: 100vh;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
-
-    padding: 24px;
 
     z-index: 1;
 }
 
-.video-wrapper {
+
+/*
+   IMPORTANT:
+
+   The interaction layer is exactly
+   the size of the actual video.
+
+   Therefore the white space above
+   and below the video does NOT count
+   as hover.
+*/
+
+#video-wrapper {
     position: relative;
 
-    width: 100%;
-    height: 100%;
-
     display: flex;
+
     align-items: center;
     justify-content: center;
 
-    overflow: hidden;
+    width: auto;
+    height: auto;
+
+    max-width: 100vw;
+    max-height: 100vh;
 }
 
-#filmVideo {
+#film-video {
     display: block;
 
     width: auto;
     height: auto;
 
-    max-width: 100%;
-    max-height: 100%;
+    max-width: 90vw;
+    max-height: 88vh;
 
     object-fit: contain;
 
-    cursor: default;
-
     user-select: none;
     -webkit-user-select: none;
+
+    cursor: pointer;
 }
 
-/* --------------------------------------------------
+
+/* =========================
    MOBILE
--------------------------------------------------- */
+   ========================= */
 
-@media (max-width: 700px) {
+@media (max-width: 600px) {
 
-    body {
-        overflow: auto;
-    }
+    .info {
+        top: 20px;
+        left: 24px;
 
-    .page {
-        height: auto;
-        min-height: 100vh;
-    }
-
-    .left {
-        position: relative;
-
-        width: 100%;
-        height: auto;
-
-        padding: 20px;
-
-        display: block;
+        font-size: 13px;
     }
 
     .logo {
-        font-size: 22px;
+        width: 160px;
+        height: 45px;
+
+        margin-bottom: 0;
     }
 
-    .logo-line {
-        height: 20px;
+    .logo-name {
+        font-size: 13px;
     }
 
-    .navigation {
-        margin-top: 42px;
+    .logo-aybak {
+        top: 15px;
+
+        font-size: 13px;
+
+        letter-spacing: normal;
     }
 
-    .navigation a {
-        font-size: 22px;
+    #video-container {
+        padding: 0 24px;
     }
 
-    .contact {
-        margin-top: 42px;
-        font-size: 22px;
-    }
-
-    .video-area {
-        position: relative;
-
-        left: auto;
-        top: auto;
-
-        width: 100%;
-        height: auto;
-
-        min-height: 60vh;
-
-        padding: 20px;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .video-wrapper {
-        width: 100%;
-        height: auto;
-
-        min-height: 50vh;
-    }
-
-    #filmVideo {
-        width: 100%;
-        height: auto;
-
+    #film-video {
         max-width: 100%;
-        max-height: none;
+        max-height: 72vh;
     }
 }
 
 </style>
+
 </head>
+
 
 <body>
 
-<div class="page">
 
-    <!-- LEFT COLUMN -->
-    <div class="left">
+<!-- =====================================================
+     INFORMATION
+     ===================================================== -->
 
-        <div>
+<div class="info">
 
-            <!-- LOGO -->
-            <div class="logo" id="logo">
-                <span class="logo-line" id="logoFirst">Denizalp</span>
-                <span class="logo-line" id="logoSecond">aybak</span>
-            </div>
 
-            <!-- NAVIGATION -->
-            <nav class="navigation">
+    <!-- LOGO -->
 
-                <a
-                    href="https://photography.denizalpaybak.com"
-                    class="nav-link"
-                >
-                    photography
-                </a>
+    <a
+        class="logo"
+        href="https://denizalpaybak.com/"
+        target="_self"
+    >
 
-                <a
-                    href="https://film.denizalpaybak.com"
-                    class="nav-link"
-                >
-                    film
-                </a>
+        <span
+            class="logo-name"
+            id="logo-name"
+        >
+            Denizalp
+        </span>
 
-            </nav>
+        <span class="logo-aybak">
 
-            <!-- CONTACT -->
-            <div class="contact">
+            <span id="letter-a">a</span><span id="letter-y">y</span><span id="letter-b">b</span><span id="letter-a2">a</span><span id="letter-k">k</span>
 
-                <div>
-                    <a href="mailto:d@denizalpaybak.com">
-                        d@denizalpaybak.com
-                    </a>
-                </div>
+        </span>
 
-                <div>
-                    instagram
-                    <a
-                        href="https://instagram.com/denizalpaybak"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        @denizalpaybak
-                    </a>
-                </div>
+    </a>
 
-                <div>
-                    <a
-                        href="https://models.com/denizalp-aybak"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        models.com
-                    </a>
-                </div>
 
-            </div>
+    <!-- NAVIGATION -->
 
-        </div>
+    <div class="navigation">
+
+        <a
+            href="https://photography.denizalpaybak.com"
+            target="_self"
+        >
+            photography
+        </a>
+
+        <a
+            href="https://film.denizalpaybak.com"
+            target="_self"
+        >
+            film
+        </a>
 
     </div>
 
 
-    <!-- VIDEO -->
-    <main class="video-area">
+    <!-- CONTACT -->
 
-        <div class="video-wrapper">
+    <div class="contact">
 
-            <video
-                id="filmVideo"
-                muted
-                autoplay
-                playsinline
-                preload="auto"
-            ></video>
+        <a
+            href="mailto:d@denizalpaybak.com"
+            target="_blank"
+            rel="noopener"
+        >
+            d@denizalpaybak.com
+        </a>
 
-        </div>
+    </div>
 
-    </main>
+
+    <!-- SOCIAL -->
+
+    <div class="social">
+
+        <a
+            href="https://www.instagram.com/denizalpaybak/"
+            target="_blank"
+            rel="noopener"
+        >
+            instagram @denizalpaybak
+        </a>
+
+        <a
+            href="https://models.com/people/denizalp-aybak"
+            target="_blank"
+            rel="noopener"
+        >
+            models.com
+        </a>
+
+    </div>
+
+
+</div>
+
+
+<!-- =====================================================
+     VIDEO
+     ===================================================== -->
+
+<div id="video-container">
+
+    <div id="video-wrapper">
+
+        <video
+            id="film-video"
+            muted
+            autoplay
+            playsinline
+            preload="auto"
+        ></video>
+
+    </div>
 
 </div>
 
 
 <script>
 
-/* ==================================================
-   CONFIG
-================================================== */
+
+/* =====================================================
+   R2
+   ===================================================== */
 
 const R2_BASE =
     "https://pub-14d397941aeb40e5bd3f66ac028fef80.r2.dev/";
 
 
 /*
-    FILM ORDER
+   Temporary film list.
 
-    For now this is the first film.
-
-    We will move this list into films.json
-    immediately after the first test is working.
+   We will replace this with films.json
+   after the interaction system is confirmed.
 */
 
 const films = [
@@ -366,71 +428,87 @@ const films = [
 ];
 
 
-/* ==================================================
-   STATE
-================================================== */
-
-let currentIndex = 0;
-
-let isHovering = false;
+let currentFilm = 0;
 
 let isMuted = true;
 
-let touchStartX = 0;
-let touchStartY = 0;
 
-
-/* ==================================================
+/* =====================================================
    ELEMENTS
-================================================== */
+   ===================================================== */
 
-const video = document.getElementById("filmVideo");
+const video =
+    document.getElementById(
+        "film-video"
+    );
 
-const videoArea = document.querySelector(".video-area");
+const videoWrapper =
+    document.getElementById(
+        "video-wrapper"
+    );
 
 
-/* ==================================================
+/* =====================================================
    LOAD FILM
-================================================== */
+   ===================================================== */
 
-function loadFilm(index, autoplay = true) {
+function loadFilm(
+    index,
+    autoplay = true
+) {
 
     if (films.length === 0) {
         return;
     }
 
+
     if (index < 0) {
-        index = films.length - 1;
+
+        index =
+            films.length - 1;
+
     }
 
-    if (index >= films.length) {
+
+    if (
+        index >= films.length
+    ) {
+
         index = 0;
+
     }
 
-    currentIndex = index;
 
-    const filename = films[currentIndex];
+    currentFilm = index;
+
 
     video.pause();
 
-    video.src = R2_BASE + filename;
+
+    video.src =
+        R2_BASE +
+        films[currentFilm];
+
 
     video.load();
 
-    video.muted = isMuted;
+
+    video.muted =
+        isMuted;
+
 
     if (autoplay) {
 
-        const playPromise = video.play();
+        const promise =
+            video.play();
 
-        if (playPromise !== undefined) {
+        if (
+            promise !== undefined
+        ) {
 
-            playPromise.catch(() => {
-                /*
-                    Browser autoplay restrictions.
-                    Video remains ready to play after interaction.
-                */
-            });
+            promise.catch(
+                () => {}
+            );
 
         }
 
@@ -439,173 +517,260 @@ function loadFilm(index, autoplay = true) {
 }
 
 
-/* ==================================================
+/* =====================================================
    NEXT
-================================================== */
+   ===================================================== */
 
 function nextFilm() {
 
-    currentIndex++;
+    currentFilm++;
 
-    if (currentIndex >= films.length) {
-        currentIndex = 0;
+    if (
+        currentFilm >=
+        films.length
+    ) {
+
+        currentFilm = 0;
+
     }
 
-    loadFilm(currentIndex, true);
+    loadFilm(
+        currentFilm,
+        true
+    );
 
 }
 
 
-/* ==================================================
+/* =====================================================
    PREVIOUS
-================================================== */
+   ===================================================== */
 
 function previousFilm() {
 
-    currentIndex--;
+    currentFilm--;
 
-    if (currentIndex < 0) {
-        currentIndex = films.length - 1;
+    if (
+        currentFilm < 0
+    ) {
+
+        currentFilm =
+            films.length - 1;
+
     }
 
-    loadFilm(currentIndex, true);
+    loadFilm(
+        currentFilm,
+        true
+    );
 
 }
 
 
-/* ==================================================
+/* =====================================================
    VIDEO END
-================================================== */
+   ===================================================== */
 
-video.addEventListener("ended", () => {
-
-    /*
-        If the user has intentionally paused the video,
-        this event cannot fire.
-
-        When a film naturally reaches the end,
-        the next film begins.
-    */
-
-    nextFilm();
-
-});
-
-
-/* ==================================================
-   DESKTOP HOVER
-================================================== */
-
-videoArea.addEventListener("mouseenter", () => {
-
-    if (window.innerWidth <= 700) {
-        return;
-    }
-
-    isHovering = true;
-
-    video.pause();
-
-});
-
-
-videoArea.addEventListener("mouseleave", () => {
-
-    if (window.innerWidth <= 700) {
-        return;
-    }
-
-    isHovering = false;
-
-    /*
-        Continue from exactly the same frame.
-    */
-
-    const playPromise = video.play();
-
-    if (playPromise !== undefined) {
-
-        playPromise.catch(() => {});
-
-    }
-
-});
-
-
-/* ==================================================
-   DESKTOP CLICK ZONES
-================================================== */
-
-videoArea.addEventListener("click", (event) => {
-
-    if (window.innerWidth <= 700) {
-        return;
-    }
-
-    const rect = videoArea.getBoundingClientRect();
-
-    const x =
-        event.clientX - rect.left;
-
-    const percentage =
-        x / rect.width;
-
-
-    /*
-        LEFT 25%
-        PREVIOUS
-    */
-
-    if (percentage < 0.25) {
-
-        previousFilm();
-
-        return;
-    }
-
-
-    /*
-        RIGHT 25%
-        NEXT
-    */
-
-    if (percentage > 0.75) {
+video.addEventListener(
+    "ended",
+    () => {
 
         nextFilm();
 
-        return;
     }
+);
 
 
-    /*
-        CENTER 50%
-        SOUND ON / OFF
-    */
-
-    isMuted = !isMuted;
-
-    video.muted = isMuted;
-
-});
+/* =====================================================
+   DESKTOP HOVER
+   ===================================================== */
 
 
-/* ==================================================
+/*
+   IMPORTANT:
+
+   Hover is attached to the actual
+   video element — NOT video-container.
+
+   Therefore white space above/below
+   the video does not trigger hover.
+*/
+
+video.addEventListener(
+    "mouseenter",
+    () => {
+
+        if (
+            window.innerWidth <= 600
+        ) {
+            return;
+        }
+
+
+        /*
+           Hover ON:
+           sound ON
+        */
+
+        isMuted = false;
+
+        video.muted = false;
+
+    }
+);
+
+
+video.addEventListener(
+    "mouseleave",
+    () => {
+
+        if (
+            window.innerWidth <= 600
+        ) {
+            return;
+        }
+
+
+        /*
+           Hover OFF:
+           sound OFF
+        */
+
+        isMuted = true;
+
+        video.muted = true;
+
+    }
+);
+
+
+/* =====================================================
+   DESKTOP CLICK
+   ===================================================== */
+
+
+/*
+   Only clicks on the actual video
+   are handled.
+
+   LEFT 25%   → PREVIOUS
+   CENTER 50% → PLAY / PAUSE
+   RIGHT 25%  → NEXT
+*/
+
+video.addEventListener(
+    "click",
+    (event) => {
+
+        if (
+            window.innerWidth <= 600
+        ) {
+            return;
+        }
+
+
+        const rect =
+            video.getBoundingClientRect();
+
+
+        const x =
+            event.clientX -
+            rect.left;
+
+
+        const percentage =
+            x / rect.width;
+
+
+        /*
+           LEFT 25%
+        */
+
+        if (
+            percentage < 0.25
+        ) {
+
+            previousFilm();
+
+            return;
+
+        }
+
+
+        /*
+           RIGHT 25%
+        */
+
+        if (
+            percentage > 0.75
+        ) {
+
+            nextFilm();
+
+            return;
+
+        }
+
+
+        /*
+           CENTER 50%
+        */
+
+        if (
+            video.paused
+        ) {
+
+            const promise =
+                video.play();
+
+            if (
+                promise !== undefined
+            ) {
+
+                promise.catch(
+                    () => {}
+                );
+
+            }
+
+        } else {
+
+            video.pause();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
    MOBILE TOUCH
-================================================== */
+   ===================================================== */
 
-videoArea.addEventListener(
+let touchStartX = 0;
+let touchStartY = 0;
+
+
+video.addEventListener(
     "touchstart",
     (event) => {
 
-        if (window.innerWidth > 700) {
+        if (
+            window.innerWidth > 600
+        ) {
             return;
         }
+
 
         const touch =
             event.changedTouches[0];
 
-        touchStartX = touch.clientX;
-        touchStartY = touch.clientY;
+
+        touchStartX =
+            touch.clientX;
+
+        touchStartY =
+            touch.clientY;
 
     },
     {
@@ -614,99 +779,137 @@ videoArea.addEventListener(
 );
 
 
-videoArea.addEventListener(
+video.addEventListener(
     "touchend",
     (event) => {
 
-        if (window.innerWidth > 700) {
+        if (
+            window.innerWidth > 600
+        ) {
             return;
         }
+
 
         const touch =
             event.changedTouches[0];
 
+
         const deltaX =
-            touch.clientX - touchStartX;
+            touch.clientX -
+            touchStartX;
+
 
         const deltaY =
-            touch.clientY - touchStartY;
+            touch.clientY -
+            touchStartY;
+
+
+        const threshold = 50;
 
 
         /*
-            SWIPE THRESHOLD
-        */
-
-        const swipeThreshold = 50;
-
-
-        /*
-            SWIPE LEFT
-            NEXT
+           SWIPE
         */
 
         if (
-            Math.abs(deltaX) > swipeThreshold &&
-            Math.abs(deltaX) > Math.abs(deltaY)
+            Math.abs(deltaX) >
+                threshold &&
+            Math.abs(deltaX) >
+                Math.abs(deltaY)
         ) {
 
-            if (deltaX < 0) {
+            /*
+               LEFT
+            */
+
+            if (
+                deltaX < 0
+            ) {
 
                 nextFilm();
 
-            } else {
+            }
+
+
+            /*
+               RIGHT
+            */
+
+            else {
 
                 previousFilm();
 
             }
 
+
             return;
+
         }
 
 
         /*
-            TAP
+           TAP
         */
 
         /*
-            First tap on a muted autoplaying video:
-            unmute and keep playing.
-
-            After that:
-            tap toggles play/pause.
+           If muted:
+           first tap enables sound
+           and keeps video playing.
         */
 
-        if (video.muted) {
+        if (
+            video.muted
+        ) {
 
             isMuted = false;
 
             video.muted = false;
 
-            const playPromise =
+
+            const promise =
                 video.play();
 
-            if (playPromise !== undefined) {
-                playPromise.catch(() => {});
+            if (
+                promise !== undefined
+            ) {
+
+                promise.catch(
+                    () => {}
+                );
+
             }
 
+
             return;
+
         }
 
 
         /*
-            Sound is already on.
-            Tap toggles play / pause.
+           Sound is already on:
+           tap = play / pause.
         */
 
-        if (video.paused) {
+        if (
+            video.paused
+        ) {
 
-            const playPromise =
+            const promise =
                 video.play();
 
-            if (playPromise !== undefined) {
-                playPromise.catch(() => {});
+            if (
+                promise !== undefined
+            ) {
+
+                promise.catch(
+                    () => {}
+                );
+
             }
 
-        } else {
+        }
+
+        else {
 
             video.pause();
 
@@ -719,23 +922,31 @@ videoArea.addEventListener(
 );
 
 
-/* ==================================================
-   PREVENT DOUBLE-TAP ZOOM
-================================================== */
+/* =====================================================
+   PREVENT DOUBLE TAP ZOOM
+   ===================================================== */
 
 let lastTouchEnd = 0;
+
 
 document.addEventListener(
     "touchend",
     (event) => {
 
-        const now = Date.now();
+        const now =
+            Date.now();
 
-        if (now - lastTouchEnd <= 300) {
+
+        if (
+            now -
+            lastTouchEnd <=
+            300
+        ) {
 
             event.preventDefault();
 
         }
+
 
         lastTouchEnd = now;
 
@@ -746,114 +957,325 @@ document.addEventListener(
 );
 
 
-/* ==================================================
+/* =====================================================
    LOGO ANIMATION
-================================================== */
+   ===================================================== */
 
-const logoFirst =
-    document.getElementById("logoFirst");
+const logo =
+    document.querySelector(
+        ".logo"
+    );
 
-const logoSecond =
-    document.getElementById("logoSecond");
+const logoName =
+    document.getElementById(
+        "logo-name"
+    );
 
 
-const logoFrames = [
-    ["Denizalp", "aybak"],
-    ["denizalp", "aybak"],
-    ["denizalp", "aybaK"],
-    ["denizalp", "aybAk"],
-    ["denizalp", "ayBak"],
-    ["denizalp", "aYBak"],
-    ["denizalp", "AYBak"],
-    ["denizalp", "AYBAk"],
-    ["denizalp", "AYBAK"],
-    ["denizalp", "AYBAk"],
-    ["denizalp", "AYBak"],
-    ["denizalp", "ayBak"],
-    ["denizalp", "aybAk"],
-    ["denizalp", "aybaK"],
-    ["denizalp", "aybak"],
-    ["Denizalp", "aybak"]
+const letters = [
+
+    document.getElementById(
+        "letter-a"
+    ),
+
+    document.getElementById(
+        "letter-y"
+    ),
+
+    document.getElementById(
+        "letter-b"
+    ),
+
+    document.getElementById(
+        "letter-a2"
+    ),
+
+    document.getElementById(
+        "letter-k"
+    )
+
 ];
 
 
-let logoIndex = 0;
+const lowercase = [
+    "a",
+    "y",
+    "b",
+    "a",
+    "k"
+];
+
+
+const uppercase = [
+    "A",
+    "Y",
+    "B",
+    "A",
+    "K"
+];
+
+
+let logoState = 0;
+
+let logoTarget = 0;
 
 let logoTimer = null;
 
-let logoPaused = false;
+
+/* =====================================================
+   LOGO STATE
+   ===================================================== */
+
+function setLogoState(
+    state
+) {
+
+    logoState = state;
 
 
-function showLogoFrame(index) {
+    if (
+        state === 0
+    ) {
 
-    logoFirst.textContent =
-        logoFrames[index][0];
+        logoName.textContent =
+            "Denizalp";
 
-    logoSecond.textContent =
-        logoFrames[index][1];
-
-}
-
-
-function startLogoAnimation() {
-
-    if (logoTimer) {
-        clearInterval(logoTimer);
     }
 
-    logoTimer = setInterval(() => {
+    else {
 
-        if (logoPaused) {
-            return;
+        logoName.textContent =
+            "denizalp";
+
+    }
+
+
+    for (
+        let i = 0;
+        i < letters.length;
+        i++
+    ) {
+
+        if (
+            i < state
+        ) {
+
+            letters[i]
+                .textContent =
+                uppercase[i];
+
         }
 
-        logoIndex++;
+        else {
 
-        if (logoIndex >= logoFrames.length) {
-            logoIndex = 0;
+            letters[i]
+                .textContent =
+                lowercase[i];
+
         }
 
-        showLogoFrame(logoIndex);
-
-    }, 220);
+    }
 
 }
 
 
-/* Desktop hover pauses logo */
+/* =====================================================
+   CANCEL LOGO
+   ===================================================== */
 
-document
-    .querySelector(".logo")
-    .addEventListener("mouseenter", () => {
+function cancelLogoAnimation() {
 
-        logoPaused = true;
+    if (
+        logoTimer !== null
+    ) {
 
-    });
+        clearTimeout(
+            logoTimer
+        );
+
+        logoTimer = null;
+
+    }
+
+}
 
 
-document
-    .querySelector(".logo")
-    .addEventListener("mouseleave", () => {
+/* =====================================================
+   MOVE LOGO
+   ===================================================== */
 
-        logoPaused = false;
+function moveLogo() {
 
-    });
+    if (
+        logoState ===
+        logoTarget
+    ) {
+
+        logoTimer = null;
+
+        return;
+
+    }
 
 
-/* ==================================================
+    if (
+        logoState <
+        logoTarget
+    ) {
+
+        setLogoState(
+            logoState + 1
+        );
+
+    }
+
+    else {
+
+        setLogoState(
+            logoState - 1
+        );
+
+    }
+
+
+    logoTimer =
+        setTimeout(
+            moveLogo,
+            120
+        );
+
+}
+
+
+/* =====================================================
+   ANIMATE TO
+   ===================================================== */
+
+function animateTo(
+    target
+) {
+
+    logoTarget =
+        target;
+
+
+    cancelLogoAnimation();
+
+
+    moveLogo();
+
+}
+
+
+/* =====================================================
+   DESKTOP LOGO
+   ===================================================== */
+
+logo.addEventListener(
+    "mouseenter",
+    () => {
+
+        if (
+            window.matchMedia(
+                "(min-width: 601px)"
+            ).matches
+        ) {
+
+            animateTo(5);
+
+        }
+
+    }
+);
+
+
+logo.addEventListener(
+    "mouseleave",
+    () => {
+
+        if (
+            window.matchMedia(
+                "(min-width: 601px)"
+            ).matches
+        ) {
+
+            animateTo(0);
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   MOBILE LOGO
+   ===================================================== */
+
+let mobileCycleTimer =
+    null;
+
+
+function startMobileCycle() {
+
+    mobileCycleTimer =
+        setTimeout(
+            () => {
+
+                animateTo(5);
+
+
+                mobileCycleTimer =
+                    setTimeout(
+                        () => {
+
+                            animateTo(0);
+
+
+                            mobileCycleTimer =
+                                setTimeout(
+                                    () => {
+
+                                        startMobileCycle();
+
+                                    },
+                                    600 + 2000
+                                );
+
+                        },
+                        600 + 2000
+                    );
+
+            },
+            2000
+        );
+
+}
+
+
+if (
+    window.matchMedia(
+        "(max-width: 600px)"
+    ).matches
+) {
+
+    setLogoState(0);
+
+    startMobileCycle();
+
+}
+
+
+/* =====================================================
    START
-================================================== */
+   ===================================================== */
 
-showLogoFrame(0);
+setLogoState(0);
 
-setTimeout(() => {
+loadFilm(
+    0,
+    true
+);
 
-    startLogoAnimation();
-
-}, 2000);
-
-
-loadFilm(0, true);
 
 </script>
 
