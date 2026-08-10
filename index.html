@@ -26,7 +26,7 @@
     }
 
     body {
-        cursor: pointer;
+        cursor: default;
     }
 
 
@@ -140,7 +140,7 @@
 
 
     /* =========================
-       VIDEO
+       VIDEO STAGE
        ========================= */
 
     #video-stage {
@@ -179,32 +179,66 @@
         width: auto;
         height: auto;
 
-        /*
-            Slightly smaller than Photography
-            so it cannot collide with the
-            left information block.
-        */
-
         max-width: 64vw;
-        max-height: 78vh;
+        max-height: 76vh;
 
         object-fit: contain;
 
-        cursor: pointer;
-
         user-select: none;
         -webkit-user-select: none;
+
+        pointer-events: none;
+    }
+
+
+    /* =========================
+       CONTROLS
+       ========================= */
+
+    #controls {
+        display: flex;
+
+        width: 64vw;
+
+        align-items: center;
+        justify-content: space-between;
+
+        margin-top: 10px;
+
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 15px;
+        font-weight: 400;
+        line-height: 1.15;
+
+        white-space: nowrap;
 
         pointer-events: auto;
     }
 
 
-    /* =========================
-       MOBILE CONTROLS
-       ========================= */
+    #controls button {
+        appearance: none;
+        -webkit-appearance: none;
 
-    #mobile-controls {
-        display: none;
+        margin: 0;
+        padding: 0;
+
+        border: 0;
+        background: transparent;
+
+        color: #000;
+
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 15px;
+        font-weight: 400;
+        line-height: 1.15;
+
+        cursor: pointer;
+    }
+
+
+    #controls button:hover {
+        text-decoration: underline;
     }
 
 
@@ -245,19 +279,10 @@
 
 
         #video-stage {
-            /*
-                Use the available space below
-                the information block instead of
-                pushing the video too far down.
-            */
-
             top: 92px;
             bottom: 18px;
 
             height: auto;
-
-            align-items: center;
-            justify-content: center;
 
             padding: 0 24px;
         }
@@ -271,51 +296,21 @@
 
         #film-video {
             max-width: 84vw;
-            max-height: 62vh;
-
-            pointer-events: auto;
+            max-height: 60vh;
         }
 
 
-        #mobile-controls {
-            display: flex;
-
+        #controls {
             width: 84vw;
-
-            align-items: center;
-            justify-content: space-between;
 
             margin-top: 10px;
 
-            font-family: Arial, Helvetica, sans-serif;
             font-size: 13px;
-            font-weight: 400;
-            line-height: 1.15;
-
-            white-space: nowrap;
-
-            pointer-events: auto;
         }
 
 
-        #mobile-controls button {
-            appearance: none;
-            -webkit-appearance: none;
-
-            margin: 0;
-            padding: 0;
-
-            border: 0;
-            background: transparent;
-
-            color: #000;
-
-            font-family: Arial, Helvetica, sans-serif;
+        #controls button {
             font-size: 13px;
-            font-weight: 400;
-            line-height: 1.15;
-
-            cursor: pointer;
         }
 
     }
@@ -334,7 +329,6 @@
 
 <div class="info">
 
-
     <a
         class="logo"
         href="https://denizalpaybak.com/"
@@ -347,7 +341,6 @@
         >
             Denizalp
         </span>
-
 
         <span class="logo-aybak">
 
@@ -381,7 +374,6 @@
             instagram @denizalpaybak
         </a>
 
-
         <a
             href="https://models.com/people/denizalp-aybak"
             target="_blank"
@@ -391,7 +383,6 @@
         </a>
 
     </div>
-
 
 </div>
 
@@ -413,15 +404,13 @@
         ></video>
 
 
-        <!-- MOBILE ONLY -->
-
-        <div id="mobile-controls">
+        <div id="controls">
 
             <button
                 id="previous-button"
                 type="button"
             >
-                &lt; previous
+                previous
             </button>
 
 
@@ -445,7 +434,7 @@
                 id="next-button"
                 type="button"
             >
-                next &gt;
+                next
             </button>
 
         </div>
@@ -467,8 +456,7 @@
 
 
     /*
-        Temporary list.
-
+        Temporary film list.
         films.json comes next.
     */
 
@@ -483,35 +471,7 @@
 
     let currentFilm = 0;
 
-
-    /*
-        Desktop browsers usually refuse to
-        enable audio from hover before the
-        page has received a genuine click.
-
-        After the first click, hover audio
-        becomes active.
-    */
-
-    let desktopAudioUnlocked = false;
-
-    let desktopHoveringVideo = false;
-
-
-    /*
-        Mobile sound is controlled explicitly
-        by the visible sound button.
-    */
-
-    let mobileSoundEnabled = false;
-
-
-    /*
-        Used so a swipe does not also trigger
-        the normal mobile tap/click action.
-    */
-
-    let suppressMobileClickUntil = 0;
+    let soundEnabled = false;
 
 
     /* =====================================================
@@ -549,75 +509,10 @@
 
 
     /* =====================================================
-       DEVICE
+       LABELS
        ===================================================== */
 
-    function isMobile() {
-
-        return window.matchMedia(
-            "(max-width: 600px)"
-        ).matches;
-
-    }
-
-
-    /* =====================================================
-       SOUND STATE
-       ===================================================== */
-
-    function applySoundState() {
-
-        /*
-            MOBILE
-
-            Sound is determined only by
-            the visible sound button.
-        */
-
-        if (isMobile()) {
-
-            video.muted =
-                !mobileSoundEnabled;
-
-            return;
-
-        }
-
-
-        /*
-            DESKTOP
-
-            Before the first click:
-            always muted.
-
-            Afterwards:
-            hover = sound on
-            outside = sound off.
-        */
-
-        if (
-            desktopAudioUnlocked &&
-            desktopHoveringVideo
-        ) {
-
-            video.muted = false;
-
-        }
-
-        else {
-
-            video.muted = true;
-
-        }
-
-    }
-
-
-    /* =====================================================
-       MOBILE LABELS
-       ===================================================== */
-
-    function updateMobileControls() {
+    function updateControls() {
 
         playButton.textContent =
             video.paused
@@ -626,23 +521,74 @@
 
 
         soundButton.textContent =
-            mobileSoundEnabled
+            soundEnabled
                 ? "sound off"
                 : "sound on";
 
     }
 
 
-    video.addEventListener(
-        "play",
-        updateMobileControls
-    );
+    /* =====================================================
+       SOUND
+       ===================================================== */
+
+    function applySoundState() {
+
+        video.muted =
+            !soundEnabled;
+
+    }
 
 
-    video.addEventListener(
-        "pause",
-        updateMobileControls
-    );
+    function toggleSound() {
+
+        soundEnabled =
+            !soundEnabled;
+
+
+        applySoundState();
+
+        updateControls();
+
+    }
+
+
+    /* =====================================================
+       PLAY / PAUSE
+       ===================================================== */
+
+    function togglePlayback() {
+
+        if (
+            video.paused
+        ) {
+
+            const promise =
+                video.play();
+
+
+            if (
+                promise !== undefined
+            ) {
+
+                promise.catch(
+                    () => {}
+                );
+
+            }
+
+        }
+
+        else {
+
+            video.pause();
+
+        }
+
+
+        updateControls();
+
+    }
 
 
     /* =====================================================
@@ -695,13 +641,8 @@
 
 
         /*
-            Preserve the user's sound state.
-
-            Desktop:
-            depends on hover + audio unlock.
-
-            Mobile:
-            depends on sound button.
+            Preserve sound state
+            when changing films.
         */
 
         applySoundState();
@@ -728,7 +669,7 @@
         }
 
 
-        updateMobileControls();
+        updateControls();
 
     }
 
@@ -788,223 +729,12 @@
 
 
     /* =====================================================
-       PLAY / PAUSE
-       ===================================================== */
-
-    function togglePlayback() {
-
-        if (
-            video.paused
-        ) {
-
-            const promise =
-                video.play();
-
-
-            if (
-                promise !== undefined
-            ) {
-
-                promise.catch(
-                    () => {}
-                );
-
-            }
-
-        }
-
-        else {
-
-            video.pause();
-
-        }
-
-
-        updateMobileControls();
-
-    }
-
-
-    /* =====================================================
-       VIDEO END
-       ===================================================== */
-
-    video.addEventListener(
-        "ended",
-        () => {
-
-            nextFilm();
-
-        }
-    );
-
-
-    /* =====================================================
-       DESKTOP HOVER — SOUND ONLY
-       ===================================================== */
-
-    video.addEventListener(
-        "mouseenter",
-        () => {
-
-            if (
-                isMobile()
-            ) {
-                return;
-            }
-
-
-            desktopHoveringVideo =
-                true;
-
-
-            /*
-                Do NOT attempt to unmute before
-                a genuine click has unlocked audio.
-
-                This fixes the first-hover issue
-                where some browsers stop playback.
-            */
-
-            applySoundState();
-
-        }
-    );
-
-
-    video.addEventListener(
-        "mouseleave",
-        () => {
-
-            if (
-                isMobile()
-            ) {
-                return;
-            }
-
-
-            desktopHoveringVideo =
-                false;
-
-
-            /*
-                Mouse leaves actual video:
-                sound immediately off.
-
-                Playback is untouched.
-            */
-
-            applySoundState();
-
-        }
-    );
-
-
-    /* =====================================================
-       DESKTOP CLICK ZONES
-       ===================================================== */
-
-    video.addEventListener(
-        "click",
-        (event) => {
-
-            if (
-                isMobile()
-            ) {
-
-                /*
-                    Mobile click is handled separately.
-                */
-
-                return;
-
-            }
-
-
-            /*
-                The first real click grants the page
-                permission to use audio.
-
-                Because the pointer is currently over
-                the video, hover sound becomes active.
-            */
-
-            desktopAudioUnlocked =
-                true;
-
-
-            applySoundState();
-
-
-            const rect =
-                video.getBoundingClientRect();
-
-
-            const x =
-                event.clientX -
-                rect.left;
-
-
-            const percentage =
-                x /
-                rect.width;
-
-
-            /*
-                LEFT 25%
-                PREVIOUS
-            */
-
-            if (
-                percentage < 0.25
-            ) {
-
-                previousFilm();
-
-                return;
-
-            }
-
-
-            /*
-                RIGHT 25%
-                NEXT
-            */
-
-            if (
-                percentage > 0.75
-            ) {
-
-                nextFilm();
-
-                return;
-
-            }
-
-
-            /*
-                CENTER 50%
-
-                ONLY PLAY / PAUSE.
-
-                It does not change sound.
-            */
-
-            togglePlayback();
-
-        }
-    );
-
-
-    /* =====================================================
-       MOBILE BUTTONS
+       BUTTONS
        ===================================================== */
 
     previousButton.addEventListener(
         "click",
-        (event) => {
-
-            event.stopPropagation();
+        () => {
 
             previousFilm();
 
@@ -1014,9 +744,7 @@
 
     nextButton.addEventListener(
         "click",
-        (event) => {
-
-            event.stopPropagation();
+        () => {
 
             nextFilm();
 
@@ -1026,9 +754,7 @@
 
     playButton.addEventListener(
         "click",
-        (event) => {
-
-            event.stopPropagation();
+        () => {
 
             togglePlayback();
 
@@ -1038,193 +764,36 @@
 
     soundButton.addEventListener(
         "click",
-        (event) => {
-
-            event.stopPropagation();
-
-
-            mobileSoundEnabled =
-                !mobileSoundEnabled;
-
-
-            /*
-                This click is a genuine user
-                gesture, so browsers can safely
-                enable audio here.
-            */
-
-            applySoundState();
-
-
-            /*
-                If sound is enabled while the
-                video was paused, do NOT force
-                it to play.
-
-                Sound and playback remain separate.
-            */
-
-            updateMobileControls();
-
-        }
-    );
-
-
-    /* =====================================================
-       MOBILE VIDEO TAP
-       ===================================================== */
-
-    video.addEventListener(
-        "click",
         () => {
 
-            if (
-                !isMobile()
-            ) {
-                return;
-            }
-
-
-            /*
-                Ignore the synthetic click that
-                follows a swipe.
-            */
-
-            if (
-                Date.now() <
-                suppressMobileClickUntil
-            ) {
-
-                return;
-
-            }
-
-
-            /*
-                Simple tap on the image itself
-                = play / pause.
-
-                Sound remains controlled by
-                the visible sound button.
-            */
-
-            togglePlayback();
+            toggleSound();
 
         }
     );
 
 
     /* =====================================================
-       MOBILE SWIPE
+       VIDEO EVENTS
        ===================================================== */
 
-    let touchStartX = 0;
-    let touchStartY = 0;
-
-
     video.addEventListener(
-        "touchstart",
-        (event) => {
-
-            if (
-                !isMobile()
-            ) {
-                return;
-            }
-
-
-            const touch =
-                event.changedTouches[0];
-
-
-            touchStartX =
-                touch.clientX;
-
-
-            touchStartY =
-                touch.clientY;
-
-        },
-        {
-            passive: true
-        }
+        "play",
+        updateControls
     );
 
 
     video.addEventListener(
-        "touchend",
-        (event) => {
-
-            if (
-                !isMobile()
-            ) {
-                return;
-            }
+        "pause",
+        updateControls
+    );
 
 
-            const touch =
-                event.changedTouches[0];
+    video.addEventListener(
+        "ended",
+        () => {
 
+            nextFilm();
 
-            const deltaX =
-                touch.clientX -
-                touchStartX;
-
-
-            const deltaY =
-                touch.clientY -
-                touchStartY;
-
-
-            const threshold = 50;
-
-
-            if (
-                Math.abs(deltaX) >
-                    threshold &&
-                Math.abs(deltaX) >
-                    Math.abs(deltaY)
-            ) {
-
-                /*
-                    Stop the click generated
-                    immediately after this swipe.
-                */
-
-                suppressMobileClickUntil =
-                    Date.now() + 450;
-
-
-                /*
-                    SWIPE LEFT
-                    NEXT
-                */
-
-                if (
-                    deltaX < 0
-                ) {
-
-                    nextFilm();
-
-                }
-
-
-                /*
-                    SWIPE RIGHT
-                    PREVIOUS
-                */
-
-                else {
-
-                    previousFilm();
-
-                }
-
-            }
-
-        },
-        {
-            passive: true
         }
     );
 
@@ -1358,7 +927,6 @@
             clearTimeout(
                 logoTimer
             );
-
 
             logoTimer = null;
 
@@ -1530,7 +1098,9 @@
 
     setLogoState(0);
 
-    updateMobileControls();
+    applySoundState();
+
+    updateControls();
 
     loadFilm(
         0,
