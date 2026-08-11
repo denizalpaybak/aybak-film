@@ -45,7 +45,11 @@ body {
 
     z-index: 10;
 
-    font-family: Arial, Helvetica, sans-serif;
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
     font-size: 15px;
     font-weight: 400;
     line-height: 1.15;
@@ -78,10 +82,7 @@ body {
     top: 0;
     left: 0;
 
-    font-family: Arial, Helvetica, sans-serif;
     font-size: 15px;
-    font-weight: 400;
-    line-height: 1.15;
 
     white-space: nowrap;
 }
@@ -92,12 +93,7 @@ body {
     top: 17px;
     left: 0;
 
-    font-family: Arial, Helvetica, sans-serif;
     font-size: 15px;
-    font-weight: 400;
-    line-height: 1.15;
-
-    letter-spacing: normal;
 
     white-space: nowrap;
 }
@@ -113,22 +109,16 @@ body {
 
 .contact {
     margin: 0;
-    padding: 0;
 }
 
 .social {
     display: flex;
     flex-direction: column;
-    gap: 0;
-
-    margin: 0;
-    padding: 0;
 }
 
 .info a {
     color: inherit;
     text-decoration: none;
-    font-weight: 400;
 }
 
 .info a:hover {
@@ -151,9 +141,12 @@ body {
     color: #000;
     text-decoration: none;
 
-    font-family: Arial, Helvetica, sans-serif;
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
     font-size: 15px;
-    font-weight: 400;
     line-height: 1.15;
 
     white-space: nowrap;
@@ -166,6 +159,7 @@ body {
 
 #video-stage {
     position: fixed;
+
     inset: 0;
 
     width: 100vw;
@@ -229,7 +223,11 @@ body {
 
     margin-top: 10px;
 
-    font-family: Arial, Helvetica, sans-serif;
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
     font-size: 15px;
     font-weight: 400;
     line-height: 1.15;
@@ -253,7 +251,11 @@ body {
 
     color: #000;
 
-    font-family: Arial, Helvetica, sans-serif;
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
     font-size: 15px;
     font-weight: 400;
     line-height: 1.15;
@@ -262,8 +264,27 @@ body {
 
     cursor: pointer;
 
-    -webkit-tap-highlight-color: transparent;
+    -webkit-tap-highlight-color:
+        transparent;
 }
+
+
+/*
+    Fixed-width morph buttons.
+
+    Their LEFT EDGE never moves.
+    Therefore:
+    p in play/pause stays fixed.
+    sound o stays fixed.
+*/
+
+#play-button,
+#sound-button {
+    display: inline-block;
+
+    text-align: left;
+}
+
 
 #controls button:hover,
 #controls button:focus,
@@ -347,7 +368,9 @@ body {
    SHORT LANDSCAPE
    ========================= */
 
-@media (orientation: landscape) and (max-height: 700px) {
+@media
+    (orientation: landscape)
+    and (max-height: 700px) {
 
     .info {
         top: 20px;
@@ -382,7 +405,12 @@ body {
 
         left: 190px;
 
-        width: calc(100vw - 214px);
+        width:
+            calc(
+                100vw -
+                214px
+            );
+
         height: 100vh;
 
         padding: 16px 24px;
@@ -542,22 +570,11 @@ body {
 
 
 /* =====================================================
-   GLOBAL ANIMATION TIMING
+   TIMING
    ===================================================== */
 
-const WORD_ANIMATION_DURATION =
+const WORD_TRANSITION_DURATION =
     600;
-
-function getWordStepDuration(
-    word
-) {
-
-    return (
-        WORD_ANIMATION_DURATION /
-        word.length
-    );
-
-}
 
 const CONTROL_FRAME_SPEED =
     90;
@@ -616,7 +633,141 @@ const nextButton =
 
 
 /* =====================================================
-   TEXT ANIMATION
+   CONTROL BAR WIDTH
+   ===================================================== */
+
+function syncControlsWidth() {
+
+    const videoWidth =
+        video
+            .getBoundingClientRect()
+            .width;
+
+
+    if (
+        videoWidth >
+        0
+    ) {
+
+        controls.style.width =
+            `${videoWidth}px`;
+
+    }
+
+}
+
+
+/* =====================================================
+   LOCK MORPH BUTTON WIDTHS
+
+   Makes first character positions fixed.
+   ===================================================== */
+
+function measureButtonTextWidth(
+    button,
+    text
+) {
+
+    const measurement =
+        document.createElement(
+            "span"
+        );
+
+
+    const style =
+        window.getComputedStyle(
+            button
+        );
+
+
+    measurement.textContent =
+        text;
+
+
+    measurement.style.position =
+        "fixed";
+
+    measurement.style.visibility =
+        "hidden";
+
+    measurement.style.whiteSpace =
+        "nowrap";
+
+    measurement.style.pointerEvents =
+        "none";
+
+    measurement.style.fontFamily =
+        style.fontFamily;
+
+    measurement.style.fontSize =
+        style.fontSize;
+
+    measurement.style.fontWeight =
+        style.fontWeight;
+
+    measurement.style.lineHeight =
+        style.lineHeight;
+
+
+    document.body.appendChild(
+        measurement
+    );
+
+
+    const width =
+        measurement
+            .getBoundingClientRect()
+            .width;
+
+
+    measurement.remove();
+
+
+    return width;
+
+}
+
+
+function lockMorphButtonWidths() {
+
+    const playWidth =
+        Math.max(
+            measureButtonTextWidth(
+                playButton,
+                "play"
+            ),
+            measureButtonTextWidth(
+                playButton,
+                "pause"
+            )
+        );
+
+
+    const soundWidth =
+        Math.max(
+            measureButtonTextWidth(
+                soundButton,
+                "sound on"
+            ),
+            measureButtonTextWidth(
+                soundButton,
+                "sound off"
+            )
+        );
+
+
+    playButton.style.width =
+        `${Math.ceil(playWidth)}px`;
+
+
+    soundButton.style.width =
+        `${Math.ceil(soundWidth)}px`;
+
+}
+
+
+/* =====================================================
+   BUTTON MORPH
    ===================================================== */
 
 const activeAnimations =
@@ -647,7 +798,7 @@ function animateButtonText(
         0;
 
 
-    function showNextFrame() {
+    function nextFrame() {
 
         element.textContent =
             frames[
@@ -663,10 +814,9 @@ function animateButtonText(
             frames.length
         ) {
 
-            activeAnimations
-                .delete(
-                    element
-                );
+            activeAnimations.delete(
+                element
+            );
 
             return;
 
@@ -675,24 +825,27 @@ function animateButtonText(
 
         const timer =
             setTimeout(
-                showNextFrame,
+                nextFrame,
                 CONTROL_FRAME_SPEED
             );
 
 
-        activeAnimations
-            .set(
-                element,
-                timer
-            );
+        activeAnimations.set(
+            element,
+            timer
+        );
 
     }
 
 
-    showNextFrame();
+    nextFrame();
 
 }
 
+
+/* =========================
+   PLAY → PAUSE
+   ========================= */
 
 function animateToPause() {
 
@@ -710,6 +863,10 @@ function animateToPause() {
 }
 
 
+/* =========================
+   PAUSE → PLAY
+   ========================= */
+
 function animateToPlay() {
 
     animateButtonText(
@@ -726,6 +883,10 @@ function animateToPlay() {
 }
 
 
+/* =========================
+   SOUND ON → OFF LABEL
+   ========================= */
+
 function animateToSoundOff() {
 
     animateButtonText(
@@ -740,6 +901,10 @@ function animateToSoundOff() {
 }
 
 
+/* =========================
+   SOUND OFF → ON LABEL
+   ========================= */
+
 function animateToSoundOn() {
 
     animateButtonText(
@@ -750,31 +915,6 @@ function animateToSoundOn() {
             "sound on"
         ]
     );
-
-}
-
-
-/* =====================================================
-   CONTROL WIDTH
-   ===================================================== */
-
-function syncControlsWidth() {
-
-    const videoWidth =
-        video
-            .getBoundingClientRect()
-            .width;
-
-
-    if (
-        videoWidth >
-        0
-    ) {
-
-        controls.style.width =
-            `${videoWidth}px`;
-
-    }
 
 }
 
@@ -991,7 +1131,13 @@ function loadFilm(
 
 
     setTimeout(
-        syncControlsWidth,
+        () => {
+
+            syncControlsWidth();
+
+            lockMorphButtonWidths();
+
+        },
         50
     );
 
@@ -1058,60 +1204,52 @@ function previousFilm() {
    BUTTONS
    ===================================================== */
 
-previousButton
-    .addEventListener(
-        "click",
-        () => {
+previousButton.addEventListener(
+    "click",
+    () => {
 
-            previousFilm();
+        previousFilm();
 
-            previousButton
-                .blur();
+        previousButton.blur();
 
-        }
-    );
+    }
+);
 
 
-nextButton
-    .addEventListener(
-        "click",
-        () => {
+nextButton.addEventListener(
+    "click",
+    () => {
 
-            nextFilm();
+        nextFilm();
 
-            nextButton
-                .blur();
+        nextButton.blur();
 
-        }
-    );
+    }
+);
 
 
-playButton
-    .addEventListener(
-        "click",
-        () => {
+playButton.addEventListener(
+    "click",
+    () => {
 
-            togglePlayback();
+        togglePlayback();
 
-            playButton
-                .blur();
+        playButton.blur();
 
-        }
-    );
+    }
+);
 
 
-soundButton
-    .addEventListener(
-        "click",
-        () => {
+soundButton.addEventListener(
+    "click",
+    () => {
 
-            toggleSound();
+        toggleSound();
 
-            soundButton
-                .blur();
+        soundButton.blur();
 
-        }
-    );
+    }
+);
 
 
 /* =====================================================
@@ -1126,7 +1264,13 @@ video.addEventListener(
 
 video.addEventListener(
     "loadedmetadata",
-    syncControlsWidth
+    () => {
+
+        syncControlsWidth();
+
+        lockMorphButtonWidths();
+
+    }
 );
 
 
@@ -1153,7 +1297,13 @@ window.addEventListener(
     () => {
 
         requestAnimationFrame(
-            syncControlsWidth
+            () => {
+
+                syncControlsWidth();
+
+                lockMorphButtonWidths();
+
+            }
         );
 
     }
@@ -1165,13 +1315,25 @@ window.addEventListener(
     () => {
 
         setTimeout(
-            syncControlsWidth,
+            () => {
+
+                syncControlsWidth();
+
+                lockMorphButtonWidths();
+
+            },
             150
         );
 
 
         setTimeout(
-            syncControlsWidth,
+            () => {
+
+                syncControlsWidth();
+
+                lockMorphButtonWidths();
+
+            },
             400
         );
 
@@ -1315,6 +1477,10 @@ function animateTo(
 }
 
 
+/* =========================
+   DESKTOP LOGO
+   ========================= */
+
 logo.addEventListener(
     "mouseenter",
     () => {
@@ -1352,6 +1518,10 @@ logo.addEventListener(
     }
 );
 
+
+/* =========================
+   MOBILE LOGO
+   ========================= */
 
 function mobileLogoCycle() {
 
@@ -1404,7 +1574,7 @@ if (
 
 /* =====================================================
    SECTION SWITCH
-   PHOTOGRAPHY = 11 steps, total ~600ms
+   Exact 600ms full transition
    ===================================================== */
 
 const sectionSwitch =
@@ -1420,22 +1590,24 @@ const sectionSwitchText =
 const switchWord =
     "photography";
 
-const switchStepDuration =
-    getWordStepDuration(
-        switchWord
-    );
-
 let switchState =
     0;
 
-let switchTarget =
-    0;
-
-let switchTimer =
+let switchAnimationFrame =
     null;
 
 
-function renderSwitch() {
+/* =========================
+   RENDER SWITCH
+   ========================= */
+
+function renderSwitch(
+    upperCount
+) {
+
+    switchState =
+        upperCount;
+
 
     let result =
         "";
@@ -1448,124 +1620,185 @@ function renderSwitch() {
     ) {
 
         result +=
-            i <
-            switchState
-
+            i < upperCount
                 ? switchWord[i]
                     .toUpperCase()
-
                 : switchWord[i]
                     .toLowerCase();
 
     }
 
 
-    sectionSwitchText
-        .textContent =
+    sectionSwitchText.textContent =
         result;
 
 }
 
 
-function moveSwitch() {
+/* =========================
+   MORPH SWITCH
+   ========================= */
+
+function morphSwitchTo(
+    target
+) {
 
     if (
-        switchState ===
-        switchTarget
+        switchAnimationFrame !==
+        null
     ) {
 
-        switchTimer =
-            null;
+        cancelAnimationFrame(
+            switchAnimationFrame
+        );
+
+    }
+
+
+    const startState =
+        switchState;
+
+
+    const distance =
+        Math.abs(
+            target -
+            startState
+        );
+
+
+    if (
+        distance ===
+        0
+    ) {
 
         return;
 
     }
 
 
-    switchState +=
-        switchState <
-        switchTarget
-            ? 1
-            : -1;
-
-
-    renderSwitch();
-
-
-    switchTimer =
-        setTimeout(
-            moveSwitch,
-            switchStepDuration
+    const duration =
+        WORD_TRANSITION_DURATION *
+        (
+            distance /
+            switchWord.length
         );
 
-}
+
+    const startTime =
+        performance.now();
 
 
-function animateSwitchTo(
-    target
-) {
-
-    switchTarget =
-        target;
-
-
-    if (
-        switchTimer
+    function frame(
+        now
     ) {
 
-        clearTimeout(
-            switchTimer
+        const progress =
+            Math.min(
+                1,
+                (
+                    now -
+                    startTime
+                ) /
+                duration
+            );
+
+
+        const value =
+            Math.round(
+                startState +
+                (
+                    target -
+                    startState
+                ) *
+                progress
+            );
+
+
+        renderSwitch(
+            value
         );
+
+
+        if (
+            progress <
+            1
+        ) {
+
+            switchAnimationFrame =
+                requestAnimationFrame(
+                    frame
+                );
+
+        }
+
+        else {
+
+            renderSwitch(
+                target
+            );
+
+
+            switchAnimationFrame =
+                null;
+
+        }
 
     }
 
 
-    moveSwitch();
+    switchAnimationFrame =
+        requestAnimationFrame(
+            frame
+        );
 
 }
 
 
-sectionSwitch
-    .addEventListener(
-        "mouseenter",
-        () => {
+/* =========================
+   SWITCH HOVER
+   ========================= */
 
-            if (
-                window.innerWidth >
-                600
-            ) {
+sectionSwitch.addEventListener(
+    "mouseenter",
+    () => {
 
-                animateSwitchTo(
-                    switchWord.length
-                );
+        if (
+            window.innerWidth >
+            600
+        ) {
 
-            }
-
-        }
-    );
-
-
-sectionSwitch
-    .addEventListener(
-        "mouseleave",
-        () => {
-
-            if (
-                window.innerWidth >
-                600
-            ) {
-
-                animateSwitchTo(
-                    0
-                );
-
-            }
+            morphSwitchTo(
+                switchWord.length
+            );
 
         }
-    );
+
+    }
+);
 
 
-renderSwitch();
+sectionSwitch.addEventListener(
+    "mouseleave",
+    () => {
+
+        if (
+            window.innerWidth >
+            600
+        ) {
+
+            morphSwitchTo(
+                0
+            );
+
+        }
+
+    }
+);
+
+
+renderSwitch(
+    0
+);
 
 
 /* =====================================================
@@ -1586,6 +1819,9 @@ playButton.textContent =
 
 soundButton.textContent =
     "sound on";
+
+
+lockMorphButtonWidths();
 
 
 loadFilmList();
