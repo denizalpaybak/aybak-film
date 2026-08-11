@@ -9,311 +9,293 @@
 
 <style>
 
-    * {
-        box-sizing: border-box;
-    }
+* {
+    box-sizing: border-box;
+}
 
-    html,
-    body {
-        margin: 0;
-        padding: 0;
+html,
+body {
+    margin: 0;
+    padding: 0;
 
-        width: 100%;
-        height: 100%;
+    width: 100%;
+    height: 100%;
 
-        background: transparent;
-        overflow: hidden;
-    }
+    background: transparent;
+    overflow: hidden;
+}
 
-    body {
-        cursor: default;
-    }
+body {
+    cursor: default;
+}
 
 
-    /* =========================
-       LEFT INFORMATION
-       ========================= */
+/* =========================
+   LEFT INFORMATION
+   ========================= */
+
+.info {
+    position: fixed;
+
+    top: 32px;
+    left: 48px;
+
+    z-index: 10;
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.15;
+}
+
+
+/* =========================
+   LOGO
+   ========================= */
+
+.logo {
+    position: relative;
+    display: block;
+
+    width: 190px;
+    height: 52px;
+
+    margin: 0;
+    padding: 0;
+
+    color: inherit;
+    text-decoration: none;
+
+    cursor: pointer;
+}
+
+.logo-name {
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.15;
+
+    white-space: nowrap;
+}
+
+.logo-aybak {
+    position: absolute;
+
+    top: 17px;
+    left: 0;
+
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.15;
+
+    white-space: nowrap;
+}
+
+.logo-aybak span {
+    display: inline;
+}
+
+
+/* =========================
+   CONTACT / SOCIAL
+   ========================= */
+
+.contact {
+    margin: 0;
+    padding: 0;
+}
+
+.social {
+    display: flex;
+    flex-direction: column;
+
+    margin: 0;
+    padding: 0;
+}
+
+.info a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.info a:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================
+   SECTION SWITCH
+   ========================= */
+
+.section-switch {
+    position: fixed;
+
+    top: 32px;
+    right: 48px;
+
+    z-index: 20;
+
+    color: #000;
+    text-decoration: none;
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.15;
+}
+
+
+/* =========================
+   VIDEO
+   ========================= */
+
+#video-stage {
+    position: fixed;
+    inset: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    pointer-events: none;
+}
+
+#video-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    pointer-events: none;
+}
+
+#film-video {
+    display: block;
+
+    width: auto;
+    height: auto;
+
+    max-width: 64vw;
+    max-height: 76vh;
+
+    object-fit: contain;
+
+    pointer-events: none;
+}
+
+
+/* =========================
+   CONTROLS
+   ========================= */
+
+#controls {
+    display: flex;
+
+    width: 64vw;
+
+    justify-content: space-between;
+
+    margin-top: 10px;
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.15;
+
+    pointer-events: auto;
+}
+
+#controls button {
+    margin: 0;
+    padding: 0;
+
+    border: 0;
+    background: transparent;
+
+    color: #000;
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+
+    cursor: pointer;
+}
+
+#controls button:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media (max-width: 600px) {
 
     .info {
-        position: fixed;
+        top: 20px;
+        left: 24px;
 
-        top: 32px;
-        left: 48px;
-
-        z-index: 10;
-
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 15px;
-        font-weight: 400;
-        line-height: 1.15;
+        font-size: 13px;
     }
-
-
-    /* =========================
-       LOGO
-       ========================= */
 
     .logo {
-        position: relative;
-        display: block;
-
-        width: 190px;
-        height: 52px;
-
-        margin: 0;
-        padding: 0;
-
-        color: inherit;
-        text-decoration: none;
-
-        cursor: pointer;
+        width: 160px;
+        height: 45px;
     }
-
 
     .logo-name {
-        position: absolute;
-
-        top: 0;
-        left: 0;
-
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 15px;
-        font-weight: 400;
-        line-height: 1.15;
-
-        white-space: nowrap;
+        font-size: 13px;
     }
-
 
     .logo-aybak {
-        position: absolute;
+        top: 15px;
 
-        top: 17px;
-        left: 0;
-
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 15px;
-        font-weight: 400;
-        line-height: 1.15;
-
-        letter-spacing: normal;
-
-        white-space: nowrap;
+        font-size: 13px;
     }
 
+    .section-switch {
+        top: 20px;
+        right: 24px;
 
-    .logo-aybak span {
-        display: inline;
+        font-size: 13px;
     }
-
-
-    /* =========================
-       CONTACT / SOCIAL
-       ========================= */
-
-    .contact {
-        margin: 0;
-        padding: 0;
-    }
-
-
-    .social {
-        display: flex;
-        flex-direction: column;
-        gap: 0;
-
-        margin: 0;
-        padding: 0;
-    }
-
-
-    .info a {
-        color: inherit;
-        text-decoration: none;
-        font-weight: 400;
-    }
-
-
-    .info a:hover {
-        text-decoration: underline;
-    }
-
-
-    /* =========================
-       VIDEO STAGE
-       ========================= */
 
     #video-stage {
-        position: fixed;
-        inset: 0;
+        top: 92px;
+        bottom: 18px;
 
-        width: 100vw;
-        height: 100vh;
+        height: auto;
 
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        z-index: 1;
-
-        pointer-events: none;
+        padding: 0 24px;
     }
-
 
     #video-block {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-
-        width: auto;
-        height: auto;
-
-        pointer-events: none;
+        width: 100%;
+        max-width: 84vw;
     }
-
 
     #film-video {
-        display: block;
-
-        width: auto;
-        height: auto;
-
-        max-width: 64vw;
-        max-height: 76vh;
-
-        object-fit: contain;
-
-        user-select: none;
-        -webkit-user-select: none;
-
-        pointer-events: none;
+        max-width: 84vw;
+        max-height: 60vh;
     }
-
-
-    /* =========================
-       CONTROLS
-       ========================= */
 
     #controls {
-        display: flex;
+        width: 84vw;
 
-        width: 64vw;
-
-        align-items: center;
-        justify-content: space-between;
-
-        margin-top: 10px;
-
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 15px;
-        font-weight: 400;
-        line-height: 1.15;
-
-        white-space: nowrap;
-
-        pointer-events: auto;
+        font-size: 13px;
     }
-
 
     #controls button {
-        appearance: none;
-        -webkit-appearance: none;
-
-        margin: 0;
-        padding: 0;
-
-        border: 0;
-        background: transparent;
-
-        color: #000;
-
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 15px;
-        font-weight: 400;
-        line-height: 1.15;
-
-        cursor: pointer;
+        font-size: 13px;
     }
 
-
-    #controls button:hover {
-        text-decoration: underline;
-    }
-
-
-    /* =========================
-       MOBILE
-       ========================= */
-
-    @media (max-width: 600px) {
-
-        .info {
-            top: 20px;
-            left: 24px;
-
-            font-size: 13px;
-        }
-
-
-        .logo {
-            width: 160px;
-            height: 45px;
-
-            margin-bottom: 0;
-        }
-
-
-        .logo-name {
-            font-size: 13px;
-        }
-
-
-        .logo-aybak {
-            top: 15px;
-
-            font-size: 13px;
-
-            letter-spacing: normal;
-        }
-
-
-        #video-stage {
-            top: 92px;
-            bottom: 18px;
-
-            height: auto;
-
-            padding: 0 24px;
-        }
-
-
-        #video-block {
-            width: 100%;
-            max-width: 84vw;
-        }
-
-
-        #film-video {
-            max-width: 84vw;
-            max-height: 60vh;
-        }
-
-
-        #controls {
-            width: 84vw;
-
-            margin-top: 10px;
-
-            font-size: 13px;
-        }
-
-
-        #controls button {
-            font-size: 13px;
-        }
-
-    }
+}
 
 </style>
 
@@ -323,16 +305,13 @@
 <body>
 
 
-<!-- =========================
-     LEFT INFORMATION
-     ========================= -->
+<!-- LEFT -->
 
 <div class="info">
 
     <a
         class="logo"
         href="https://denizalpaybak.com/"
-        target="_self"
     >
 
         <span
@@ -387,9 +366,18 @@
 </div>
 
 
-<!-- =========================
-     VIDEO
-     ========================= -->
+<!-- RIGHT SWITCH -->
+
+<a
+    class="section-switch"
+    id="section-switch"
+    href="https://photography.denizalpaybak.com/"
+>
+    <span id="section-switch-text">photography</span>
+</a>
+
+
+<!-- VIDEO -->
 
 <div id="video-stage">
 
@@ -406,34 +394,19 @@
 
         <div id="controls">
 
-            <button
-                id="previous-button"
-                type="button"
-            >
+            <button id="previous-button">
                 previous
             </button>
 
-
-            <button
-                id="play-button"
-                type="button"
-            >
+            <button id="play-button">
                 pause
             </button>
 
-
-            <button
-                id="sound-button"
-                type="button"
-            >
+            <button id="sound-button">
                 sound on
             </button>
 
-
-            <button
-                id="next-button"
-                type="button"
-            >
+            <button id="next-button">
                 next
             </button>
 
@@ -446,789 +419,659 @@
 
 <script>
 
+/* =====================================================
+   R2 / FILMS.JSON
+   ===================================================== */
 
-    /* =====================================================
-       R2
-       ===================================================== */
+const R2_BASE =
+    "https://pub-14d397941aeb40e5bd3f66ac028fef80.r2.dev/";
 
-    const R2_BASE =
-        "https://pub-14d397941aeb40e5bd3f66ac028fef80.r2.dev/";
+let films = [];
 
+let currentFilm = 0;
 
-    /* =====================================================
-       FILM LIST
-       Loaded from films.json
-       ===================================================== */
-
-    let films = [];
+let soundEnabled = false;
 
 
-    /* =====================================================
-       STATE
-       ===================================================== */
+const video =
+    document.getElementById(
+        "film-video"
+    );
 
-    let currentFilm = 0;
+const previousButton =
+    document.getElementById(
+        "previous-button"
+    );
 
-    let soundEnabled = false;
+const playButton =
+    document.getElementById(
+        "play-button"
+    );
 
+const soundButton =
+    document.getElementById(
+        "sound-button"
+    );
 
-    /* =====================================================
-       ELEMENTS
-       ===================================================== */
-
-    const video =
-        document.getElementById(
-            "film-video"
-        );
-
-
-    const previousButton =
-        document.getElementById(
-            "previous-button"
-        );
-
-
-    const playButton =
-        document.getElementById(
-            "play-button"
-        );
+const nextButton =
+    document.getElementById(
+        "next-button"
+    );
 
 
-    const soundButton =
-        document.getElementById(
-            "sound-button"
-        );
+/* =====================================================
+   FILM LIST
+   ===================================================== */
 
+async function loadFilmList() {
 
-    const nextButton =
-        document.getElementById(
-            "next-button"
-        );
+    try {
 
-
-    /* =====================================================
-       LOAD FILMS.JSON
-       ===================================================== */
-
-    async function loadFilmList() {
-
-        try {
-
-            const response =
-                await fetch(
-                    "./films.json",
-                    {
-                        cache: "no-store"
-                    }
-                );
-
-
-            if (
-                !response.ok
-            ) {
-
-                throw new Error(
-                    "films.json could not be loaded."
-                );
-
-            }
-
-
-            const data =
-                await response.json();
-
-
-            if (
-                !Array.isArray(data) ||
-                data.length === 0
-            ) {
-
-                throw new Error(
-                    "films.json contains no films."
-                );
-
-            }
-
-
-            /*
-                Only keep valid strings.
-            */
-
-            films =
-                data.filter(
-                    item =>
-                        typeof item === "string" &&
-                        item.trim() !== ""
-                );
-
-
-            if (
-                films.length === 0
-            ) {
-
-                throw new Error(
-                    "films.json contains no valid film filenames."
-                );
-
-            }
-
-
-            /*
-                Start with the first film
-                listed in films.json.
-            */
-
-            loadFilm(
-                0,
-                true
+        const response =
+            await fetch(
+                "./films.json",
+                {
+                    cache: "no-store"
+                }
             );
 
-        }
-
-        catch (error) {
-
-            console.error(
-                "Could not load film list:",
-                error
-            );
-
-        }
-
-    }
-
-
-    /* =====================================================
-       LABELS
-       ===================================================== */
-
-    function updateControls() {
-
-        playButton.textContent =
-            video.paused
-                ? "play"
-                : "pause";
-
-
-        soundButton.textContent =
-            soundEnabled
-                ? "sound off"
-                : "sound on";
-
-    }
-
-
-    /* =====================================================
-       SOUND
-       ===================================================== */
-
-    function applySoundState() {
-
-        video.muted =
-            !soundEnabled;
-
-    }
-
-
-    function toggleSound() {
-
-        soundEnabled =
-            !soundEnabled;
-
-
-        applySoundState();
-
-        updateControls();
-
-    }
-
-
-    /* =====================================================
-       PLAY / PAUSE
-       ===================================================== */
-
-    function togglePlayback() {
 
         if (
-            video.paused
+            !response.ok
         ) {
 
-            const promise =
-                video.play();
-
-
-            if (
-                promise !== undefined
-            ) {
-
-                promise.catch(
-                    () => {}
-                );
-
-            }
-
-        }
-
-        else {
-
-            video.pause();
+            throw new Error(
+                "films.json could not be loaded"
+            );
 
         }
 
 
-        updateControls();
+        films =
+            (await response.json())
+            .filter(
+                item =>
+                    typeof item ===
+                    "string"
+            );
 
-    }
-
-
-    /* =====================================================
-       LOAD FILM
-       ===================================================== */
-
-    function loadFilm(
-        index,
-        autoplay = true
-    ) {
 
         if (
             films.length === 0
         ) {
 
             return;
-
-        }
-
-
-        if (
-            index < 0
-        ) {
-
-            index =
-                films.length - 1;
-
-        }
-
-
-        if (
-            index >= films.length
-        ) {
-
-            index = 0;
-
-        }
-
-
-        currentFilm =
-            index;
-
-
-        video.pause();
-
-
-        video.src =
-            R2_BASE +
-            films[currentFilm];
-
-
-        video.load();
-
-
-        /*
-            Preserve sound state when
-            moving between films.
-        */
-
-        applySoundState();
-
-
-        if (
-            autoplay
-        ) {
-
-            const promise =
-                video.play();
-
-
-            if (
-                promise !== undefined
-            ) {
-
-                promise.catch(
-                    () => {}
-                );
-
-            }
-
-        }
-
-
-        updateControls();
-
-    }
-
-
-    /* =====================================================
-       NEXT
-       ===================================================== */
-
-    function nextFilm() {
-
-        if (
-            films.length === 0
-        ) {
-
-            return;
-
-        }
-
-
-        currentFilm++;
-
-
-        if (
-            currentFilm >=
-            films.length
-        ) {
-
-            currentFilm = 0;
 
         }
 
 
         loadFilm(
-            currentFilm,
+            0,
             true
         );
 
     }
 
+    catch (error) {
 
-    /* =====================================================
-       PREVIOUS
-       ===================================================== */
-
-    function previousFilm() {
-
-        if (
-            films.length === 0
-        ) {
-
-            return;
-
-        }
-
-
-        currentFilm--;
-
-
-        if (
-            currentFilm < 0
-        ) {
-
-            currentFilm =
-                films.length - 1;
-
-        }
-
-
-        loadFilm(
-            currentFilm,
-            true
+        console.error(
+            error
         );
 
     }
 
+}
 
-    /* =====================================================
-       BUTTONS
-       ===================================================== */
 
-    previousButton.addEventListener(
-        "click",
-        () => {
+/* =====================================================
+   CONTROLS
+   ===================================================== */
 
-            previousFilm();
+function updateControls() {
 
-        }
-    );
+    playButton.textContent =
+        video.paused
+            ? "play"
+            : "pause";
 
 
-    nextButton.addEventListener(
-        "click",
-        () => {
+    soundButton.textContent =
+        soundEnabled
+            ? "sound off"
+            : "sound on";
 
-            nextFilm();
+}
 
-        }
-    );
 
+function applySoundState() {
 
-    playButton.addEventListener(
-        "click",
-        () => {
+    video.muted =
+        !soundEnabled;
 
-            togglePlayback();
+}
 
-        }
-    );
 
+function toggleSound() {
 
-    soundButton.addEventListener(
-        "click",
-        () => {
+    soundEnabled =
+        !soundEnabled;
 
-            toggleSound();
-
-        }
-    );
-
-
-    /* =====================================================
-       VIDEO EVENTS
-       ===================================================== */
-
-    video.addEventListener(
-        "play",
-        updateControls
-    );
-
-
-    video.addEventListener(
-        "pause",
-        updateControls
-    );
-
-
-    /*
-        When a film finishes naturally,
-        automatically move to the next film.
-    */
-
-    video.addEventListener(
-        "ended",
-        () => {
-
-            nextFilm();
-
-        }
-    );
-
-
-    /* =====================================================
-       LOGO ANIMATION
-       ===================================================== */
-
-    const logo =
-        document.querySelector(
-            ".logo"
-        );
-
-
-    const logoName =
-        document.getElementById(
-            "logo-name"
-        );
-
-
-    const letters = [
-
-        document.getElementById(
-            "letter-a"
-        ),
-
-        document.getElementById(
-            "letter-y"
-        ),
-
-        document.getElementById(
-            "letter-b"
-        ),
-
-        document.getElementById(
-            "letter-a2"
-        ),
-
-        document.getElementById(
-            "letter-k"
-        )
-
-    ];
-
-
-    const lowercase = [
-        "a",
-        "y",
-        "b",
-        "a",
-        "k"
-    ];
-
-
-    const uppercase = [
-        "A",
-        "Y",
-        "B",
-        "A",
-        "K"
-    ];
-
-
-    let logoState = 0;
-
-    let logoTarget = 0;
-
-    let logoTimer = null;
-
-
-    function setLogoState(
-        state
-    ) {
-
-        logoState =
-            state;
-
-
-        if (
-            state === 0
-        ) {
-
-            logoName.textContent =
-                "Denizalp";
-
-        }
-
-        else {
-
-            logoName.textContent =
-                "denizalp";
-
-        }
-
-
-        for (
-            let i = 0;
-            i < letters.length;
-            i++
-        ) {
-
-            if (
-                i < state
-            ) {
-
-                letters[i]
-                    .textContent =
-                    uppercase[i];
-
-            }
-
-            else {
-
-                letters[i]
-                    .textContent =
-                    lowercase[i];
-
-            }
-
-        }
-
-    }
-
-
-    function cancelLogoAnimation() {
-
-        if (
-            logoTimer !== null
-        ) {
-
-            clearTimeout(
-                logoTimer
-            );
-
-
-            logoTimer =
-                null;
-
-        }
-
-    }
-
-
-    function moveLogo() {
-
-        if (
-            logoState ===
-            logoTarget
-        ) {
-
-            logoTimer =
-                null;
-
-
-            return;
-
-        }
-
-
-        if (
-            logoState <
-            logoTarget
-        ) {
-
-            setLogoState(
-                logoState + 1
-            );
-
-        }
-
-        else {
-
-            setLogoState(
-                logoState - 1
-            );
-
-        }
-
-
-        logoTimer =
-            setTimeout(
-                moveLogo,
-                120
-            );
-
-    }
-
-
-    function animateTo(
-        target
-    ) {
-
-        logoTarget =
-            target;
-
-
-        cancelLogoAnimation();
-
-
-        moveLogo();
-
-    }
-
-
-    /* =====================================================
-       DESKTOP LOGO
-       ===================================================== */
-
-    logo.addEventListener(
-        "mouseenter",
-        () => {
-
-            if (
-                window.matchMedia(
-                    "(min-width: 601px)"
-                ).matches
-            ) {
-
-                animateTo(5);
-
-            }
-
-        }
-    );
-
-
-    logo.addEventListener(
-        "mouseleave",
-        () => {
-
-            if (
-                window.matchMedia(
-                    "(min-width: 601px)"
-                ).matches
-            ) {
-
-                animateTo(0);
-
-            }
-
-        }
-    );
-
-
-    /* =====================================================
-       MOBILE LOGO
-       ===================================================== */
-
-    let mobileCycleTimer =
-        null;
-
-
-    function startMobileCycle() {
-
-        mobileCycleTimer =
-            setTimeout(
-                () => {
-
-                    animateTo(5);
-
-
-                    mobileCycleTimer =
-                        setTimeout(
-                            () => {
-
-                                animateTo(0);
-
-
-                                mobileCycleTimer =
-                                    setTimeout(
-                                        () => {
-
-                                            startMobileCycle();
-
-                                        },
-                                        2600
-                                    );
-
-                            },
-                            2600
-                        );
-
-                },
-                2000
-            );
-
-    }
-
-
-    if (
-        window.matchMedia(
-            "(max-width: 600px)"
-        ).matches
-    ) {
-
-        setLogoState(0);
-
-        startMobileCycle();
-
-    }
-
-
-    /* =====================================================
-       START
-       ===================================================== */
-
-    setLogoState(0);
 
     applySoundState();
 
     updateControls();
 
+}
 
-    /*
-        Fetch films.json and start
-        the first film.
-    */
 
-    loadFilmList();
+function togglePlayback() {
 
+    if (
+        video.paused
+    ) {
+
+        video.play().catch(
+            () => {}
+        );
+
+    }
+
+    else {
+
+        video.pause();
+
+    }
+
+
+    updateControls();
+
+}
+
+
+/* =====================================================
+   LOAD
+   ===================================================== */
+
+function loadFilm(
+    index,
+    autoplay = true
+) {
+
+    if (
+        films.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        index < 0
+    ) {
+
+        index =
+            films.length - 1;
+
+    }
+
+
+    if (
+        index >= films.length
+    ) {
+
+        index = 0;
+
+    }
+
+
+    currentFilm =
+        index;
+
+
+    video.pause();
+
+
+    video.src =
+        R2_BASE +
+        films[currentFilm];
+
+
+    video.load();
+
+
+    applySoundState();
+
+
+    if (
+        autoplay
+    ) {
+
+        video.play().catch(
+            () => {}
+        );
+
+    }
+
+
+    updateControls();
+
+}
+
+
+function nextFilm() {
+
+    loadFilm(
+        currentFilm + 1,
+        true
+    );
+
+}
+
+
+function previousFilm() {
+
+    loadFilm(
+        currentFilm - 1,
+        true
+    );
+
+}
+
+
+previousButton.onclick =
+    previousFilm;
+
+nextButton.onclick =
+    nextFilm;
+
+playButton.onclick =
+    togglePlayback;
+
+soundButton.onclick =
+    toggleSound;
+
+
+video.addEventListener(
+    "play",
+    updateControls
+);
+
+video.addEventListener(
+    "pause",
+    updateControls
+);
+
+video.addEventListener(
+    "ended",
+    nextFilm
+);
+
+
+/* =====================================================
+   LOGO ANIMATION
+   ===================================================== */
+
+const logo =
+    document.querySelector(
+        ".logo"
+    );
+
+const logoName =
+    document.getElementById(
+        "logo-name"
+    );
+
+const letters = [
+    document.getElementById("letter-a"),
+    document.getElementById("letter-y"),
+    document.getElementById("letter-b"),
+    document.getElementById("letter-a2"),
+    document.getElementById("letter-k")
+];
+
+const lowercase = [
+    "a",
+    "y",
+    "b",
+    "a",
+    "k"
+];
+
+const uppercase = [
+    "A",
+    "Y",
+    "B",
+    "A",
+    "K"
+];
+
+let logoState = 0;
+
+let logoTarget = 0;
+
+let logoTimer = null;
+
+
+function setLogoState(state) {
+
+    logoState = state;
+
+
+    logoName.textContent =
+        state === 0
+            ? "Denizalp"
+            : "denizalp";
+
+
+    for (
+        let i = 0;
+        i < letters.length;
+        i++
+    ) {
+
+        letters[i].textContent =
+            i < state
+                ? uppercase[i]
+                : lowercase[i];
+
+    }
+
+}
+
+
+function moveLogo() {
+
+    if (
+        logoState ===
+        logoTarget
+    ) {
+
+        logoTimer = null;
+
+        return;
+
+    }
+
+
+    setLogoState(
+        logoState <
+        logoTarget
+            ? logoState + 1
+            : logoState - 1
+    );
+
+
+    logoTimer =
+        setTimeout(
+            moveLogo,
+            120
+        );
+
+}
+
+
+function animateTo(target) {
+
+    logoTarget = target;
+
+
+    if (
+        logoTimer
+    ) {
+
+        clearTimeout(
+            logoTimer
+        );
+
+    }
+
+
+    moveLogo();
+
+}
+
+
+/* DESKTOP */
+
+logo.addEventListener(
+    "mouseenter",
+    () => {
+
+        if (
+            window.innerWidth >
+            600
+        ) {
+
+            animateTo(5);
+
+        }
+
+    }
+);
+
+
+logo.addEventListener(
+    "mouseleave",
+    () => {
+
+        if (
+            window.innerWidth >
+            600
+        ) {
+
+            animateTo(0);
+
+        }
+
+    }
+);
+
+
+/* MOBILE */
+
+function mobileLogoCycle() {
+
+    setTimeout(
+        () => {
+
+            animateTo(5);
+
+
+            setTimeout(
+                () => {
+
+                    animateTo(0);
+
+
+                    setTimeout(
+                        mobileLogoCycle,
+                        2600
+                    );
+
+                },
+                2600
+            );
+
+        },
+        2000
+    );
+
+}
+
+
+if (
+    window.innerWidth <=
+    600
+) {
+
+    setLogoState(0);
+
+    mobileLogoCycle();
+
+}
+
+
+/* =====================================================
+   SECTION SWITCH
+   DESKTOP HOVER ONLY
+   ===================================================== */
+
+const sectionSwitch =
+    document.getElementById(
+        "section-switch"
+    );
+
+const sectionSwitchText =
+    document.getElementById(
+        "section-switch-text"
+    );
+
+const switchWord =
+    "photography";
+
+let switchState = 0;
+
+let switchTarget = 0;
+
+let switchTimer = null;
+
+
+function renderSwitch() {
+
+    let result = "";
+
+
+    for (
+        let i = 0;
+        i < switchWord.length;
+        i++
+    ) {
+
+        result +=
+            i < switchState
+                ? switchWord[i]
+                    .toUpperCase()
+                : switchWord[i]
+                    .toLowerCase();
+
+    }
+
+
+    sectionSwitchText
+        .textContent =
+        result;
+
+}
+
+
+function moveSwitch() {
+
+    if (
+        switchState ===
+        switchTarget
+    ) {
+
+        switchTimer = null;
+
+        return;
+
+    }
+
+
+    switchState +=
+        switchState <
+        switchTarget
+            ? 1
+            : -1;
+
+
+    renderSwitch();
+
+
+    switchTimer =
+        setTimeout(
+            moveSwitch,
+            120
+        );
+
+}
+
+
+function animateSwitchTo(
+    target
+) {
+
+    switchTarget =
+        target;
+
+
+    if (
+        switchTimer
+    ) {
+
+        clearTimeout(
+            switchTimer
+        );
+
+    }
+
+
+    moveSwitch();
+
+}
+
+
+sectionSwitch.addEventListener(
+    "mouseenter",
+    () => {
+
+        if (
+            window.innerWidth >
+            600
+        ) {
+
+            animateSwitchTo(
+                switchWord.length
+            );
+
+        }
+
+    }
+);
+
+
+sectionSwitch.addEventListener(
+    "mouseleave",
+    () => {
+
+        if (
+            window.innerWidth >
+            600
+        ) {
+
+            animateSwitchTo(0);
+
+        }
+
+    }
+);
+
+
+renderSwitch();
+
+
+/* =====================================================
+   START
+   ===================================================== */
+
+setLogoState(0);
+
+applySoundState();
+
+updateControls();
+
+loadFilmList();
 
 </script>
 
