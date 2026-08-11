@@ -222,11 +222,6 @@ body {
 #controls {
     display: flex;
 
-    /*
-        JavaScript matches this exactly
-        to the actual rendered video width.
-    */
-
     width: auto;
 
     align-items: center;
@@ -270,20 +265,12 @@ body {
     -webkit-tap-highlight-color: transparent;
 }
 
-
-/*
-    Desktop only.
-
-    This prevents touch browsers from
-    keeping a sticky :hover state.
-*/
-
-@media (hover: hover) and (pointer: fine) {
-
-    #controls button:hover {
-        text-decoration: underline;
-    }
-
+#controls button:hover,
+#controls button:focus,
+#controls button:focus-visible,
+#controls button:active {
+    text-decoration: none;
+    outline: none;
 }
 
 
@@ -351,22 +338,6 @@ body {
 
     #controls button {
         font-size: 13px;
-
-        text-decoration: none !important;
-    }
-
-
-    /*
-        Mobile must never visually retain
-        hover / focus / active underline.
-    */
-
-    #controls button:hover,
-    #controls button:focus,
-    #controls button:focus-visible,
-    #controls button:active {
-        text-decoration: none !important;
-        outline: none;
     }
 
 }
@@ -405,12 +376,6 @@ body {
 
         font-size: 13px;
     }
-
-
-    /*
-        Leave room for the information
-        block on the left.
-    */
 
     #video-stage {
         inset: 0;
@@ -588,9 +553,17 @@ body {
 <script>
 
 
-/* =========================
+/* =====================================================
+   SETTINGS
+   ===================================================== */
+
+const CONTROL_FRAME_SPEED =
+    90;
+
+
+/* =====================================================
    R2 / FILMS.JSON
-   ========================= */
+   ===================================================== */
 
 const R2_BASE =
     "https://pub-14d397941aeb40e5bd3f66ac028fef80.r2.dev/";
@@ -602,9 +575,9 @@ let currentFilm = 0;
 let soundEnabled = false;
 
 
-/* =========================
+/* =====================================================
    ELEMENTS
-   ========================= */
+   ===================================================== */
 
 const video =
     document.getElementById(
@@ -637,58 +610,171 @@ const nextButton =
     );
 
 
-/* =========================
-   DEVICE
-   ========================= */
+/* =====================================================
+   GENERIC TEXT ANIMATION
+   ===================================================== */
 
-function isMobileLayout() {
-
-    return window.matchMedia(
-        "(max-width: 600px)"
-    ).matches;
-
-}
+const activeAnimations =
+    new WeakMap();
 
 
-/* =========================
-   MOBILE BUTTON BLUR
-   ========================= */
-
-/*
-    Touch browsers can retain focus /
-    hover styling after a tap.
-
-    On mobile only, immediately remove
-    focus after the button action.
-*/
-
-function clearMobileButtonFocus(
-    button
+function animateButtonText(
+    element,
+    frames
 ) {
 
     if (
-        !isMobileLayout()
+        activeAnimations.has(
+            element
+        )
     ) {
 
-        return;
+        clearTimeout(
+            activeAnimations.get(
+                element
+            )
+        );
 
     }
 
 
-    requestAnimationFrame(
-        () => {
+    let frameIndex =
+        0;
 
-            button.blur();
+
+    function showNextFrame() {
+
+        element.textContent =
+            frames[
+                frameIndex
+            ];
+
+
+        frameIndex++;
+
+
+        if (
+            frameIndex >=
+            frames.length
+        ) {
+
+            activeAnimations.delete(
+                element
+            );
+
+            return;
 
         }
+
+
+        const timer =
+            setTimeout(
+                showNextFrame,
+                CONTROL_FRAME_SPEED
+            );
+
+
+        activeAnimations.set(
+            element,
+            timer
+        );
+
+    }
+
+
+    showNextFrame();
+
+}
+
+
+/* =====================================================
+   PLAY → PAUSE
+   ===================================================== */
+
+function animateToPause() {
+
+    animateButtonText(
+        playButton,
+        [
+            "play",
+            "plau",
+            "paau",
+            "paus",
+            "pause"
+        ]
     );
 
 }
 
 
-/* =========================
+/* =====================================================
+   PAUSE → PLAY
+   ===================================================== */
+
+function animateToPlay() {
+
+    animateButtonText(
+        playButton,
+        [
+            "pause",
+            "paus",
+            "paau",
+            "plau",
+            "play"
+        ]
+    );
+
+}
+
+
+/* =====================================================
+   SOUND OFF → ON LABEL
+   ===================================================== */
+
+/*
+    Button says "sound on" when sound is
+    currently muted, because clicking it
+    will turn sound ON.
+
+    After turning sound on, the label
+    becomes "sound off".
+*/
+
+function animateToSoundOff() {
+
+    animateButtonText(
+        soundButton,
+        [
+            "sound on",
+            "sound of",
+            "sound off"
+        ]
+    );
+
+}
+
+
+/* =====================================================
+   SOUND ON → OFF LABEL
+   ===================================================== */
+
+function animateToSoundOn() {
+
+    animateButtonText(
+        soundButton,
+        [
+            "sound off",
+            "sound of",
+            "sound on"
+        ]
+    );
+
+}
+
+
+/* =====================================================
    CONTROL WIDTH
-   ========================= */
+   ===================================================== */
 
 function syncControlsWidth() {
 
@@ -710,9 +796,9 @@ function syncControlsWidth() {
 }
 
 
-/* =========================
-   FILM LIST
-   ========================= */
+/* =====================================================
+   FILMS.JSON
+   ===================================================== */
 
 async function loadFilmList() {
 
@@ -778,25 +864,9 @@ async function loadFilmList() {
 }
 
 
-/* =========================
-   CONTROLS
-   ========================= */
-
-function updateControls() {
-
-    playButton.textContent =
-        video.paused
-            ? "play"
-            : "pause";
-
-
-    soundButton.textContent =
-        soundEnabled
-            ? "sound off"
-            : "sound on";
-
-}
-
+/* =====================================================
+   SOUND
+   ===================================================== */
 
 function applySoundState() {
 
@@ -808,18 +878,61 @@ function applySoundState() {
 
 function toggleSound() {
 
-    soundEnabled =
-        !soundEnabled;
+    /*
+        Currently muted.
+        Turn sound ON.
+    */
+
+    if (
+        !soundEnabled
+    ) {
+
+        soundEnabled =
+            true;
 
 
-    applySoundState();
+        applySoundState();
 
-    updateControls();
+
+        animateToSoundOff();
+
+    }
+
+
+    /*
+        Currently audible.
+        Turn sound OFF.
+    */
+
+    else {
+
+        soundEnabled =
+            false;
+
+
+        applySoundState();
+
+
+        animateToSoundOn();
+
+    }
 
 }
 
 
+/* =====================================================
+   PLAY / PAUSE
+   ===================================================== */
+
 function togglePlayback() {
+
+    /*
+        Currently PAUSED.
+        Resume playback.
+
+        Label:
+        PLAY → PAUSE
+    */
 
     if (
         video.paused
@@ -831,23 +944,35 @@ function togglePlayback() {
                 () => {}
             );
 
+
+        animateToPause();
+
     }
+
+
+    /*
+        Currently PLAYING.
+        Pause at current frame.
+
+        Label:
+        PAUSE → PLAY
+    */
 
     else {
 
         video.pause();
 
+
+        animateToPlay();
+
     }
-
-
-    updateControls();
 
 }
 
 
-/* =========================
+/* =====================================================
    LOAD FILM
-   ========================= */
+   ===================================================== */
 
 function loadFilm(
     index,
@@ -877,7 +1002,8 @@ function loadFilm(
         index >= films.length
     ) {
 
-        index = 0;
+        index =
+            0;
 
     }
 
@@ -900,11 +1026,6 @@ function loadFilm(
     applySoundState();
 
 
-    /*
-        Match controls to the newly
-        rendered video.
-    */
-
     setTimeout(
         syncControlsWidth,
         50
@@ -921,17 +1042,31 @@ function loadFilm(
                 () => {}
             );
 
+
+        playButton.textContent =
+            "pause";
+
+    }
+
+    else {
+
+        playButton.textContent =
+            "play";
+
     }
 
 
-    updateControls();
+    soundButton.textContent =
+        soundEnabled
+            ? "sound off"
+            : "sound on";
 
 }
 
 
-/* =========================
+/* =====================================================
    NEXT / PREVIOUS
-   ========================= */
+   ===================================================== */
 
 function nextFilm() {
 
@@ -953,9 +1088,9 @@ function previousFilm() {
 }
 
 
-/* =========================
+/* =====================================================
    BUTTONS
-   ========================= */
+   ===================================================== */
 
 previousButton.addEventListener(
     "click",
@@ -963,9 +1098,7 @@ previousButton.addEventListener(
 
         previousFilm();
 
-        clearMobileButtonFocus(
-            previousButton
-        );
+        previousButton.blur();
 
     }
 );
@@ -977,9 +1110,7 @@ nextButton.addEventListener(
 
         nextFilm();
 
-        clearMobileButtonFocus(
-            nextButton
-        );
+        nextButton.blur();
 
     }
 );
@@ -991,9 +1122,7 @@ playButton.addEventListener(
 
         togglePlayback();
 
-        clearMobileButtonFocus(
-            playButton
-        );
+        playButton.blur();
 
     }
 );
@@ -1005,40 +1134,21 @@ soundButton.addEventListener(
 
         toggleSound();
 
-        clearMobileButtonFocus(
-            soundButton
-        );
+        soundButton.blur();
 
     }
 );
 
 
-/* =========================
+/* =====================================================
    VIDEO EVENTS
-   ========================= */
-
-video.addEventListener(
-    "play",
-    updateControls
-);
-
-
-video.addEventListener(
-    "pause",
-    updateControls
-);
-
+   ===================================================== */
 
 video.addEventListener(
     "ended",
     nextFilm
 );
 
-
-/*
-    Keep control width synchronized
-    to actual rendered video width.
-*/
 
 video.addEventListener(
     "loadedmetadata",
@@ -1095,9 +1205,9 @@ window.addEventListener(
 );
 
 
-/* =========================
+/* =====================================================
    LOGO
-   ========================= */
+   ===================================================== */
 
 const logo =
     document.querySelector(
@@ -1152,11 +1262,14 @@ const uppercase = [
 ];
 
 
-let logoState = 0;
+let logoState =
+    0;
 
-let logoTarget = 0;
+let logoTarget =
+    0;
 
-let logoTimer = null;
+let logoTimer =
+    null;
 
 
 function setLogoState(
@@ -1207,13 +1320,10 @@ function moveLogo() {
 
 
     setLogoState(
-
         logoState <
         logoTarget
-
             ? logoState + 1
             : logoState - 1
-
     );
 
 
@@ -1345,9 +1455,9 @@ if (
 }
 
 
-/* =========================
+/* =====================================================
    SECTION SWITCH
-   ========================= */
+   ===================================================== */
 
 const sectionSwitch =
     document.getElementById(
@@ -1386,10 +1496,8 @@ function renderSwitch() {
 
         result +=
             i < switchState
-
                 ? switchWord[i]
                     .toUpperCase()
-
                 : switchWord[i]
                     .toLowerCase();
 
@@ -1507,9 +1615,9 @@ sectionSwitch.addEventListener(
 renderSwitch();
 
 
-/* =========================
+/* =====================================================
    START
-   ========================= */
+   ===================================================== */
 
 setLogoState(
     0
@@ -1519,7 +1627,12 @@ setLogoState(
 applySoundState();
 
 
-updateControls();
+playButton.textContent =
+    "pause";
+
+
+soundButton.textContent =
+    "sound on";
 
 
 loadFilmList();
