@@ -21,7 +21,7 @@ body {
     width: 100%;
     height: 100%;
 
-    background: transparent;
+    background: #fff;
     overflow: hidden;
 }
 
@@ -44,7 +44,6 @@ body {
 
     font-family: Arial, Helvetica, sans-serif;
     font-size: 15px;
-    font-weight: 400;
     line-height: 1.15;
 }
 
@@ -60,9 +59,6 @@ body {
     width: 190px;
     height: 52px;
 
-    margin: 0;
-    padding: 0;
-
     color: inherit;
     text-decoration: none;
 
@@ -71,26 +67,20 @@ body {
 
 .logo-name {
     position: absolute;
-
     top: 0;
     left: 0;
 
     font-size: 15px;
-    font-weight: 400;
-    line-height: 1.15;
 
     white-space: nowrap;
 }
 
 .logo-aybak {
     position: absolute;
-
     top: 17px;
     left: 0;
 
     font-size: 15px;
-    font-weight: 400;
-    line-height: 1.15;
 
     white-space: nowrap;
 }
@@ -104,17 +94,9 @@ body {
    CONTACT / SOCIAL
    ========================= */
 
-.contact {
-    margin: 0;
-    padding: 0;
-}
-
 .social {
     display: flex;
     flex-direction: column;
-
-    margin: 0;
-    padding: 0;
 }
 
 .info a {
@@ -144,7 +126,6 @@ body {
 
     font-family: Arial, Helvetica, sans-serif;
     font-size: 15px;
-    font-weight: 400;
     line-height: 1.15;
 }
 
@@ -205,7 +186,6 @@ body {
 
     font-family: Arial, Helvetica, sans-serif;
     font-size: 15px;
-    font-weight: 400;
     line-height: 1.15;
 
     pointer-events: auto;
@@ -255,7 +235,6 @@ body {
 
     .logo-aybak {
         top: 15px;
-
         font-size: 13px;
     }
 
@@ -297,6 +276,80 @@ body {
 
 }
 
+
+/* =========================
+   SHORT LANDSCAPE
+   ========================= */
+
+@media (orientation: landscape) and (max-height: 700px) {
+
+    .info {
+        top: 20px;
+        left: 24px;
+
+        font-size: 13px;
+    }
+
+    .logo {
+        width: 160px;
+        height: 45px;
+    }
+
+    .logo-name,
+    .logo-aybak {
+        font-size: 13px;
+    }
+
+    .logo-aybak {
+        top: 15px;
+    }
+
+    .section-switch {
+        top: 20px;
+        right: 24px;
+
+        font-size: 13px;
+    }
+
+    /*
+        Reserve space on the left for info.
+    */
+
+    #video-stage {
+        inset: 0;
+
+        left: 190px;
+
+        width: calc(100vw - 214px);
+        height: 100vh;
+
+        padding: 16px 24px;
+    }
+
+    #video-block {
+        width: 100%;
+        max-width: none;
+    }
+
+    #film-video {
+        max-width: 62vw;
+        max-height: 60vh;
+    }
+
+    #controls {
+        width: 62vw;
+
+        margin-top: 8px;
+
+        font-size: 13px;
+    }
+
+    #controls button {
+        font-size: 13px;
+    }
+
+}
+
 </style>
 
 </head>
@@ -304,8 +357,6 @@ body {
 
 <body>
 
-
-<!-- LEFT -->
 
 <div class="info">
 
@@ -366,8 +417,6 @@ body {
 </div>
 
 
-<!-- RIGHT SWITCH -->
-
 <a
     class="section-switch"
     id="section-switch"
@@ -376,8 +425,6 @@ body {
     <span id="section-switch-text">photography</span>
 </a>
 
-
-<!-- VIDEO -->
 
 <div id="video-stage">
 
@@ -419,17 +466,16 @@ body {
 
 <script>
 
-/* =====================================================
+
+/* =========================
    R2 / FILMS.JSON
-   ===================================================== */
+   ========================= */
 
 const R2_BASE =
     "https://pub-14d397941aeb40e5bd3f66ac028fef80.r2.dev/";
 
 let films = [];
-
 let currentFilm = 0;
-
 let soundEnabled = false;
 
 
@@ -459,9 +505,9 @@ const nextButton =
     );
 
 
-/* =====================================================
+/* =========================
    FILM LIST
-   ===================================================== */
+   ========================= */
 
 async function loadFilmList() {
 
@@ -475,7 +521,6 @@ async function loadFilmList() {
                 }
             );
 
-
         if (
             !response.ok
         ) {
@@ -486,7 +531,6 @@ async function loadFilmList() {
 
         }
 
-
         films =
             (await response.json())
             .filter(
@@ -495,15 +539,11 @@ async function loadFilmList() {
                     "string"
             );
 
-
         if (
             films.length === 0
         ) {
-
             return;
-
         }
-
 
         loadFilm(
             0,
@@ -523,9 +563,9 @@ async function loadFilmList() {
 }
 
 
-/* =====================================================
+/* =========================
    CONTROLS
-   ===================================================== */
+   ========================= */
 
 function updateControls() {
 
@@ -533,7 +573,6 @@ function updateControls() {
         video.paused
             ? "play"
             : "pause";
-
 
     soundButton.textContent =
         soundEnabled
@@ -556,9 +595,7 @@ function toggleSound() {
     soundEnabled =
         !soundEnabled;
 
-
     applySoundState();
-
     updateControls();
 
 }
@@ -582,15 +619,14 @@ function togglePlayback() {
 
     }
 
-
     updateControls();
 
 }
 
 
-/* =====================================================
+/* =========================
    LOAD
-   ===================================================== */
+   ========================= */
 
 function loadFilm(
     index,
@@ -600,11 +636,8 @@ function loadFilm(
     if (
         films.length === 0
     ) {
-
         return;
-
     }
-
 
     if (
         index < 0
@@ -615,7 +648,6 @@ function loadFilm(
 
     }
 
-
     if (
         index >= films.length
     ) {
@@ -624,24 +656,18 @@ function loadFilm(
 
     }
 
-
     currentFilm =
         index;
 
-
     video.pause();
-
 
     video.src =
         R2_BASE +
         films[currentFilm];
 
-
     video.load();
 
-
     applySoundState();
-
 
     if (
         autoplay
@@ -652,7 +678,6 @@ function loadFilm(
         );
 
     }
-
 
     updateControls();
 
@@ -708,14 +733,12 @@ video.addEventListener(
 );
 
 
-/* =====================================================
-   LOGO ANIMATION
-   ===================================================== */
+/* =========================
+   LOGO
+   ========================= */
 
 const logo =
-    document.querySelector(
-        ".logo"
-    );
+    document.querySelector(".logo");
 
 const logoName =
     document.getElementById(
@@ -730,26 +753,11 @@ const letters = [
     document.getElementById("letter-k")
 ];
 
-const lowercase = [
-    "a",
-    "y",
-    "b",
-    "a",
-    "k"
-];
-
-const uppercase = [
-    "A",
-    "Y",
-    "B",
-    "A",
-    "K"
-];
+const lowercase = ["a","y","b","a","k"];
+const uppercase = ["A","Y","B","A","K"];
 
 let logoState = 0;
-
 let logoTarget = 0;
-
 let logoTimer = null;
 
 
@@ -757,12 +765,10 @@ function setLogoState(state) {
 
     logoState = state;
 
-
     logoName.textContent =
         state === 0
             ? "Denizalp"
             : "denizalp";
-
 
     for (
         let i = 0;
@@ -788,11 +794,9 @@ function moveLogo() {
     ) {
 
         logoTimer = null;
-
         return;
 
     }
-
 
     setLogoState(
         logoState <
@@ -800,7 +804,6 @@ function moveLogo() {
             ? logoState + 1
             : logoState - 1
     );
-
 
     logoTimer =
         setTimeout(
@@ -815,7 +818,6 @@ function animateTo(target) {
 
     logoTarget = target;
 
-
     if (
         logoTimer
     ) {
@@ -826,21 +828,17 @@ function animateTo(target) {
 
     }
 
-
     moveLogo();
 
 }
 
-
-/* DESKTOP */
 
 logo.addEventListener(
     "mouseenter",
     () => {
 
         if (
-            window.innerWidth >
-            600
+            window.innerWidth > 600
         ) {
 
             animateTo(5);
@@ -856,8 +854,7 @@ logo.addEventListener(
     () => {
 
         if (
-            window.innerWidth >
-            600
+            window.innerWidth > 600
         ) {
 
             animateTo(0);
@@ -868,8 +865,6 @@ logo.addEventListener(
 );
 
 
-/* MOBILE */
-
 function mobileLogoCycle() {
 
     setTimeout(
@@ -877,12 +872,10 @@ function mobileLogoCycle() {
 
             animateTo(5);
 
-
             setTimeout(
                 () => {
 
                     animateTo(0);
-
 
                     setTimeout(
                         mobileLogoCycle,
@@ -901,21 +894,18 @@ function mobileLogoCycle() {
 
 
 if (
-    window.innerWidth <=
-    600
+    window.innerWidth <= 600
 ) {
 
     setLogoState(0);
-
     mobileLogoCycle();
 
 }
 
 
-/* =====================================================
+/* =========================
    SECTION SWITCH
-   DESKTOP HOVER ONLY
-   ===================================================== */
+   ========================= */
 
 const sectionSwitch =
     document.getElementById(
@@ -931,16 +921,13 @@ const switchWord =
     "photography";
 
 let switchState = 0;
-
 let switchTarget = 0;
-
 let switchTimer = null;
 
 
 function renderSwitch() {
 
     let result = "";
-
 
     for (
         let i = 0;
@@ -957,9 +944,7 @@ function renderSwitch() {
 
     }
 
-
-    sectionSwitchText
-        .textContent =
+    sectionSwitchText.textContent =
         result;
 
 }
@@ -973,11 +958,9 @@ function moveSwitch() {
     ) {
 
         switchTimer = null;
-
         return;
 
     }
-
 
     switchState +=
         switchState <
@@ -985,9 +968,7 @@ function moveSwitch() {
             ? 1
             : -1;
 
-
     renderSwitch();
-
 
     switchTimer =
         setTimeout(
@@ -998,13 +979,9 @@ function moveSwitch() {
 }
 
 
-function animateSwitchTo(
-    target
-) {
+function animateSwitchTo(target) {
 
-    switchTarget =
-        target;
-
+    switchTarget = target;
 
     if (
         switchTimer
@@ -1016,7 +993,6 @@ function animateSwitchTo(
 
     }
 
-
     moveSwitch();
 
 }
@@ -1027,8 +1003,7 @@ sectionSwitch.addEventListener(
     () => {
 
         if (
-            window.innerWidth >
-            600
+            window.innerWidth > 600
         ) {
 
             animateSwitchTo(
@@ -1046,8 +1021,7 @@ sectionSwitch.addEventListener(
     () => {
 
         if (
-            window.innerWidth >
-            600
+            window.innerWidth > 600
         ) {
 
             animateSwitchTo(0);
@@ -1060,17 +1034,10 @@ sectionSwitch.addEventListener(
 
 renderSwitch();
 
-
-/* =====================================================
-   START
-   ===================================================== */
-
 setLogoState(0);
 
 applySoundState();
-
 updateControls();
-
 loadFilmList();
 
 </script>
