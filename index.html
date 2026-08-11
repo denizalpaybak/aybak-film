@@ -420,10 +420,6 @@ body {
 <body>
 
 
-<!-- =========================
-     LEFT INFORMATION
-     ========================= -->
-
 <div class="info">
 
     <a
@@ -483,10 +479,6 @@ body {
 </div>
 
 
-<!-- =========================
-     SECTION SWITCH
-     ========================= -->
-
 <a
     class="section-switch"
     id="section-switch"
@@ -495,10 +487,6 @@ body {
     <span id="section-switch-text">photography</span>
 </a>
 
-
-<!-- =========================
-     VIDEO
-     ========================= -->
 
 <div id="video-stage">
 
@@ -554,8 +542,22 @@ body {
 
 
 /* =====================================================
-   SETTINGS
+   GLOBAL ANIMATION TIMING
    ===================================================== */
+
+const WORD_ANIMATION_DURATION =
+    600;
+
+function getWordStepDuration(
+    word
+) {
+
+    return (
+        WORD_ANIMATION_DURATION /
+        word.length
+    );
+
+}
 
 const CONTROL_FRAME_SPEED =
     90;
@@ -568,11 +570,14 @@ const CONTROL_FRAME_SPEED =
 const R2_BASE =
     "https://pub-14d397941aeb40e5bd3f66ac028fef80.r2.dev/";
 
-let films = [];
+let films =
+    [];
 
-let currentFilm = 0;
+let currentFilm =
+    0;
 
-let soundEnabled = false;
+let soundEnabled =
+    false;
 
 
 /* =====================================================
@@ -611,7 +616,7 @@ const nextButton =
 
 
 /* =====================================================
-   GENERIC TEXT ANIMATION
+   TEXT ANIMATION
    ===================================================== */
 
 const activeAnimations =
@@ -658,9 +663,10 @@ function animateButtonText(
             frames.length
         ) {
 
-            activeAnimations.delete(
-                element
-            );
+            activeAnimations
+                .delete(
+                    element
+                );
 
             return;
 
@@ -674,10 +680,11 @@ function animateButtonText(
             );
 
 
-        activeAnimations.set(
-            element,
-            timer
-        );
+        activeAnimations
+            .set(
+                element,
+                timer
+            );
 
     }
 
@@ -686,10 +693,6 @@ function animateButtonText(
 
 }
 
-
-/* =====================================================
-   PLAY → PAUSE
-   ===================================================== */
 
 function animateToPause() {
 
@@ -707,10 +710,6 @@ function animateToPause() {
 }
 
 
-/* =====================================================
-   PAUSE → PLAY
-   ===================================================== */
-
 function animateToPlay() {
 
     animateButtonText(
@@ -727,19 +726,6 @@ function animateToPlay() {
 }
 
 
-/* =====================================================
-   SOUND OFF → ON LABEL
-   ===================================================== */
-
-/*
-    Button says "sound on" when sound is
-    currently muted, because clicking it
-    will turn sound ON.
-
-    After turning sound on, the label
-    becomes "sound off".
-*/
-
 function animateToSoundOff() {
 
     animateButtonText(
@@ -753,10 +739,6 @@ function animateToSoundOff() {
 
 }
 
-
-/* =====================================================
-   SOUND ON → OFF LABEL
-   ===================================================== */
 
 function animateToSoundOn() {
 
@@ -785,7 +767,8 @@ function syncControlsWidth() {
 
 
     if (
-        videoWidth > 0
+        videoWidth >
+        0
     ) {
 
         controls.style.width =
@@ -808,7 +791,8 @@ async function loadFilmList() {
             await fetch(
                 "./films.json",
                 {
-                    cache: "no-store"
+                    cache:
+                        "no-store"
                 }
             );
 
@@ -833,12 +817,14 @@ async function loadFilmList() {
                 item =>
                     typeof item ===
                     "string" &&
-                    item.trim() !== ""
+                    item.trim() !==
+                    ""
             );
 
 
         if (
-            films.length === 0
+            films.length ===
+            0
         ) {
 
             return;
@@ -878,11 +864,6 @@ function applySoundState() {
 
 function toggleSound() {
 
-    /*
-        Currently muted.
-        Turn sound ON.
-    */
-
     if (
         !soundEnabled
     ) {
@@ -897,12 +878,6 @@ function toggleSound() {
         animateToSoundOff();
 
     }
-
-
-    /*
-        Currently audible.
-        Turn sound OFF.
-    */
 
     else {
 
@@ -926,14 +901,6 @@ function toggleSound() {
 
 function togglePlayback() {
 
-    /*
-        Currently PAUSED.
-        Resume playback.
-
-        Label:
-        PLAY → PAUSE
-    */
-
     if (
         video.paused
     ) {
@@ -948,15 +915,6 @@ function togglePlayback() {
         animateToPause();
 
     }
-
-
-    /*
-        Currently PLAYING.
-        Pause at current frame.
-
-        Label:
-        PAUSE → PLAY
-    */
 
     else {
 
@@ -980,7 +938,8 @@ function loadFilm(
 ) {
 
     if (
-        films.length === 0
+        films.length ===
+        0
     ) {
 
         return;
@@ -989,17 +948,20 @@ function loadFilm(
 
 
     if (
-        index < 0
+        index <
+        0
     ) {
 
         index =
-            films.length - 1;
+            films.length -
+            1;
 
     }
 
 
     if (
-        index >= films.length
+        index >=
+        films.length
     ) {
 
         index =
@@ -1017,7 +979,9 @@ function loadFilm(
 
     video.src =
         R2_BASE +
-        films[currentFilm];
+        films[
+            currentFilm
+        ];
 
 
     video.load();
@@ -1071,7 +1035,8 @@ function loadFilm(
 function nextFilm() {
 
     loadFilm(
-        currentFilm + 1,
+        currentFilm +
+        1,
         true
     );
 
@@ -1081,7 +1046,8 @@ function nextFilm() {
 function previousFilm() {
 
     loadFilm(
-        currentFilm - 1,
+        currentFilm -
+        1,
         true
     );
 
@@ -1092,52 +1058,60 @@ function previousFilm() {
    BUTTONS
    ===================================================== */
 
-previousButton.addEventListener(
-    "click",
-    () => {
+previousButton
+    .addEventListener(
+        "click",
+        () => {
 
-        previousFilm();
+            previousFilm();
 
-        previousButton.blur();
+            previousButton
+                .blur();
 
-    }
-);
-
-
-nextButton.addEventListener(
-    "click",
-    () => {
-
-        nextFilm();
-
-        nextButton.blur();
-
-    }
-);
+        }
+    );
 
 
-playButton.addEventListener(
-    "click",
-    () => {
+nextButton
+    .addEventListener(
+        "click",
+        () => {
 
-        togglePlayback();
+            nextFilm();
 
-        playButton.blur();
+            nextButton
+                .blur();
 
-    }
-);
+        }
+    );
 
 
-soundButton.addEventListener(
-    "click",
-    () => {
+playButton
+    .addEventListener(
+        "click",
+        () => {
 
-        toggleSound();
+            togglePlayback();
 
-        soundButton.blur();
+            playButton
+                .blur();
 
-    }
-);
+        }
+    );
+
+
+soundButton
+    .addEventListener(
+        "click",
+        () => {
+
+            toggleSound();
+
+            soundButton
+                .blur();
+
+        }
+    );
 
 
 /* =====================================================
@@ -1220,29 +1194,12 @@ const logoName =
     );
 
 const letters = [
-
-    document.getElementById(
-        "letter-a"
-    ),
-
-    document.getElementById(
-        "letter-y"
-    ),
-
-    document.getElementById(
-        "letter-b"
-    ),
-
-    document.getElementById(
-        "letter-a2"
-    ),
-
-    document.getElementById(
-        "letter-k"
-    )
-
+    document.getElementById("letter-a"),
+    document.getElementById("letter-y"),
+    document.getElementById("letter-b"),
+    document.getElementById("letter-a2"),
+    document.getElementById("letter-k")
 ];
-
 
 const lowercase = [
     "a",
@@ -1252,7 +1209,6 @@ const lowercase = [
     "k"
 ];
 
-
 const uppercase = [
     "A",
     "Y",
@@ -1260,7 +1216,6 @@ const uppercase = [
     "A",
     "K"
 ];
-
 
 let logoState =
     0;
@@ -1281,7 +1236,8 @@ function setLogoState(
 
 
     logoName.textContent =
-        state === 0
+        state ===
+        0
             ? "Denizalp"
             : "denizalp";
 
@@ -1312,7 +1268,6 @@ function moveLogo() {
 
         logoTimer =
             null;
-
 
         return;
 
@@ -1360,10 +1315,6 @@ function animateTo(
 }
 
 
-/* =========================
-   DESKTOP LOGO
-   ========================= */
-
 logo.addEventListener(
     "mouseenter",
     () => {
@@ -1401,10 +1352,6 @@ logo.addEventListener(
     }
 );
 
-
-/* =========================
-   MOBILE LOGO
-   ========================= */
 
 function mobileLogoCycle() {
 
@@ -1457,6 +1404,7 @@ if (
 
 /* =====================================================
    SECTION SWITCH
+   PHOTOGRAPHY = 11 steps, total ~600ms
    ===================================================== */
 
 const sectionSwitch =
@@ -1471,6 +1419,11 @@ const sectionSwitchText =
 
 const switchWord =
     "photography";
+
+const switchStepDuration =
+    getWordStepDuration(
+        switchWord
+    );
 
 let switchState =
     0;
@@ -1495,9 +1448,12 @@ function renderSwitch() {
     ) {
 
         result +=
-            i < switchState
+            i <
+            switchState
+
                 ? switchWord[i]
                     .toUpperCase()
+
                 : switchWord[i]
                     .toLowerCase();
 
@@ -1521,7 +1477,6 @@ function moveSwitch() {
         switchTimer =
             null;
 
-
         return;
 
     }
@@ -1540,7 +1495,7 @@ function moveSwitch() {
     switchTimer =
         setTimeout(
             moveSwitch,
-            120
+            switchStepDuration
         );
 
 }
@@ -1570,46 +1525,44 @@ function animateSwitchTo(
 }
 
 
-/* =========================
-   DESKTOP SECTION SWITCH
-   ========================= */
+sectionSwitch
+    .addEventListener(
+        "mouseenter",
+        () => {
 
-sectionSwitch.addEventListener(
-    "mouseenter",
-    () => {
+            if (
+                window.innerWidth >
+                600
+            ) {
 
-        if (
-            window.innerWidth >
-            600
-        ) {
+                animateSwitchTo(
+                    switchWord.length
+                );
 
-            animateSwitchTo(
-                switchWord.length
-            );
-
-        }
-
-    }
-);
-
-
-sectionSwitch.addEventListener(
-    "mouseleave",
-    () => {
-
-        if (
-            window.innerWidth >
-            600
-        ) {
-
-            animateSwitchTo(
-                0
-            );
+            }
 
         }
+    );
 
-    }
-);
+
+sectionSwitch
+    .addEventListener(
+        "mouseleave",
+        () => {
+
+            if (
+                window.innerWidth >
+                600
+            ) {
+
+                animateSwitchTo(
+                    0
+                );
+
+            }
+
+        }
+    );
 
 
 renderSwitch();
