@@ -23,6 +23,9 @@ body {
 
     background: #fff;
     overflow: hidden;
+
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
 }
 
 body {
@@ -220,8 +223,8 @@ body {
     display: flex;
 
     /*
-        Width is set by JavaScript
-        to the ACTUAL rendered video width.
+        JavaScript matches this exactly
+        to the actual rendered video width.
     */
 
     width: auto;
@@ -249,6 +252,8 @@ body {
     padding: 0;
 
     border: 0;
+    outline: none;
+
     background: transparent;
 
     color: #000;
@@ -258,11 +263,27 @@ body {
     font-weight: 400;
     line-height: 1.15;
 
+    text-decoration: none;
+
     cursor: pointer;
+
+    -webkit-tap-highlight-color: transparent;
 }
 
-#controls button:hover {
-    text-decoration: underline;
+
+/*
+    Desktop only.
+
+    This prevents touch browsers from
+    keeping a sticky :hover state.
+*/
+
+@media (hover: hover) and (pointer: fine) {
+
+    #controls button:hover {
+        text-decoration: underline;
+    }
+
 }
 
 
@@ -330,6 +351,22 @@ body {
 
     #controls button {
         font-size: 13px;
+
+        text-decoration: none !important;
+    }
+
+
+    /*
+        Mobile must never visually retain
+        hover / focus / active underline.
+    */
+
+    #controls button:hover,
+    #controls button:focus,
+    #controls button:focus-visible,
+    #controls button:active {
+        text-decoration: none !important;
+        outline: none;
     }
 
 }
@@ -369,9 +406,10 @@ body {
         font-size: 13px;
     }
 
+
     /*
-        Reserve left-side room for
-        the information block.
+        Leave room for the information
+        block on the left.
     */
 
     #video-stage {
@@ -416,6 +454,10 @@ body {
 
 <body>
 
+
+<!-- =========================
+     LEFT INFORMATION
+     ========================= -->
 
 <div class="info">
 
@@ -476,6 +518,10 @@ body {
 </div>
 
 
+<!-- =========================
+     SECTION SWITCH
+     ========================= -->
+
 <a
     class="section-switch"
     id="section-switch"
@@ -484,6 +530,10 @@ body {
     <span id="section-switch-text">photography</span>
 </a>
 
+
+<!-- =========================
+     VIDEO
+     ========================= -->
 
 <div id="video-stage">
 
@@ -588,13 +638,63 @@ const nextButton =
 
 
 /* =========================
+   DEVICE
+   ========================= */
+
+function isMobileLayout() {
+
+    return window.matchMedia(
+        "(max-width: 600px)"
+    ).matches;
+
+}
+
+
+/* =========================
+   MOBILE BUTTON BLUR
+   ========================= */
+
+/*
+    Touch browsers can retain focus /
+    hover styling after a tap.
+
+    On mobile only, immediately remove
+    focus after the button action.
+*/
+
+function clearMobileButtonFocus(
+    button
+) {
+
+    if (
+        !isMobileLayout()
+    ) {
+
+        return;
+
+    }
+
+
+    requestAnimationFrame(
+        () => {
+
+            button.blur();
+
+        }
+    );
+
+}
+
+
+/* =========================
    CONTROL WIDTH
    ========================= */
 
 function syncControlsWidth() {
 
     const videoWidth =
-        video.getBoundingClientRect()
+        video
+            .getBoundingClientRect()
             .width;
 
 
@@ -725,9 +825,11 @@ function togglePlayback() {
         video.paused
     ) {
 
-        video.play().catch(
-            () => {}
-        );
+        video
+            .play()
+            .catch(
+                () => {}
+            );
 
     }
 
@@ -799,8 +901,8 @@ function loadFilm(
 
 
     /*
-        Recalculate the bar once the
-        new video starts rendering.
+        Match controls to the newly
+        rendered video.
     */
 
     setTimeout(
@@ -813,9 +915,11 @@ function loadFilm(
         autoplay
     ) {
 
-        video.play().catch(
-            () => {}
-        );
+        video
+            .play()
+            .catch(
+                () => {}
+            );
 
     }
 
@@ -855,25 +959,57 @@ function previousFilm() {
 
 previousButton.addEventListener(
     "click",
-    previousFilm
+    () => {
+
+        previousFilm();
+
+        clearMobileButtonFocus(
+            previousButton
+        );
+
+    }
 );
 
 
 nextButton.addEventListener(
     "click",
-    nextFilm
+    () => {
+
+        nextFilm();
+
+        clearMobileButtonFocus(
+            nextButton
+        );
+
+    }
 );
 
 
 playButton.addEventListener(
     "click",
-    togglePlayback
+    () => {
+
+        togglePlayback();
+
+        clearMobileButtonFocus(
+            playButton
+        );
+
+    }
 );
 
 
 soundButton.addEventListener(
     "click",
-    toggleSound
+    () => {
+
+        toggleSound();
+
+        clearMobileButtonFocus(
+            soundButton
+        );
+
+    }
 );
 
 
@@ -900,8 +1036,8 @@ video.addEventListener(
 
 
 /*
-    Keep the control bar exactly
-    matched to the rendered video.
+    Keep control width synchronized
+    to actual rendered video width.
 */
 
 video.addEventListener(
@@ -974,12 +1110,29 @@ const logoName =
     );
 
 const letters = [
-    document.getElementById("letter-a"),
-    document.getElementById("letter-y"),
-    document.getElementById("letter-b"),
-    document.getElementById("letter-a2"),
-    document.getElementById("letter-k")
+
+    document.getElementById(
+        "letter-a"
+    ),
+
+    document.getElementById(
+        "letter-y"
+    ),
+
+    document.getElementById(
+        "letter-b"
+    ),
+
+    document.getElementById(
+        "letter-a2"
+    ),
+
+    document.getElementById(
+        "letter-k"
+    )
+
 ];
+
 
 const lowercase = [
     "a",
@@ -989,6 +1142,7 @@ const lowercase = [
     "k"
 ];
 
+
 const uppercase = [
     "A",
     "Y",
@@ -996,6 +1150,7 @@ const uppercase = [
     "A",
     "K"
 ];
+
 
 let logoState = 0;
 
@@ -1008,7 +1163,8 @@ function setLogoState(
     state
 ) {
 
-    logoState = state;
+    logoState =
+        state;
 
 
     logoName.textContent =
@@ -1023,7 +1179,8 @@ function setLogoState(
         i++
     ) {
 
-        letters[i].textContent =
+        letters[i]
+            .textContent =
             i < state
                 ? uppercase[i]
                 : lowercase[i];
@@ -1040,7 +1197,9 @@ function moveLogo() {
         logoTarget
     ) {
 
-        logoTimer = null;
+        logoTimer =
+            null;
+
 
         return;
 
@@ -1048,10 +1207,13 @@ function moveLogo() {
 
 
     setLogoState(
+
         logoState <
         logoTarget
+
             ? logoState + 1
             : logoState - 1
+
     );
 
 
@@ -1068,7 +1230,8 @@ function animateTo(
     target
 ) {
 
-    logoTarget = target;
+    logoTarget =
+        target;
 
 
     if (
@@ -1087,17 +1250,22 @@ function animateTo(
 }
 
 
-/* DESKTOP */
+/* =========================
+   DESKTOP LOGO
+   ========================= */
 
 logo.addEventListener(
     "mouseenter",
     () => {
 
         if (
-            window.innerWidth > 600
+            window.innerWidth >
+            600
         ) {
 
-            animateTo(5);
+            animateTo(
+                5
+            );
 
         }
 
@@ -1110,10 +1278,13 @@ logo.addEventListener(
     () => {
 
         if (
-            window.innerWidth > 600
+            window.innerWidth >
+            600
         ) {
 
-            animateTo(0);
+            animateTo(
+                0
+            );
 
         }
 
@@ -1121,20 +1292,26 @@ logo.addEventListener(
 );
 
 
-/* MOBILE */
+/* =========================
+   MOBILE LOGO
+   ========================= */
 
 function mobileLogoCycle() {
 
     setTimeout(
         () => {
 
-            animateTo(5);
+            animateTo(
+                5
+            );
 
 
             setTimeout(
                 () => {
 
-                    animateTo(0);
+                    animateTo(
+                        0
+                    );
 
 
                     setTimeout(
@@ -1154,10 +1331,14 @@ function mobileLogoCycle() {
 
 
 if (
-    window.innerWidth <= 600
+    window.innerWidth <=
+    600
 ) {
 
-    setLogoState(0);
+    setLogoState(
+        0
+    );
+
 
     mobileLogoCycle();
 
@@ -1181,16 +1362,20 @@ const sectionSwitchText =
 const switchWord =
     "photography";
 
-let switchState = 0;
+let switchState =
+    0;
 
-let switchTarget = 0;
+let switchTarget =
+    0;
 
-let switchTimer = null;
+let switchTimer =
+    null;
 
 
 function renderSwitch() {
 
-    let result = "";
+    let result =
+        "";
 
 
     for (
@@ -1201,15 +1386,18 @@ function renderSwitch() {
 
         result +=
             i < switchState
+
                 ? switchWord[i]
                     .toUpperCase()
+
                 : switchWord[i]
                     .toLowerCase();
 
     }
 
 
-    sectionSwitchText.textContent =
+    sectionSwitchText
+        .textContent =
         result;
 
 }
@@ -1222,7 +1410,9 @@ function moveSwitch() {
         switchTarget
     ) {
 
-        switchTimer = null;
+        switchTimer =
+            null;
+
 
         return;
 
@@ -1252,7 +1442,8 @@ function animateSwitchTo(
     target
 ) {
 
-    switchTarget = target;
+    switchTarget =
+        target;
 
 
     if (
@@ -1271,12 +1462,17 @@ function animateSwitchTo(
 }
 
 
+/* =========================
+   DESKTOP SECTION SWITCH
+   ========================= */
+
 sectionSwitch.addEventListener(
     "mouseenter",
     () => {
 
         if (
-            window.innerWidth > 600
+            window.innerWidth >
+            600
         ) {
 
             animateSwitchTo(
@@ -1294,10 +1490,13 @@ sectionSwitch.addEventListener(
     () => {
 
         if (
-            window.innerWidth > 600
+            window.innerWidth >
+            600
         ) {
 
-            animateSwitchTo(0);
+            animateSwitchTo(
+                0
+            );
 
         }
 
@@ -1312,11 +1511,16 @@ renderSwitch();
    START
    ========================= */
 
-setLogoState(0);
+setLogoState(
+    0
+);
+
 
 applySoundState();
 
+
 updateControls();
+
 
 loadFilmList();
 
