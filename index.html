@@ -44,6 +44,7 @@ body {
 
     font-family: Arial, Helvetica, sans-serif;
     font-size: 15px;
+    font-weight: 400;
     line-height: 1.15;
 }
 
@@ -59,6 +60,9 @@ body {
     width: 190px;
     height: 52px;
 
+    margin: 0;
+    padding: 0;
+
     color: inherit;
     text-decoration: none;
 
@@ -67,20 +71,30 @@ body {
 
 .logo-name {
     position: absolute;
+
     top: 0;
     left: 0;
 
+    font-family: Arial, Helvetica, sans-serif;
     font-size: 15px;
+    font-weight: 400;
+    line-height: 1.15;
 
     white-space: nowrap;
 }
 
 .logo-aybak {
     position: absolute;
+
     top: 17px;
     left: 0;
 
+    font-family: Arial, Helvetica, sans-serif;
     font-size: 15px;
+    font-weight: 400;
+    line-height: 1.15;
+
+    letter-spacing: normal;
 
     white-space: nowrap;
 }
@@ -94,14 +108,24 @@ body {
    CONTACT / SOCIAL
    ========================= */
 
+.contact {
+    margin: 0;
+    padding: 0;
+}
+
 .social {
     display: flex;
     flex-direction: column;
+    gap: 0;
+
+    margin: 0;
+    padding: 0;
 }
 
 .info a {
     color: inherit;
     text-decoration: none;
+    font-weight: 400;
 }
 
 .info a:hover {
@@ -126,12 +150,15 @@ body {
 
     font-family: Arial, Helvetica, sans-serif;
     font-size: 15px;
+    font-weight: 400;
     line-height: 1.15;
+
+    white-space: nowrap;
 }
 
 
 /* =========================
-   VIDEO
+   VIDEO STAGE
    ========================= */
 
 #video-stage {
@@ -148,13 +175,27 @@ body {
     pointer-events: none;
 }
 
+
+/* =========================
+   VIDEO BLOCK
+   ========================= */
+
 #video-block {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+
+    width: auto;
+    height: auto;
 
     pointer-events: none;
 }
+
+
+/* =========================
+   VIDEO
+   ========================= */
 
 #film-video {
     display: block;
@@ -178,20 +219,32 @@ body {
 #controls {
     display: flex;
 
-    width: 64vw;
+    /*
+        Width is set by JavaScript
+        to the ACTUAL rendered video width.
+    */
 
+    width: auto;
+
+    align-items: center;
     justify-content: space-between;
 
     margin-top: 10px;
 
     font-family: Arial, Helvetica, sans-serif;
     font-size: 15px;
+    font-weight: 400;
     line-height: 1.15;
+
+    white-space: nowrap;
 
     pointer-events: auto;
 }
 
 #controls button {
+    appearance: none;
+    -webkit-appearance: none;
+
     margin: 0;
     padding: 0;
 
@@ -202,6 +255,8 @@ body {
 
     font-family: Arial, Helvetica, sans-serif;
     font-size: 15px;
+    font-weight: 400;
+    line-height: 1.15;
 
     cursor: pointer;
 }
@@ -235,6 +290,7 @@ body {
 
     .logo-aybak {
         top: 15px;
+
         font-size: 13px;
     }
 
@@ -265,7 +321,9 @@ body {
     }
 
     #controls {
-        width: 84vw;
+        width: auto;
+
+        margin-top: 10px;
 
         font-size: 13px;
     }
@@ -312,7 +370,8 @@ body {
     }
 
     /*
-        Reserve space on the left for info.
+        Reserve left-side room for
+        the information block.
     */
 
     #video-stage {
@@ -337,7 +396,7 @@ body {
     }
 
     #controls {
-        width: 62vw;
+        width: auto;
 
         margin-top: 8px;
 
@@ -441,19 +500,31 @@ body {
 
         <div id="controls">
 
-            <button id="previous-button">
+            <button
+                id="previous-button"
+                type="button"
+            >
                 previous
             </button>
 
-            <button id="play-button">
+            <button
+                id="play-button"
+                type="button"
+            >
                 pause
             </button>
 
-            <button id="sound-button">
+            <button
+                id="sound-button"
+                type="button"
+            >
                 sound on
             </button>
 
-            <button id="next-button">
+            <button
+                id="next-button"
+                type="button"
+            >
                 next
             </button>
 
@@ -475,13 +546,24 @@ const R2_BASE =
     "https://pub-14d397941aeb40e5bd3f66ac028fef80.r2.dev/";
 
 let films = [];
+
 let currentFilm = 0;
+
 let soundEnabled = false;
 
+
+/* =========================
+   ELEMENTS
+   ========================= */
 
 const video =
     document.getElementById(
         "film-video"
+    );
+
+const controls =
+    document.getElementById(
+        "controls"
     );
 
 const previousButton =
@@ -506,6 +588,29 @@ const nextButton =
 
 
 /* =========================
+   CONTROL WIDTH
+   ========================= */
+
+function syncControlsWidth() {
+
+    const videoWidth =
+        video.getBoundingClientRect()
+            .width;
+
+
+    if (
+        videoWidth > 0
+    ) {
+
+        controls.style.width =
+            `${videoWidth}px`;
+
+    }
+
+}
+
+
+/* =========================
    FILM LIST
    ========================= */
 
@@ -521,6 +626,7 @@ async function loadFilmList() {
                 }
             );
 
+
         if (
             !response.ok
         ) {
@@ -531,19 +637,28 @@ async function loadFilmList() {
 
         }
 
+
+        const data =
+            await response.json();
+
+
         films =
-            (await response.json())
-            .filter(
+            data.filter(
                 item =>
                     typeof item ===
-                    "string"
+                    "string" &&
+                    item.trim() !== ""
             );
+
 
         if (
             films.length === 0
         ) {
+
             return;
+
         }
+
 
         loadFilm(
             0,
@@ -574,6 +689,7 @@ function updateControls() {
             ? "play"
             : "pause";
 
+
     soundButton.textContent =
         soundEnabled
             ? "sound off"
@@ -595,7 +711,9 @@ function toggleSound() {
     soundEnabled =
         !soundEnabled;
 
+
     applySoundState();
+
     updateControls();
 
 }
@@ -619,13 +737,14 @@ function togglePlayback() {
 
     }
 
+
     updateControls();
 
 }
 
 
 /* =========================
-   LOAD
+   LOAD FILM
    ========================= */
 
 function loadFilm(
@@ -636,8 +755,11 @@ function loadFilm(
     if (
         films.length === 0
     ) {
+
         return;
+
     }
+
 
     if (
         index < 0
@@ -648,6 +770,7 @@ function loadFilm(
 
     }
 
+
     if (
         index >= films.length
     ) {
@@ -656,18 +779,35 @@ function loadFilm(
 
     }
 
+
     currentFilm =
         index;
 
+
     video.pause();
+
 
     video.src =
         R2_BASE +
         films[currentFilm];
 
+
     video.load();
 
+
     applySoundState();
+
+
+    /*
+        Recalculate the bar once the
+        new video starts rendering.
+    */
+
+    setTimeout(
+        syncControlsWidth,
+        50
+    );
+
 
     if (
         autoplay
@@ -679,10 +819,15 @@ function loadFilm(
 
     }
 
+
     updateControls();
 
 }
 
+
+/* =========================
+   NEXT / PREVIOUS
+   ========================= */
 
 function nextFilm() {
 
@@ -704,32 +849,113 @@ function previousFilm() {
 }
 
 
-previousButton.onclick =
-    previousFilm;
+/* =========================
+   BUTTONS
+   ========================= */
 
-nextButton.onclick =
-    nextFilm;
+previousButton.addEventListener(
+    "click",
+    previousFilm
+);
 
-playButton.onclick =
-    togglePlayback;
 
-soundButton.onclick =
-    toggleSound;
+nextButton.addEventListener(
+    "click",
+    nextFilm
+);
 
+
+playButton.addEventListener(
+    "click",
+    togglePlayback
+);
+
+
+soundButton.addEventListener(
+    "click",
+    toggleSound
+);
+
+
+/* =========================
+   VIDEO EVENTS
+   ========================= */
 
 video.addEventListener(
     "play",
     updateControls
 );
 
+
 video.addEventListener(
     "pause",
     updateControls
 );
 
+
 video.addEventListener(
     "ended",
     nextFilm
+);
+
+
+/*
+    Keep the control bar exactly
+    matched to the rendered video.
+*/
+
+video.addEventListener(
+    "loadedmetadata",
+    syncControlsWidth
+);
+
+
+video.addEventListener(
+    "loadeddata",
+    syncControlsWidth
+);
+
+
+video.addEventListener(
+    "canplay",
+    syncControlsWidth
+);
+
+
+video.addEventListener(
+    "resize",
+    syncControlsWidth
+);
+
+
+window.addEventListener(
+    "resize",
+    () => {
+
+        requestAnimationFrame(
+            syncControlsWidth
+        );
+
+    }
+);
+
+
+window.addEventListener(
+    "orientationchange",
+    () => {
+
+        setTimeout(
+            syncControlsWidth,
+            150
+        );
+
+
+        setTimeout(
+            syncControlsWidth,
+            400
+        );
+
+    }
 );
 
 
@@ -738,7 +964,9 @@ video.addEventListener(
    ========================= */
 
 const logo =
-    document.querySelector(".logo");
+    document.querySelector(
+        ".logo"
+    );
 
 const logoName =
     document.getElementById(
@@ -753,22 +981,41 @@ const letters = [
     document.getElementById("letter-k")
 ];
 
-const lowercase = ["a","y","b","a","k"];
-const uppercase = ["A","Y","B","A","K"];
+const lowercase = [
+    "a",
+    "y",
+    "b",
+    "a",
+    "k"
+];
+
+const uppercase = [
+    "A",
+    "Y",
+    "B",
+    "A",
+    "K"
+];
 
 let logoState = 0;
+
 let logoTarget = 0;
+
 let logoTimer = null;
 
 
-function setLogoState(state) {
+function setLogoState(
+    state
+) {
 
     logoState = state;
+
 
     logoName.textContent =
         state === 0
             ? "Denizalp"
             : "denizalp";
+
 
     for (
         let i = 0;
@@ -794,9 +1041,11 @@ function moveLogo() {
     ) {
 
         logoTimer = null;
+
         return;
 
     }
+
 
     setLogoState(
         logoState <
@@ -804,6 +1053,7 @@ function moveLogo() {
             ? logoState + 1
             : logoState - 1
     );
+
 
     logoTimer =
         setTimeout(
@@ -814,9 +1064,12 @@ function moveLogo() {
 }
 
 
-function animateTo(target) {
+function animateTo(
+    target
+) {
 
     logoTarget = target;
+
 
     if (
         logoTimer
@@ -828,10 +1081,13 @@ function animateTo(target) {
 
     }
 
+
     moveLogo();
 
 }
 
+
+/* DESKTOP */
 
 logo.addEventListener(
     "mouseenter",
@@ -865,6 +1121,8 @@ logo.addEventListener(
 );
 
 
+/* MOBILE */
+
 function mobileLogoCycle() {
 
     setTimeout(
@@ -872,10 +1130,12 @@ function mobileLogoCycle() {
 
             animateTo(5);
 
+
             setTimeout(
                 () => {
 
                     animateTo(0);
+
 
                     setTimeout(
                         mobileLogoCycle,
@@ -898,6 +1158,7 @@ if (
 ) {
 
     setLogoState(0);
+
     mobileLogoCycle();
 
 }
@@ -921,13 +1182,16 @@ const switchWord =
     "photography";
 
 let switchState = 0;
+
 let switchTarget = 0;
+
 let switchTimer = null;
 
 
 function renderSwitch() {
 
     let result = "";
+
 
     for (
         let i = 0;
@@ -944,6 +1208,7 @@ function renderSwitch() {
 
     }
 
+
     sectionSwitchText.textContent =
         result;
 
@@ -958,9 +1223,11 @@ function moveSwitch() {
     ) {
 
         switchTimer = null;
+
         return;
 
     }
+
 
     switchState +=
         switchState <
@@ -968,7 +1235,9 @@ function moveSwitch() {
             ? 1
             : -1;
 
+
     renderSwitch();
+
 
     switchTimer =
         setTimeout(
@@ -979,9 +1248,12 @@ function moveSwitch() {
 }
 
 
-function animateSwitchTo(target) {
+function animateSwitchTo(
+    target
+) {
 
     switchTarget = target;
+
 
     if (
         switchTimer
@@ -992,6 +1264,7 @@ function animateSwitchTo(target) {
         );
 
     }
+
 
     moveSwitch();
 
@@ -1034,10 +1307,17 @@ sectionSwitch.addEventListener(
 
 renderSwitch();
 
+
+/* =========================
+   START
+   ========================= */
+
 setLogoState(0);
 
 applySoundState();
+
 updateControls();
+
 loadFilmList();
 
 </script>
