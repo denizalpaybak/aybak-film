@@ -978,7 +978,8 @@ body.index-mode #video-stage {
         left: 0;
         right: 0;
 
-        bottom: 72px;
+        /* Restore the breathing room used in the other modes. */
+        bottom: 112px;
 
         width: 100%;
 
@@ -1014,8 +1015,11 @@ body.index-mode #video-stage {
         left: 0;
         right: 0;
 
-        /* Keep a distinct row above INDEX. */
-        bottom: 60px;
+        /*
+            Keep a real gap both above this row and below it.
+            INDEX remains a separate third row, as in portrait.
+        */
+        bottom: 72px;
 
         width: 100%;
 
@@ -1071,7 +1075,13 @@ body.index-mode #video-stage {
     }
 
     .card-copy {
-        min-width: 196px;
+        /*
+            Caption width must not collapse to the width of a
+            very narrow portrait film. Smaller thumbnails + a
+            stable copy width make both title and date readable.
+        */
+        min-width: 178px;
+        width: 100%;
         overflow: visible;
     }
 
@@ -3826,7 +3836,9 @@ function activatePreview(
 
 
         preview.preload =
-            "auto";
+            isPhoneLayout()
+                ? "metadata"
+                : "auto";
 
 
         preview.load();
@@ -3927,8 +3939,14 @@ const previewObserver =
 
         },
         {
+            /*
+                Mobile should not wake distant MP4 previews early.
+                Desktop keeps the generous prefetch margin.
+            */
             rootMargin:
-                "220px"
+                isPhoneLayout()
+                    ? "36px"
+                    : "220px"
         }
     );
 
@@ -4458,8 +4476,12 @@ function buildProjectAllGrid() {
                 createPreviewVideo(
                     filename,
                     {
+                        /*
+                            Mobile defers MP4 work; desktop keeps eager
+                            metadata for immediate layout.
+                        */
                         eagerMetadata:
-                            true
+                            !isPhoneLayout()
                     }
                 );
 
@@ -4640,9 +4662,51 @@ async function enterProjectAll() {
             layoutProjectAllGrid();
 
 
-            activatePreviewsIn(
-                projectAllGrid
-            );
+            if (
+                !isPhoneLayout()
+            ) {
+
+                activatePreviewsIn(
+                    projectAllGrid
+                );
+
+            }
+
+            else {
+
+                /*
+                    Stagger mobile decoders instead of starting every
+                    MP4 in the same frame. The full grid still becomes
+                    animated, but initial interaction is much quicker.
+                */
+                [
+                    ...projectAllGrid.querySelectorAll(
+                        "video[data-src]"
+                    )
+                ].forEach(
+                    (preview, index) => {
+
+                        setTimeout(
+                            () => {
+
+                                if (
+                                    projectAllMode
+                                ) {
+
+                                    activatePreview(
+                                        preview
+                                    );
+
+                                }
+
+                            },
+                            index * 90
+                        );
+
+                    }
+                );
+
+            }
 
         }
     );
@@ -4989,26 +5053,28 @@ function getIndexGeometry() {
 
             mediaHeight:
                 clamp(
-                    window.innerHeight * 0.47,
-                    158,
-                    190
+                    window.innerHeight * 0.405,
+                    136,
+                    166
                 ),
 
             /*
-                Horizontal works remain visibly shorter than
-                portrait works, matching portrait-mobile index.
+                Landscape clips stay visibly shorter than portrait
+                clips and both are centered in the same media stage.
+                The slightly smaller scale also leaves enough room
+                for the complete two-line caption underneath.
             */
             maxLandscapeWidth:
                 Math.min(
-                    window.innerWidth * 0.215,
-                    196
+                    window.innerWidth * 0.19,
+                    174
                 ),
 
             gap:
                 clamp(
-                    window.innerWidth * 0.065,
-                    50,
-                    68
+                    window.innerWidth * 0.06,
+                    46,
+                    62
                 ),
 
             leftPadding:
@@ -5210,9 +5276,9 @@ function syncIndexCardSize(
             ? Math.max(
                 width,
                 clamp(
-                    window.innerWidth * 0.19,
-                    196,
-                    224
+                    window.innerWidth * 0.175,
+                    178,
+                    204
                 )
             )
             : width;
@@ -5372,17 +5438,17 @@ function layoutIndexViewport() {
 
         indexScroller.style.top =
             `${Math.ceil(
-                infoRect.bottom + 10
+                infoRect.bottom + 6
             )}px`;
 
 
         indexScroller.style.bottom =
             `${Math.max(
-                34,
+                26,
                 Math.ceil(
                     window.innerHeight -
                     indexRect.top +
-                    24
+                    14
                 )
             )}px`;
 
@@ -6135,8 +6201,8 @@ async function enterIndex() {
                     .slice(
                         0,
                         isPhoneLandscape()
-                            ? 5
-                            : 3
+                            ? 3
+                            : 2
                     )
                     .forEach(
                         activatePreview
