@@ -3224,17 +3224,34 @@ function fitMainVideo() {
             projectMeta.getBoundingClientRect().top;
 
 
+        /*
+            Use the ENTIRE horizontal interval between the
+            contact block and the photography switch.
+
+            Vertically, the media may grow from the safe top
+            boundary all the way down to just above the
+            title / counter / view-all row. This is the same
+            space-efficiency visible in the photography
+            landscape reference.
+        */
+
+        const mediaTopBoundary =
+            18;
+
+
+        const mediaBottomBoundary =
+            metaTop - 8;
+
+
         const maxMediaWidth =
-            Math.min(
-                area.width * 0.82,
-                window.innerWidth * 0.58
-            );
+            area.width;
 
 
         const maxMediaHeight =
             Math.max(
                 120,
-                metaTop - 14
+                mediaBottomBoundary -
+                mediaTopBoundary
             );
 
 
@@ -3334,10 +3351,9 @@ function fitMainVideo() {
 
         mediaHolder.style.top =
             `${Math.max(
-                12,
-                metaTop -
-                mediaHeight -
-                10
+                mediaTopBoundary,
+                mediaBottomBoundary -
+                mediaHeight
             )}px`;
 
 
@@ -5378,6 +5394,63 @@ function syncIndexCardSize(
 
         preview.style.transform =
             "translateY(-50%)";
+
+    }
+
+
+    /*
+        Landscape-mobile cards deliberately keep a wider
+        invisible card than very narrow portrait previews so
+        the caption has room to breathe. The caption itself,
+        however, must visually belong to the thumbnail: its
+        LEFT EDGE now starts exactly where the visible preview
+        starts. It may extend to the right when the title/date
+        needs more room.
+    */
+
+    if (
+        isPhoneLandscape()
+    ) {
+
+        const copy =
+            button.querySelector(
+                ".card-copy"
+            );
+
+
+        if (
+            copy
+        ) {
+
+            const previewOffset =
+                Math.max(
+                    0,
+                    (
+                        cardWidth -
+                        width
+                    ) /
+                    2
+                );
+
+
+            copy.style.marginLeft =
+                `${previewOffset}px`;
+
+
+            copy.style.width =
+                `${Math.max(
+                    width,
+                    190
+                )}px`;
+
+
+            copy.style.minWidth =
+                `${Math.max(
+                    width,
+                    190
+                )}px`;
+
+        }
 
     }
 
