@@ -1014,7 +1014,8 @@ body.index-mode #video-stage {
         left: 0;
         right: 0;
 
-        bottom: 42px;
+        /* Keep a distinct row above INDEX. */
+        bottom: 60px;
 
         width: 100%;
 
@@ -1052,6 +1053,33 @@ body.index-mode #video-stage {
 
     #index-grid {
         align-items: flex-start;
+    }
+
+
+    /*
+        Landscape index follows portrait-mobile logic:
+        every card owns the same invisible media stage;
+        the actual video is centered inside that stage.
+        Caption width is independent from a very narrow
+        portrait thumbnail so title + date stay readable.
+    */
+
+    .card-video-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .card-copy {
+        min-width: 196px;
+        overflow: visible;
+    }
+
+    .card-title,
+    .card-date {
+        overflow: visible;
+        text-overflow: clip;
+        white-space: nowrap;
     }
 
 }
@@ -2876,17 +2904,38 @@ function getPhonePortraitSlideBounds() {
 function getPhoneLandscapeArea() {
 
     /*
-        Photography-landscape reference:
+        Photography landscape reference:
 
-        The content is NOT pushed into a rigid right column.
-        The useful field is almost the entire viewport.
-
-        The info block simply occupies the upper-left portion
-        of that field, while media can remain centered.
+        The media field lives BETWEEN the real contact block
+        and the photography switch. This puts the artwork
+        visually farther right than the old full-viewport
+        centering while preserving the left identity block.
     */
+
+    const infoRect =
+        info.getBoundingClientRect();
+
+
+    const switchRect =
+        sectionSwitch.getBoundingClientRect();
+
 
     const indexRect =
         indexButton.getBoundingClientRect();
+
+
+    const left =
+        Math.max(
+            24,
+            infoRect.right + 24
+        );
+
+
+    const right =
+        Math.min(
+            window.innerWidth - 24,
+            switchRect.left - 24
+        );
 
 
     const top =
@@ -2896,17 +2945,15 @@ function getPhoneLandscapeArea() {
     const bottom =
         Math.min(
             window.innerHeight - 12,
-            indexRect.top - 8
+            indexRect.top - 16
         );
 
 
     return {
 
-        left:
-            24,
+        left,
 
-        right:
-            window.innerWidth - 24,
+        right,
 
         top,
 
@@ -2915,7 +2962,7 @@ function getPhoneLandscapeArea() {
         width:
             Math.max(
                 1,
-                window.innerWidth - 48
+                right - left
             ),
 
         height:
@@ -3156,25 +3203,28 @@ function fitMainVideo() {
         /*
             Match photography landscape:
 
-            - the video is centered in the viewport
-            - it does NOT inherit the left contact column
-            - portrait / landscape videos are both allowed
-              to become substantial
-            - metadata and controls span the full safe width
-              independently from the video's own aspect ratio
+            - center media inside the interval between
+              contact and photography
+            - keep metadata / controls full safe-width
+            - allow the video to extend lower so its bottom
+              visually meets the view-all row
         */
+
+        const metaTop =
+            projectMeta.getBoundingClientRect().top;
+
 
         const maxMediaWidth =
             Math.min(
-                area.width * 0.54,
-                window.innerWidth * 0.54
+                area.width * 0.82,
+                window.innerWidth * 0.58
             );
 
 
         const maxMediaHeight =
-            Math.min(
-                window.innerHeight * 0.72,
-                area.height * 0.80
+            Math.max(
+                120,
+                metaTop - 14
             );
 
 
@@ -3203,19 +3253,16 @@ function fitMainVideo() {
         }
 
 
-        /*
-            Portrait video:
-            use more of the vertical field, like a portrait
-            image on photography.denizalpaybak.com.
-        */
-
         if (
             ratio <
             1
         ) {
 
             mediaHeight =
-                maxMediaHeight;
+                Math.min(
+                    maxMediaHeight,
+                    window.innerHeight * 0.73
+                );
 
 
             mediaWidth =
@@ -3242,7 +3289,8 @@ function fitMainVideo() {
 
 
         blockWidth =
-            area.width;
+            window.innerWidth -
+            48;
 
 
         videoBlock.style.width =
@@ -3254,11 +3302,37 @@ function fitMainVideo() {
 
 
         mediaHolder.style.width =
-            "100%";
+            `${area.width}px`;
 
 
         mediaHolder.style.height =
-            "";
+            `${mediaHeight}px`;
+
+
+        mediaHolder.style.left =
+            `${area.left - 24}px`;
+
+
+        mediaHolder.style.right =
+            "auto";
+
+
+        /*
+            Anchor the holder so the video's lower boundary
+            sits directly above the metadata/view-all row.
+        */
+
+        mediaHolder.style.top =
+            `${Math.max(
+                12,
+                metaTop -
+                mediaHeight -
+                10
+            )}px`;
+
+
+        mediaHolder.style.bottom =
+            "auto";
 
 
         video.style.width =
@@ -4915,22 +4989,26 @@ function getIndexGeometry() {
 
             mediaHeight:
                 clamp(
-                    window.innerHeight * 0.44,
-                    140,
-                    176
+                    window.innerHeight * 0.47,
+                    158,
+                    190
                 ),
 
+            /*
+                Horizontal works remain visibly shorter than
+                portrait works, matching portrait-mobile index.
+            */
             maxLandscapeWidth:
                 Math.min(
-                    window.innerWidth * 0.22,
-                    190
+                    window.innerWidth * 0.215,
+                    196
                 ),
 
             gap:
                 clamp(
-                    window.innerWidth * 0.075,
-                    56,
-                    78
+                    window.innerWidth * 0.065,
+                    50,
+                    68
                 ),
 
             leftPadding:
@@ -5132,9 +5210,9 @@ function syncIndexCardSize(
             ? Math.max(
                 width,
                 clamp(
-                    window.innerWidth * 0.165,
-                    156,
-                    190
+                    window.innerWidth * 0.19,
+                    196,
+                    224
                 )
             )
             : width;
@@ -5192,20 +5270,50 @@ function syncIndexCardSize(
         `${height}px`;
 
 
-    preview.style.top =
-        "50%";
-
-
-    preview.style.left =
+    if (
         isPhoneLandscape()
-            ? "50%"
-            : "0";
+    ) {
+
+        /*
+            Flex centering removes the small optical Y drift
+            that occurred with absolute-positioned previews.
+        */
+
+        preview.style.position =
+            "static";
 
 
-    preview.style.transform =
-        isPhoneLandscape()
-            ? "translate(-50%, -50%)"
-            : "translateY(-50%)";
+        preview.style.top =
+            "auto";
+
+
+        preview.style.left =
+            "auto";
+
+
+        preview.style.transform =
+            "none";
+
+    }
+
+    else {
+
+        preview.style.position =
+            "absolute";
+
+
+        preview.style.top =
+            "50%";
+
+
+        preview.style.left =
+            "0";
+
+
+        preview.style.transform =
+            "translateY(-50%)";
+
+    }
 
 }
 
@@ -5465,8 +5573,13 @@ function buildIndex() {
                     createPreviewVideo(
                         project.videos[0],
                         {
+                            /*
+                                Desktop can pre-resolve dimensions.
+                                Mobile defers network/decode until the
+                                card is actually near the viewport.
+                            */
                             eagerMetadata:
-                                true
+                                !isPhoneLayout()
                         }
                     );
 
@@ -5995,9 +6108,41 @@ async function enterIndex() {
     requestAnimationFrame(
         () => {
 
-            activatePreviewsIn(
-                indexGrid
-            );
+            if (
+                !isPhoneLayout()
+            ) {
+
+                activatePreviewsIn(
+                    indexGrid
+                );
+
+            }
+
+            else {
+
+                /*
+                    Loading every index movie at once is the main
+                    reason mobile felt dramatically slower than
+                    desktop. Only prime the first visible cluster;
+                    IntersectionObserver activates the rest lazily.
+                */
+
+                [
+                    ...indexGrid.querySelectorAll(
+                        "video[data-src]"
+                    )
+                ]
+                    .slice(
+                        0,
+                        isPhoneLandscape()
+                            ? 5
+                            : 3
+                    )
+                    .forEach(
+                        activatePreview
+                    );
+
+            }
 
         }
     );
@@ -6771,6 +6916,21 @@ video.addEventListener(
    ===================================================== */
 
 async function warmIndexPreviews() {
+
+    /*
+        Do not prewarm the entire film index on phones.
+        Mobile Safari otherwise starts many MP4 metadata /
+        decode jobs in parallel before the user even opens INDEX.
+    */
+
+    if (
+        isPhoneLayout()
+    ) {
+
+        return;
+
+    }
+
 
     const previews =
         [
