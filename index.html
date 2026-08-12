@@ -961,7 +961,7 @@ body.index-mode #video-stage {
         right: 0;
 
         top: 18px;
-        bottom: 88px;
+        bottom: 118px;
 
         width: 100%;
 
@@ -978,7 +978,7 @@ body.index-mode #video-stage {
         left: 0;
         right: 0;
 
-        bottom: 58px;
+        bottom: 72px;
 
         width: 100%;
 
@@ -1014,7 +1014,7 @@ body.index-mode #video-stage {
         left: 0;
         right: 0;
 
-        bottom: 32px;
+        bottom: 42px;
 
         width: 100%;
 
@@ -4906,24 +4906,31 @@ function getIndexGeometry() {
 
         return {
 
+            /*
+                Mirror the portrait-index relationship:
+                portrait videos can use the full common
+                media stage, while landscape videos are
+                width-limited and therefore visibly shorter.
+            */
+
             mediaHeight:
                 clamp(
-                    window.innerHeight * 0.30,
-                    96,
-                    126
+                    window.innerHeight * 0.44,
+                    140,
+                    176
                 ),
 
             maxLandscapeWidth:
                 Math.min(
-                    window.innerWidth * 0.24,
-                    210
+                    window.innerWidth * 0.22,
+                    190
                 ),
 
             gap:
                 clamp(
-                    window.innerWidth * 0.105,
-                    72,
-                    100
+                    window.innerWidth * 0.075,
+                    56,
+                    78
                 ),
 
             leftPadding:
@@ -5112,24 +5119,45 @@ function syncIndexCardSize(
         No browser ambiguity.
     */
 
+    /*
+        Landscape-mobile needs a card width that is not
+        dictated by an extremely narrow portrait video.
+        The visual stays centered inside that card, so the
+        caption remains readable without changing portrait
+        mobile or desktop behavior.
+    */
+
+    const cardWidth =
+        isPhoneLandscape()
+            ? Math.max(
+                width,
+                clamp(
+                    window.innerWidth * 0.165,
+                    156,
+                    190
+                )
+            )
+            : width;
+
+
     button.style.width =
-        `${width}px`;
+        `${cardWidth}px`;
 
 
     button.style.flex =
-        `0 0 ${width}px`;
+        `0 0 ${cardWidth}px`;
 
 
     button.style.minWidth =
-        `${width}px`;
+        `${cardWidth}px`;
 
 
     button.style.maxWidth =
-        `${width}px`;
+        `${cardWidth}px`;
 
 
     wrap.style.width =
-        `${width}px`;
+        `${cardWidth}px`;
 
 
     wrap.style.height =
@@ -5169,11 +5197,15 @@ function syncIndexCardSize(
 
 
     preview.style.left =
-        "0";
+        isPhoneLandscape()
+            ? "50%"
+            : "0";
 
 
     preview.style.transform =
-        "translateY(-50%)";
+        isPhoneLandscape()
+            ? "translate(-50%, -50%)"
+            : "translateY(-50%)";
 
 }
 
