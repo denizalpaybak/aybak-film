@@ -1,22 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
->
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Denizalp Aybak — Film</title>
 
 <style>
-
-/* =====================================================
-   RESET
-   ===================================================== */
-
 * {
     box-sizing: border-box;
 }
@@ -24,21 +13,12 @@
 html,
 body {
     margin: 0;
-    padding: 0;
-
     width: 100%;
     height: 100%;
-
     overflow: hidden;
-
     background: #fff;
     color: #000;
-
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
+    font-family: Arial, Helvetica, sans-serif;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
 }
@@ -47,13 +27,7 @@ button {
     font: inherit;
 }
 
-
-/* =====================================================
-   VARIABLES
-   ===================================================== */
-
 :root {
-
     --font-size: 15px;
     --line-height: 1.15;
 
@@ -63,22 +37,13 @@ button {
     --index-bottom: 24px;
 
     --meta-gap: 6px;
-
-    --visual-height: 72vh;
-    --video-max-width: 76vw;
-
     --meta-top-gap: 10px;
 
     --index-content-top: 130px;
 
     --index-video-height: 365px;
-
+    --index-gap: 54px;
 }
-
-
-/* =====================================================
-   BODY
-   ===================================================== */
 
 body {
     cursor: default;
@@ -91,10 +56,8 @@ body {
 
 .info {
     position: fixed;
-
     top: var(--top);
     left: var(--side);
-
     z-index: 500;
 
     font-size: var(--font-size);
@@ -108,7 +71,6 @@ body {
 
 .logo {
     position: relative;
-
     display: block;
 
     width: 190px;
@@ -124,7 +86,6 @@ body {
 
 .logo-name {
     position: absolute;
-
     top: 0;
     left: 0;
 
@@ -133,7 +94,6 @@ body {
 
 .logo-aybak {
     position: absolute;
-
     top: 17px;
     left: 0;
 
@@ -195,13 +155,21 @@ body {
 
 #video-stage {
     position: fixed;
-
     inset: 0;
 
     z-index: 10;
 
     pointer-events: none;
 }
+
+
+/*
+    The block width is set dynamically from the actual
+    video's aspect ratio.
+
+    This means the metadata and controls below always
+    align with the real left and right edges of the film.
+*/
 
 #video-block {
     position: absolute;
@@ -216,22 +184,13 @@ body {
 
     align-items: stretch;
 
-    width:
-        min(
-            var(--video-max-width),
-            calc(
-                var(--visual-height) *
-                16 / 9
-            )
-        );
+    pointer-events: none;
 
     max-width:
         calc(
             100vw -
             var(--side) * 2
         );
-
-    pointer-events: none;
 }
 
 
@@ -244,11 +203,6 @@ body {
 
     width: 100%;
     height: auto;
-
-    max-height:
-        var(--visual-height);
-
-    aspect-ratio: 16 / 9;
 
     object-fit: contain;
 
@@ -642,7 +596,8 @@ body.index-mode #video-stage {
 
     align-items: center;
 
-    gap: 54px;
+    gap:
+        var(--index-gap);
 
     width: max-content;
 
@@ -674,6 +629,8 @@ body.index-mode #video-stage {
 
     width: auto;
 
+    min-width: 1px;
+
     margin: 0;
     padding: 0;
 
@@ -702,7 +659,9 @@ body.index-mode #video-stage {
     display: block;
 
     width: auto;
-    height: var(--index-video-height);
+
+    height:
+        var(--index-video-height);
 
     pointer-events: none;
 }
@@ -711,7 +670,9 @@ body.index-mode #video-stage {
     display: block;
 
     width: auto;
-    height: var(--index-video-height);
+
+    height:
+        var(--index-video-height);
 
     max-width: none;
     max-height: none;
@@ -774,30 +735,21 @@ body.index-mode #video-stage {
     and (max-width: 1366px) {
 
     :root {
-
-        --visual-height: 68vh;
-        --video-max-width: 72vw;
-
         --index-video-height: 325px;
-
-    }
-
-    #index-grid {
-        gap: 46px;
+        --index-gap: 46px;
     }
 
 }
 
 
 /* =====================================================
-   PHONE BASE
+   PHONE
    ===================================================== */
 
 @media
     (max-width: 600px) {
 
     :root {
-
         --font-size: 13px;
 
         --side: 24px;
@@ -807,6 +759,7 @@ body.index-mode #video-stage {
 
         --meta-gap: 5px;
 
+        --index-gap: 26px;
     }
 
     .logo {
@@ -830,27 +783,7 @@ body.index-mode #video-stage {
     and (orientation: portrait) {
 
     :root {
-
-        --index-video-height: 56vw;
-
-    }
-
-    #video-block {
-        top: 50%;
-
-        width:
-            calc(
-                100vw -
-                var(--side) * 2
-            );
-
-        max-width: none;
-    }
-
-    #film-video {
-        width: 100%;
-
-        max-height: 52vh;
+        --index-video-height: 52vw;
     }
 
     #controls {
@@ -871,8 +804,6 @@ body.index-mode #video-stage {
     }
 
     #index-grid {
-        gap: 30px;
-
         transform:
             translateY(-4px);
     }
@@ -890,7 +821,6 @@ body.index-mode #video-stage {
     and (max-width: 1000px) {
 
     :root {
-
         --font-size: 13px;
 
         --side: 24px;
@@ -898,8 +828,9 @@ body.index-mode #video-stage {
 
         --index-bottom: 14px;
 
-        --index-video-height: 220px;
+        --index-video-height: 52vh;
 
+        --index-gap: 22px;
     }
 
     .logo {
@@ -909,22 +840,6 @@ body.index-mode #video-stage {
 
     .logo-aybak {
         top: 15px;
-    }
-
-    #video-block {
-        top: 50%;
-
-        width:
-            min(
-                58vw,
-                720px
-            );
-
-        max-height: 80vh;
-    }
-
-    #film-video {
-        max-height: 60vh;
     }
 
     #project-meta,
@@ -941,8 +856,6 @@ body.index-mode #video-stage {
     }
 
     #index-grid {
-        gap: 26px;
-
         transform: none;
     }
 
@@ -964,9 +877,7 @@ body.index-mode #video-stage {
 }
 
 </style>
-
 </head>
-
 
 <body>
 
@@ -1101,7 +1012,9 @@ body.index-mode #video-stage {
                 id="sound-button"
                 type="button"
                 aria-label="sound on"
-            ><span id="sound-label">sound&nbsp;</span><span id="sound-state">on</span></button>
+            >
+                <span>sound&nbsp;</span><span id="sound-state">on</span>
+            </button>
 
             <button
                 id="next-button"
@@ -1122,9 +1035,7 @@ body.index-mode #video-stage {
      =================================================== -->
 
 <div id="project-all-view">
-
     <div id="project-all-grid"></div>
-
 </div>
 
 
@@ -1146,9 +1057,7 @@ body.index-mode #video-stage {
         id="index-scroller"
         tabindex="0"
     >
-
         <div id="index-grid"></div>
-
     </div>
 
 </div>
@@ -1165,6 +1074,12 @@ const R2_BASE =
 
 const FILMS_JSON =
     "./films.json";
+
+const LANDING_URL =
+    "https://denizalpaybak.com/";
+
+const PHOTOGRAPHY_URL =
+    "https://photography.denizalpaybak.com/";
 
 
 /* =====================================================
@@ -1183,14 +1098,20 @@ const CASE_DURATION =
 const INDEX_TRANSITION_DURATION =
     400;
 
-const WORD_TRANSITION_DURATION =
-    400;
-
 const LOGO_STEP_DURATION =
     80;
 
-const LANDING_URL =
-    "https://denizalpaybak.com/";
+
+/*
+    Short pause after the mobile navigation animation.
+
+    This allows the user to actually register the final
+    uppercase state before navigation happens.
+*/
+
+const MOBILE_NAV_HOLD =
+    520;
+
 
 const PREVIEW_DURATION =
     5;
@@ -1219,6 +1140,31 @@ const info =
         "info"
     );
 
+const logo =
+    document.getElementById(
+        "logo"
+    );
+
+const logoName =
+    document.getElementById(
+        "logo-name"
+    );
+
+const logoLetters =
+    [
+        "letter-a",
+        "letter-y",
+        "letter-b",
+        "letter-a2",
+        "letter-k"
+    ].map(
+        id =>
+            document.getElementById(
+                id
+            )
+    );
+
+
 const sectionSwitch =
     document.getElementById(
         "section-switch"
@@ -1229,10 +1175,6 @@ const sectionSwitchText =
         "section-switch-text"
     );
 
-const videoStage =
-    document.getElementById(
-        "video-stage"
-    );
 
 const videoBlock =
     document.getElementById(
@@ -1243,6 +1185,7 @@ const video =
     document.getElementById(
         "film-video"
     );
+
 
 const projectMeta =
     document.getElementById(
@@ -1264,6 +1207,7 @@ const projectCounter =
         "project-counter"
     );
 
+
 const previousButton =
     document.getElementById(
         "previous-button"
@@ -1284,10 +1228,6 @@ const soundState =
         "sound-state"
     );
 
-const controls =
-    document.getElementById(
-        "controls"
-    );
 
 const viewAllButton =
     document.getElementById(
@@ -1303,6 +1243,7 @@ const projectAllGrid =
     document.getElementById(
         "project-all-grid"
     );
+
 
 const indexButton =
     document.getElementById(
@@ -1376,12 +1317,11 @@ let autoplayBeforeProjectAll =
 
 
 /*
-    Remembers whether the main film was actually playing
-    at the exact moment the browser tab became hidden.
+    Used for the browser-tab pause bug.
 
-    If the user had manually paused the film before
-    changing tabs, this stays false and the film will
-    remain paused when they return.
+    If the film was already manually paused before
+    leaving the tab, returning to the tab does NOT
+    restart it.
 */
 
 let resumeAfterVisibility =
@@ -1406,8 +1346,82 @@ let touchMoved =
 
 
 /* =====================================================
-   GENERAL HELPERS
+   LOGO STATE
    ===================================================== */
+
+let logoState =
+    0;
+
+let logoTarget =
+    0;
+
+let logoTimer =
+    null;
+
+
+const logoLower =
+    [
+        "a",
+        "y",
+        "b",
+        "a",
+        "k"
+    ];
+
+
+const logoUpper =
+    [
+        "A",
+        "Y",
+        "B",
+        "A",
+        "K"
+    ];
+
+
+/* =====================================================
+   INDEX WORD STATE
+   ===================================================== */
+
+let indexWordState =
+    0;
+
+let indexWordFrame =
+    null;
+
+const indexWord =
+    "index";
+
+
+/* =====================================================
+   HELPERS
+   ===================================================== */
+
+function wait(
+    milliseconds
+) {
+
+    return new Promise(
+        resolve =>
+            setTimeout(
+                resolve,
+                milliseconds
+            )
+    );
+
+}
+
+
+function hasHover() {
+
+    return window
+        .matchMedia(
+            "(hover: hover) and (pointer: fine)"
+        )
+        .matches;
+
+}
+
 
 function isPhonePortrait() {
 
@@ -1448,9 +1462,12 @@ function videoUrl(
 
     return (
         R2_BASE +
-        encodeURIComponent(
-            filename
-        )
+        filename
+            .split("/")
+            .map(
+                encodeURIComponent
+            )
+            .join("/")
     );
 
 }
@@ -1471,18 +1488,11 @@ function currentFilename() {
         currentProject();
 
 
-    if (
-        !project
-    ) {
-
-        return null;
-
-    }
-
-
-    return project.videos[
-        currentVideoIndex
-    ];
+    return project
+        ? project.videos[
+            currentVideoIndex
+        ]
+        : null;
 
 }
 
@@ -1504,7 +1514,7 @@ function normalizeProjectIndex(
 
 
 /* =====================================================
-   COUNTERS
+   COUNTER
    ===================================================== */
 
 function getCounterText(
@@ -1544,224 +1554,6 @@ function getAllCounterText(
             "0"
         ) +
         ")"
-    );
-
-}
-
-
-/* =====================================================
-   SIMPLE SEQUENTIAL MORPH
-   ===================================================== */
-
-function morphSequential(
-    element,
-    nextText,
-    duration =
-        TEXT_MORPH_DURATION
-) {
-
-    const oldText =
-        element.dataset.rawText !==
-        undefined
-            ? element.dataset.rawText
-            : element.textContent;
-
-
-    if (
-        oldText ===
-        nextText
-    ) {
-
-        element.textContent =
-            nextText;
-
-        element.dataset.rawText =
-            nextText;
-
-        return Promise.resolve();
-
-    }
-
-
-    const length =
-        Math.max(
-            oldText.length,
-            nextText.length
-        );
-
-
-    const from =
-        oldText
-            .padEnd(
-                length,
-                " "
-            )
-            .split(
-                ""
-            );
-
-
-    const to =
-        nextText
-            .padEnd(
-                length,
-                " "
-            )
-            .split(
-                ""
-            );
-
-
-    const changedPositions =
-        [];
-
-
-    for (
-        let i = 0;
-        i < length;
-        i++
-    ) {
-
-        if (
-            from[i] !==
-            to[i]
-        ) {
-
-            changedPositions.push(
-                i
-            );
-
-        }
-
-    }
-
-
-    const originalWidth =
-        element
-            .getBoundingClientRect()
-            .width;
-
-
-    if (
-        originalWidth > 0
-    ) {
-
-        element.style.minWidth =
-            `${originalWidth}px`;
-
-    }
-
-
-    const start =
-        performance.now();
-
-
-    return new Promise(
-        resolve => {
-
-            function frame(
-                now
-            ) {
-
-                const progress =
-                    Math.min(
-                        1,
-                        (
-                            now -
-                            start
-                        ) /
-                        duration
-                    );
-
-
-                const completed =
-                    Math.floor(
-                        progress *
-                        (
-                            changedPositions.length +
-                            1
-                        )
-                    );
-
-
-                const current =
-                    from.slice();
-
-
-                for (
-                    let i = 0;
-                    i < completed;
-                    i++
-                ) {
-
-                    const position =
-                        changedPositions[
-                            i
-                        ];
-
-
-                    if (
-                        position ===
-                        undefined
-                    ) {
-
-                        continue;
-
-                    }
-
-
-                    current[
-                        position
-                    ] =
-                        to[
-                            position
-                        ];
-
-                }
-
-
-                element.textContent =
-                    current
-                        .join(
-                            ""
-                        )
-                        .trimEnd();
-
-
-                if (
-                    progress <
-                    1
-                ) {
-
-                    requestAnimationFrame(
-                        frame
-                    );
-
-                }
-
-                else {
-
-                    element.textContent =
-                        nextText;
-
-                    element.dataset.rawText =
-                        nextText;
-
-                    element.style.minWidth =
-                        "";
-
-                    resolve();
-
-                }
-
-            }
-
-
-            requestAnimationFrame(
-                frame
-            );
-
-        }
     );
 
 }
@@ -1829,26 +1621,76 @@ function renderPrefixCase(
 
 
     return baseText
-        .split(
-            ""
-        )
+        .split("")
         .map(
             (
                 character,
                 index
-            ) => {
+            ) =>
 
-                return upper.has(
+                upper.has(
                     index
                 )
                     ? character.toUpperCase()
-                    : character.toLowerCase();
-
-            }
+                    : character.toLowerCase()
         )
-        .join(
-            ""
+        .join("");
+
+}
+
+
+function currentUpperPrefixCount(
+    element,
+    base
+) {
+
+    const positions =
+        getLetterPositions(
+            base
         );
+
+
+    const text =
+        element.textContent;
+
+
+    let result =
+        0;
+
+
+    for (
+        const position
+        of positions
+    ) {
+
+        const character =
+            text[
+                position
+            ];
+
+
+        if (
+            character &&
+            character ===
+                character.toUpperCase() &&
+            character !==
+                character.toLowerCase()
+        ) {
+
+            result++;
+
+        }
+
+        else {
+
+            break;
+
+        }
+
+    }
+
+
+    return result;
 
 }
 
@@ -1869,59 +1711,17 @@ function animateCase(
         baseText.toLowerCase();
 
 
-    const positions =
+    const total =
         getLetterPositions(
             base
+        ).length;
+
+
+    const startState =
+        currentUpperPrefixCount(
+            element,
+            base
         );
-
-
-    const total =
-        positions.length;
-
-
-    const currentText =
-        element.textContent;
-
-
-    let currentState =
-        0;
-
-
-    for (
-        let i = 0;
-        i < positions.length;
-        i++
-    ) {
-
-        const position =
-            positions[i];
-
-
-        const character =
-            currentText[
-                position
-            ];
-
-
-        if (
-            character &&
-            character ===
-            character.toUpperCase() &&
-            character !==
-            character.toLowerCase()
-        ) {
-
-            currentState++;
-
-        }
-
-        else {
-
-            break;
-
-        }
-
-    }
 
 
     const target =
@@ -1931,7 +1731,7 @@ function animateCase(
 
 
     if (
-        currentState ===
+        startState ===
         target
     ) {
 
@@ -1941,12 +1741,13 @@ function animateCase(
                 target
             );
 
+
         return Promise.resolve();
 
     }
 
 
-    const start =
+    const started =
         performance.now();
 
 
@@ -1962,7 +1763,7 @@ function animateCase(
                         1,
                         (
                             now -
-                            start
+                            started
                         ) /
                         duration
                     );
@@ -1970,10 +1771,10 @@ function animateCase(
 
                 const state =
                     Math.round(
-                        currentState +
+                        startState +
                         (
                             target -
-                            currentState
+                            startState
                         ) *
                         progress
                     );
@@ -2005,6 +1806,7 @@ function animateCase(
                             target
                         );
 
+
                     resolve();
 
                 }
@@ -2023,7 +1825,201 @@ function animateCase(
 
 
 /* =====================================================
-   GENERIC HOVER CASE
+   SEQUENTIAL TEXT MORPH
+   ===================================================== */
+
+function morphSequential(
+    element,
+    nextText,
+    duration =
+        TEXT_MORPH_DURATION
+) {
+
+    const oldText =
+        element.dataset.rawText !==
+        undefined
+            ? element.dataset.rawText
+            : element.textContent;
+
+
+    if (
+        oldText ===
+        nextText
+    ) {
+
+        element.textContent =
+            nextText;
+
+
+        element.dataset.rawText =
+            nextText;
+
+
+        return Promise.resolve();
+
+    }
+
+
+    const length =
+        Math.max(
+            oldText.length,
+            nextText.length
+        );
+
+
+    const from =
+        oldText
+            .padEnd(
+                length,
+                " "
+            )
+            .split("");
+
+
+    const to =
+        nextText
+            .padEnd(
+                length,
+                " "
+            )
+            .split("");
+
+
+    const changed =
+        [];
+
+
+    for (
+        let i = 0;
+        i < length;
+        i++
+    ) {
+
+        if (
+            from[i] !==
+            to[i]
+        ) {
+
+            changed.push(
+                i
+            );
+
+        }
+
+    }
+
+
+    const started =
+        performance.now();
+
+
+    return new Promise(
+        resolve => {
+
+            function frame(
+                now
+            ) {
+
+                const progress =
+                    Math.min(
+                        1,
+                        (
+                            now -
+                            started
+                        ) /
+                        duration
+                    );
+
+
+                const completed =
+                    Math.floor(
+                        progress *
+                        (
+                            changed.length +
+                            1
+                        )
+                    );
+
+
+                const current =
+                    from.slice();
+
+
+                for (
+                    let i = 0;
+                    i < completed;
+                    i++
+                ) {
+
+                    const position =
+                        changed[
+                            i
+                        ];
+
+
+                    if (
+                        position !==
+                        undefined
+                    ) {
+
+                        current[
+                            position
+                        ] =
+                            to[
+                                position
+                            ];
+
+                    }
+
+                }
+
+
+                element.textContent =
+                    current
+                        .join("")
+                        .trimEnd();
+
+
+                if (
+                    progress <
+                    1
+                ) {
+
+                    requestAnimationFrame(
+                        frame
+                    );
+
+                }
+
+                else {
+
+                    element.textContent =
+                        nextText;
+
+
+                    element.dataset.rawText =
+                        nextText;
+
+
+                    resolve();
+
+                }
+
+            }
+
+
+            requestAnimationFrame(
+                frame
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   GENERIC HOVER
    ===================================================== */
 
 function installHoverCase(
@@ -2036,21 +2032,16 @@ function installHoverCase(
         () => {
 
             if (
-                !window.matchMedia(
-                    "(hover: hover)"
-                ).matches
+                hasHover()
             ) {
 
-                return;
+                animateCase(
+                    element,
+                    getBaseText(),
+                    true
+                );
 
             }
-
-
-            animateCase(
-                element,
-                getBaseText(),
-                true
-            );
 
         }
     );
@@ -2061,21 +2052,16 @@ function installHoverCase(
         () => {
 
             if (
-                !window.matchMedia(
-                    "(hover: hover)"
-                ).matches
+                hasHover()
             ) {
 
-                return;
+                animateCase(
+                    element,
+                    getBaseText(),
+                    false
+                );
 
             }
-
-
-            animateCase(
-                element,
-                getBaseText(),
-                false
-            );
 
         }
     );
@@ -2083,9 +2069,17 @@ function installHoverCase(
 }
 
 
-/* =====================================================
-   SECTION SWITCH
-   ===================================================== */
+installHoverCase(
+    previousButton,
+    () => "previous"
+);
+
+
+installHoverCase(
+    nextButton,
+    () => "next"
+);
+
 
 installHoverCase(
     sectionSwitchText,
@@ -2094,67 +2088,8 @@ installHoverCase(
 
 
 /* =====================================================
-   CONTROL HOVERS
-   ===================================================== */
-
-installHoverCase(
-    previousButton,
-    () => "previous"
-);
-
-installHoverCase(
-    nextButton,
-    () => "next"
-);
-
-
-/* =====================================================
    LOGO
    ===================================================== */
-
-const logo =
-    document.getElementById(
-        "logo"
-    );
-
-const logoName =
-    document.getElementById(
-        "logo-name"
-    );
-
-const logoLetters = [
-    document.getElementById("letter-a"),
-    document.getElementById("letter-y"),
-    document.getElementById("letter-b"),
-    document.getElementById("letter-a2"),
-    document.getElementById("letter-k")
-];
-
-const lowercase = [
-    "a",
-    "y",
-    "b",
-    "a",
-    "k"
-];
-
-const uppercase = [
-    "A",
-    "Y",
-    "B",
-    "A",
-    "K"
-];
-
-let logoState =
-    0;
-
-let logoTarget =
-    0;
-
-let logoTimer =
-    null;
-
 
 function setLogoState(
     state
@@ -2170,19 +2105,24 @@ function setLogoState(
             : "denizalp";
 
 
-    for (
-        let i = 0;
-        i < logoLetters.length;
-        i++
-    ) {
+    logoLetters.forEach(
+        (
+            element,
+            index
+        ) => {
 
-        logoLetters[i]
-            .textContent =
-                i < state
-                    ? uppercase[i]
-                    : lowercase[i];
+            element.textContent =
+                index <
+                state
+                    ? logoUpper[
+                        index
+                    ]
+                    : logoLower[
+                        index
+                    ];
 
-    }
+        }
+    );
 
 }
 
@@ -2220,7 +2160,9 @@ function animateLogoTo(
                     logoTimer =
                         null;
 
+
                     resolve();
+
 
                     return;
 
@@ -2257,9 +2199,7 @@ logo.addEventListener(
     () => {
 
         if (
-            window.matchMedia(
-                "(hover: hover)"
-            ).matches
+            hasHover()
         ) {
 
             animateLogoTo(
@@ -2277,9 +2217,7 @@ logo.addEventListener(
     () => {
 
         if (
-            window.matchMedia(
-                "(hover: hover)"
-            ).matches
+            hasHover()
         ) {
 
             animateLogoTo(
@@ -2292,6 +2230,17 @@ logo.addEventListener(
 );
 
 
+/*
+    MOBILE:
+    Denizalp aybak
+    ->
+    denizalp AYBAK
+    ->
+    short hold
+    ->
+    landing
+*/
+
 logo.addEventListener(
     "click",
     async event => {
@@ -2300,13 +2249,16 @@ logo.addEventListener(
 
 
         if (
-            window.matchMedia(
-                "(hover: none)"
-            ).matches
+            !hasHover()
         ) {
 
             await animateLogoTo(
                 5
+            );
+
+
+            await wait(
+                MOBILE_NAV_HOLD
             );
 
         }
@@ -2325,16 +2277,68 @@ logo.addEventListener(
 
         if (
             event.code ===
-                "Enter" ||
+            "Enter" ||
             event.code ===
-                "Space"
+            "Space"
         ) {
 
             event.preventDefault();
 
+
             logo.click();
 
         }
+
+    }
+);
+
+
+/* =====================================================
+   MOBILE PHOTOGRAPHY TAP
+   ===================================================== */
+
+/*
+    Same logic as the mobile logo:
+
+    photography
+    ->
+    PHOTOGRAPHY
+    ->
+    short hold
+    ->
+    photography site
+*/
+
+sectionSwitch.addEventListener(
+    "click",
+    async event => {
+
+        if (
+            hasHover()
+        ) {
+
+            return;
+
+        }
+
+
+        event.preventDefault();
+
+
+        await animateCase(
+            sectionSwitchText,
+            "photography",
+            true
+        );
+
+
+        await wait(
+            MOBILE_NAV_HOLD
+        );
+
+
+        window.location.href =
+            PHOTOGRAPHY_URL;
 
     }
 );
@@ -2350,33 +2354,30 @@ setLogoState(
    ===================================================== */
 
 async function updateMetadata(
-    targetProjectIndex,
-    targetVideoIndex
+    projectIndex,
+    videoIndex
 ) {
 
     const project =
         projects[
-            targetProjectIndex
+            projectIndex
         ];
-
-
-    const projectChanged =
-        renderedProjectIndex !==
-        targetProjectIndex;
 
 
     projectCounter.textContent =
         getCounterText(
-            targetVideoIndex,
+            videoIndex,
             project.videos.length
         );
+
 
     projectCounter.dataset.rawText =
         projectCounter.textContent;
 
 
     if (
-        projectChanged
+        renderedProjectIndex !==
+        projectIndex
     ) {
 
         await Promise.all(
@@ -2385,8 +2386,7 @@ async function updateMetadata(
                 morphSequential(
                     projectTitle,
                     project.title
-                        .toLowerCase(),
-                    TEXT_MORPH_DURATION
+                        .toLowerCase()
                 ),
 
                 morphSequential(
@@ -2394,8 +2394,7 @@ async function updateMetadata(
                     (
                         project.date ||
                         ""
-                    ).toLowerCase(),
-                    TEXT_MORPH_DURATION
+                    ).toLowerCase()
                 )
 
             ]
@@ -2405,7 +2404,7 @@ async function updateMetadata(
 
 
     renderedProjectIndex =
-        targetProjectIndex;
+        projectIndex;
 
 }
 
@@ -2423,7 +2422,7 @@ function soundStateBaseText() {
 }
 
 
-function updateSoundAriaLabel() {
+function updateSoundAria() {
 
     soundButton.setAttribute(
         "aria-label",
@@ -2436,24 +2435,24 @@ function updateSoundAriaLabel() {
 
 
 async function updateSoundButton(
-    animate = false
+    animate =
+        false
 ) {
 
     const base =
         soundStateBaseText();
 
+
     const target =
         (
-            window.matchMedia(
-                "(hover: hover)"
-            ).matches &&
+            hasHover() &&
             soundButtonHovered
         )
             ? base.toUpperCase()
             : base.toLowerCase();
 
 
-    updateSoundAriaLabel();
+    updateSoundAria();
 
 
     if (
@@ -2472,6 +2471,7 @@ async function updateSoundButton(
 
         soundState.textContent =
             target;
+
 
         soundState.dataset.rawText =
             target;
@@ -2494,7 +2494,9 @@ async function toggleSound() {
     soundEnabled =
         !soundEnabled;
 
+
     applySoundState();
+
 
     await updateSoundButton(
         true
@@ -2508,9 +2510,7 @@ soundButton.addEventListener(
     () => {
 
         if (
-            !window.matchMedia(
-                "(hover: hover)"
-            ).matches
+            !hasHover()
         ) {
 
             return;
@@ -2537,9 +2537,7 @@ soundButton.addEventListener(
     () => {
 
         if (
-            !window.matchMedia(
-                "(hover: hover)"
-            ).matches
+            !hasHover()
         ) {
 
             return;
@@ -2589,11 +2587,209 @@ function togglePlayback() {
 
 
 /* =====================================================
-   LOAD VIDEO
+   MAIN VIDEO FIT
+   ===================================================== */
+
+/*
+    The main slide no longer lives inside a forced
+    16:9 element.
+
+    The video's intrinsic ratio controls the width.
+
+    Desktop:
+    - vertical position stays fixed
+    - width contracts/expands with media
+    - metadata and controls inherit exactly that width
+
+    Mobile portrait:
+    - portrait videos are allowed to use much more height
+    - no more tiny vertical image inside a 16:9 box
+*/
+
+function fitMainVideo() {
+
+    if (
+        !video.videoWidth ||
+        !video.videoHeight
+    ) {
+
+        return;
+
+    }
+
+
+    const ratio =
+        video.videoWidth /
+        video.videoHeight;
+
+
+    const viewportWidth =
+        window.innerWidth;
+
+
+    const viewportHeight =
+        window.innerHeight;
+
+
+    const side =
+        parseFloat(
+            getComputedStyle(
+                document.documentElement
+            ).getPropertyValue(
+                "--side"
+            )
+        ) || 48;
+
+
+    let maxWidth;
+    let maxHeight;
+
+
+    if (
+        isPhonePortrait()
+    ) {
+
+        maxWidth =
+            viewportWidth -
+            side * 2;
+
+
+        maxHeight =
+            viewportHeight *
+            0.60;
+
+    }
+
+
+    else if (
+        isPhoneLandscape()
+    ) {
+
+        maxWidth =
+            viewportWidth *
+            0.62;
+
+
+        maxHeight =
+            viewportHeight *
+            0.66;
+
+    }
+
+
+    else {
+
+        maxWidth =
+            Math.min(
+                viewportWidth *
+                0.76,
+
+                viewportWidth -
+                side * 2
+            );
+
+
+        maxHeight =
+            viewportHeight *
+            0.72;
+
+    }
+
+
+    let width =
+        maxWidth;
+
+
+    let height =
+        width /
+        ratio;
+
+
+    if (
+        height >
+        maxHeight
+    ) {
+
+        height =
+            maxHeight;
+
+
+        width =
+            height *
+            ratio;
+
+    }
+
+
+    /*
+        Give portrait film substantially more vertical
+        presence on a portrait phone.
+    */
+
+    if (
+        isPhonePortrait() &&
+        ratio <
+        1
+    ) {
+
+        height =
+            Math.min(
+                viewportHeight *
+                0.64,
+
+                maxHeight +
+                viewportHeight *
+                0.04
+            );
+
+
+        width =
+            height *
+            ratio;
+
+
+        if (
+            width >
+            maxWidth
+        ) {
+
+            width =
+                maxWidth;
+
+
+            height =
+                width /
+                ratio;
+
+        }
+
+    }
+
+
+    videoBlock.style.width =
+        `${Math.max(
+            1,
+            width
+        )}px`;
+
+
+    video.style.width =
+        "100%";
+
+
+    video.style.height =
+        "auto";
+
+}
+
+
+/* =====================================================
+   LOAD MAIN VIDEO
    ===================================================== */
 
 async function loadCurrentVideo(
-    autoplay = true
+    autoplay =
+        true
 ) {
 
     const filename =
@@ -2630,11 +2826,44 @@ async function loadCurrentVideo(
     );
 
 
+    const onMetadata =
+        () => {
+
+            fitMainVideo();
+
+
+            video.removeEventListener(
+                "loadedmetadata",
+                onMetadata
+            );
+
+        };
+
+
+    if (
+        video.readyState >=
+        1
+    ) {
+
+        fitMainVideo();
+
+    }
+
+    else {
+
+        video.addEventListener(
+            "loadedmetadata",
+            onMetadata
+        );
+
+    }
+
+
     if (
         autoplay
     ) {
 
-        const tryPlay =
+        const play =
             () => {
 
                 video
@@ -2651,7 +2880,7 @@ async function loadCurrentVideo(
             2
         ) {
 
-            tryPlay();
+            play();
 
         }
 
@@ -2659,7 +2888,7 @@ async function loadCurrentVideo(
 
             video.addEventListener(
                 "canplay",
-                tryPlay,
+                play,
                 {
                     once: true
                 }
@@ -2673,7 +2902,7 @@ async function loadCurrentVideo(
 
 
 /* =====================================================
-   NEXT
+   NEXT / PREVIOUS
    ===================================================== */
 
 function nextFilm() {
@@ -2681,8 +2910,7 @@ function nextFilm() {
     if (
         projectAllMode ||
         indexMode ||
-        projects.length ===
-        0
+        !projects.length
     ) {
 
         return;
@@ -2712,6 +2940,7 @@ function nextFilm() {
                 1
             );
 
+
         currentVideoIndex =
             0;
 
@@ -2725,17 +2954,12 @@ function nextFilm() {
 }
 
 
-/* =====================================================
-   PREVIOUS
-   ===================================================== */
-
 function previousFilm() {
 
     if (
         projectAllMode ||
         indexMode ||
-        projects.length ===
-        0
+        !projects.length
     ) {
 
         return;
@@ -2789,15 +3013,12 @@ video.addEventListener(
 
 
         if (
-            touchMoved
+            !touchMoved
         ) {
 
-            return;
+            togglePlayback();
 
         }
-
-
-        togglePlayback();
 
     }
 );
@@ -2809,17 +3030,15 @@ video.addEventListener(
 );
 
 
-/* =====================================================
-   CONTROL EVENTS
-   ===================================================== */
-
 previousButton.addEventListener(
     "click",
     event => {
 
         event.stopPropagation();
 
+
         previousFilm();
+
 
         previousButton.blur();
 
@@ -2833,7 +3052,9 @@ nextButton.addEventListener(
 
         event.stopPropagation();
 
+
         nextFilm();
+
 
         nextButton.blur();
 
@@ -2847,6 +3068,7 @@ soundButton.addEventListener(
 
         event.stopPropagation();
 
+
         toggleSound();
 
     }
@@ -2858,7 +3080,11 @@ soundButton.addEventListener(
    ===================================================== */
 
 function createPreviewVideo(
-    filename
+    filename,
+    {
+        eagerMetadata =
+            false
+    } = {}
 ) {
 
     const preview =
@@ -2876,14 +3102,19 @@ function createPreviewVideo(
     preview.muted =
         true;
 
+
     preview.defaultMuted =
         true;
+
 
     preview.playsInline =
         true;
 
+
     preview.preload =
-        "metadata";
+        eagerMetadata
+            ? "metadata"
+            : "none";
 
 
     preview.disablePictureInPicture =
@@ -2921,79 +3152,36 @@ function createPreviewVideo(
     );
 
 
+    /*
+        Index metadata begins loading before the user
+        opens Index.
+
+        This is important on mobile because the card
+        width can be known before the rail is shown,
+        avoiding collapsed / overlapping cards.
+    */
+
+    if (
+        eagerMetadata
+    ) {
+
+        preview.src =
+            preview.dataset.src;
+
+
+        preview.load();
+
+    }
+
+
     return preview;
 
 }
 
 
 /* =====================================================
-   PREVIEW OBSERVER
+   PREVIEW ACTIVATION
    ===================================================== */
-
-const previewObserver =
-    new IntersectionObserver(
-        entries => {
-
-            entries.forEach(
-                entry => {
-
-                    const preview =
-                        entry.target;
-
-
-                    if (
-                        entry.isIntersecting
-                    ) {
-
-                        if (
-                            !preview.getAttribute(
-                                "src"
-                            )
-                        ) {
-
-                            preview.src =
-                                preview.dataset.src;
-
-                            preview.load();
-
-                        }
-
-
-                        preview
-                            .play()
-                            .catch(
-                                () => {}
-                            );
-
-                    }
-
-                    else {
-
-                        preview.pause();
-
-                    }
-
-                }
-            );
-
-        },
-        {
-            rootMargin:
-                "180px"
-        }
-    );
-
-
-function observePreview(
-    preview
-) {
-
-    previewObserver.observe(
-        preview
-    );
-
-}
-
 
 function activatePreview(
     preview
@@ -3008,8 +3196,10 @@ function activatePreview(
         preview.src =
             preview.dataset.src;
 
+
         preview.preload =
             "auto";
+
 
         preview.load();
 
@@ -3040,10 +3230,6 @@ function activatePreviewsIn(
 }
 
 
-/* =====================================================
-   STOP PREVIEWS
-   ===================================================== */
-
 function stopAllPreviews() {
 
     document
@@ -3057,6 +3243,75 @@ function stopAllPreviews() {
 
             }
         );
+
+}
+
+
+/* =====================================================
+   PREVIEW OBSERVER
+   ===================================================== */
+
+const previewObserver =
+    new IntersectionObserver(
+        entries => {
+
+            entries.forEach(
+                entry => {
+
+                    const preview =
+                        entry.target;
+
+
+                    const allowed =
+                        (
+                            indexMode &&
+                            indexView.contains(
+                                preview
+                            )
+                        ) ||
+                        (
+                            projectAllMode &&
+                            projectAllView.contains(
+                                preview
+                            )
+                        );
+
+
+                    if (
+                        entry.isIntersecting &&
+                        allowed
+                    ) {
+
+                        activatePreview(
+                            preview
+                        );
+
+                    }
+
+                    else {
+
+                        preview.pause();
+
+                    }
+
+                }
+            );
+
+        },
+        {
+            rootMargin:
+                "220px"
+        }
+    );
+
+
+function observePreview(
+    preview
+) {
+
+    previewObserver.observe(
+        preview
+    );
 
 }
 
@@ -3084,51 +3339,34 @@ function syncProjectAllBounds() {
         projectMeta.getBoundingClientRect();
 
 
-    const rootStyle =
-        getComputedStyle(
-            document.documentElement
-        );
-
-
     const side =
         parseFloat(
-            rootStyle.getPropertyValue(
+            getComputedStyle(
+                document.documentElement
+            ).getPropertyValue(
                 "--side"
             )
         ) || 48;
 
 
-    let topGap =
-        14;
-
-    let bottomGap =
-        14;
-
-
-    if (
-        isPhonePortrait()
-    ) {
-
-        topGap =
-            10;
-
-        bottomGap =
-            10;
-
-    }
-
-
-    if (
+    const topGap =
         isPhoneLandscape()
-    ) {
+            ? 4
+            : (
+                isPhonePortrait()
+                    ? 10
+                    : 14
+            );
 
-        topGap =
-            4;
 
-        bottomGap =
-            6;
-
-    }
+    const bottomGap =
+        isPhoneLandscape()
+            ? 6
+            : (
+                isPhonePortrait()
+                    ? 10
+                    : 14
+            );
 
 
     const top =
@@ -3168,7 +3406,7 @@ function syncProjectAllBounds() {
 
 
 /* =====================================================
-   VIEW ALL GRID LAYOUT
+   VIEW ALL GRID
    ===================================================== */
 
 function calculateProjectAllLayout(
@@ -3362,9 +3600,20 @@ function buildProjectAllGrid() {
                 "project-all-thumb";
 
 
+            /*
+                View All only contains a few films, so
+                metadata is fetched immediately.
+
+                This reduces the mobile delay considerably.
+            */
+
             const preview =
                 createPreviewVideo(
-                    filename
+                    filename,
+                    {
+                        eagerMetadata:
+                            true
+                    }
                 );
 
 
@@ -3423,9 +3672,7 @@ viewAllButton.addEventListener(
     async () => {
 
         if (
-            !window.matchMedia(
-                "(hover: hover)"
-            ).matches ||
+            !hasHover() ||
             projectViewAnimating
         ) {
 
@@ -3438,15 +3685,11 @@ viewAllButton.addEventListener(
             true;
 
 
-        const base =
-            projectAllMode
-                ? "close"
-                : "view all";
-
-
         await animateCase(
             viewAllButton,
-            base,
+            projectAllMode
+                ? "close"
+                : "view all",
             true
         );
 
@@ -3459,9 +3702,7 @@ viewAllButton.addEventListener(
     async () => {
 
         if (
-            !window.matchMedia(
-                "(hover: hover)"
-            ).matches ||
+            !hasHover() ||
             projectViewAnimating
         ) {
 
@@ -3474,15 +3715,11 @@ viewAllButton.addEventListener(
             false;
 
 
-        const base =
-            projectAllMode
-                ? "close"
-                : "view all";
-
-
         await animateCase(
             viewAllButton,
-            base,
+            projectAllMode
+                ? "close"
+                : "view all",
             false
         );
 
@@ -3525,11 +3762,6 @@ async function enterProjectAll() {
     buildProjectAllGrid();
 
 
-    activatePreviewsIn(
-        projectAllGrid
-    );
-
-
     projectAllMode =
         true;
 
@@ -3544,15 +3776,23 @@ async function enterProjectAll() {
 
             layoutProjectAllGrid();
 
+
+            /*
+                Start all small previews right after the
+                overlay receives its final geometry.
+            */
+
+            activatePreviewsIn(
+                projectAllGrid
+            );
+
         }
     );
 
 
-    const targetButton =
+    const buttonTarget =
         (
-            window.matchMedia(
-                "(hover: hover)"
-            ).matches &&
+            hasHover() &&
             viewButtonHovered
         )
             ? "CLOSE"
@@ -3570,7 +3810,8 @@ async function enterProjectAll() {
 
             animateCase(
                 projectDate,
-                project.date || "",
+                project.date ||
+                "",
                 true
             ),
 
@@ -3584,7 +3825,7 @@ async function enterProjectAll() {
 
             morphSequential(
                 viewAllButton,
-                targetButton,
+                buttonTarget,
                 STATE_MORPH_DURATION
             )
 
@@ -3644,11 +3885,9 @@ async function leaveProjectAll(
     }
 
 
-    const targetButton =
+    const buttonTarget =
         (
-            window.matchMedia(
-                "(hover: hover)"
-            ).matches &&
+            hasHover() &&
             viewButtonHovered
         )
             ? "VIEW ALL"
@@ -3666,7 +3905,8 @@ async function leaveProjectAll(
 
             animateCase(
                 projectDate,
-                project.date || "",
+                project.date ||
+                "",
                 false
             ),
 
@@ -3681,7 +3921,7 @@ async function leaveProjectAll(
 
             morphSequential(
                 viewAllButton,
-                targetButton,
+                buttonTarget,
                 STATE_MORPH_DURATION
             )
 
@@ -3722,10 +3962,6 @@ async function leaveProjectAll(
 }
 
 
-/* =====================================================
-   VIEW ALL CLICK
-   ===================================================== */
-
 viewAllButton.addEventListener(
     "click",
     async event => {
@@ -3748,7 +3984,8 @@ viewAllButton.addEventListener(
 
             await leaveProjectAll(
                 {
-                    resume: true
+                    resume:
+                        true
                 }
             );
 
@@ -3765,7 +4002,7 @@ viewAllButton.addEventListener(
 
 
 /* =====================================================
-   INDEX SORT
+   INDEX ORDER
    ===================================================== */
 
 function getChronologicalProjects() {
@@ -3802,20 +4039,11 @@ function getChronologicalProjects() {
                         : 999;
 
 
-                if (
-                    orderA !==
-                    orderB
-                ) {
-
-                    return (
-                        orderA -
-                        orderB
-                    );
-
-                }
-
-
                 return (
+                    orderA -
+                    orderB
+                ) ||
+                (
                     a.originalIndex -
                     b.originalIndex
                 );
@@ -3827,7 +4055,163 @@ function getChronologicalProjects() {
 
 
 /* =====================================================
-   INDEX CARD CASE CONTROLLER
+   INDEX DIMENSIONS
+   ===================================================== */
+
+/*
+    Mobile:
+    landscape thumbnails are allowed to scale down if
+    their natural width would exceed the available screen.
+
+    This prevents cards from collapsing / overlapping.
+
+    Desktop:
+    portrait clips receive an 18% height boost because
+    equal-height portrait cards read visually much smaller
+    than landscape cards.
+*/
+
+function getIndexMetrics(
+    ratio
+) {
+
+    const root =
+        getComputedStyle(
+            document.documentElement
+        );
+
+
+    let height =
+        parseFloat(
+            root.getPropertyValue(
+                "--index-video-height"
+            )
+        ) || 365;
+
+
+    let maxWidth =
+        Infinity;
+
+
+    if (
+        isPhonePortrait()
+    ) {
+
+        maxWidth =
+            window.innerWidth -
+            48;
+
+    }
+
+
+    else if (
+        isPhoneLandscape()
+    ) {
+
+        maxWidth =
+            window.innerWidth *
+            0.72;
+
+    }
+
+
+    if (
+        maxWidth <
+        Infinity &&
+        height *
+        ratio >
+        maxWidth
+    ) {
+
+        height =
+            maxWidth /
+            ratio;
+
+    }
+
+
+    if (
+        !isPhoneLayout() &&
+        ratio <
+        0.9
+    ) {
+
+        height *=
+            1.18;
+
+    }
+
+
+    return {
+        height,
+
+        width:
+            height *
+            ratio
+    };
+
+}
+
+
+function syncIndexCardSize(
+    preview,
+    button,
+    wrap
+) {
+
+    if (
+        !preview.videoWidth ||
+        !preview.videoHeight
+    ) {
+
+        return;
+
+    }
+
+
+    const ratio =
+        preview.videoWidth /
+        preview.videoHeight;
+
+
+    const metrics =
+        getIndexMetrics(
+            ratio
+        );
+
+
+    button.style.width =
+        `${metrics.width}px`;
+
+
+    button.style.flexBasis =
+        `${metrics.width}px`;
+
+
+    button.style.minWidth =
+        `${metrics.width}px`;
+
+
+    wrap.style.width =
+        `${metrics.width}px`;
+
+
+    wrap.style.height =
+        `${metrics.height}px`;
+
+
+    preview.style.height =
+        `${metrics.height}px`;
+
+
+    preview.style.width =
+        `${metrics.width}px`;
+
+}
+
+
+/* =====================================================
+   INDEX CASE CONTROLLER
    ===================================================== */
 
 function createCaseController(
@@ -3839,177 +4223,24 @@ function createCaseController(
         baseText.toLowerCase();
 
 
-    let frame =
-        null;
-
-
-    function animate(
-        toUpper
-    ) {
-
-        if (
-            frame !==
-            null
-        ) {
-
-            cancelAnimationFrame(
-                frame
-            );
-
-            frame =
-                null;
-
-        }
-
-
-        const positions =
-            getLetterPositions(
-                base
-            );
-
-
-        const total =
-            positions.length;
-
-
-        const currentText =
-            element.textContent;
-
-
-        let startState =
-            0;
-
-
-        for (
-            let i = 0;
-            i < positions.length;
-            i++
-        ) {
-
-            const position =
-                positions[i];
-
-
-            const character =
-                currentText[
-                    position
-                ];
-
-
-            if (
-                character &&
-                character ===
-                character.toUpperCase() &&
-                character !==
-                character.toLowerCase()
-            ) {
-
-                startState++;
-
-            }
-
-            else {
-
-                break;
-
-            }
-
-        }
-
-
-        const target =
-            toUpper
-                ? total
-                : 0;
-
-
-        const start =
-            performance.now();
-
-
-        function step(
-            now
-        ) {
-
-            const progress =
-                Math.min(
-                    1,
-                    (
-                        now -
-                        start
-                    ) /
-                    CASE_DURATION
-                );
-
-
-            const state =
-                Math.round(
-                    startState +
-                    (
-                        target -
-                        startState
-                    ) *
-                    progress
-                );
-
-
-            element.textContent =
-                renderPrefixCase(
-                    base,
-                    state
-                );
-
-
-            if (
-                progress <
-                1
-            ) {
-
-                frame =
-                    requestAnimationFrame(
-                        step
-                    );
-
-            }
-
-            else {
-
-                element.textContent =
-                    renderPrefixCase(
-                        base,
-                        target
-                    );
-
-
-                frame =
-                    null;
-
-            }
-
-        }
-
-
-        frame =
-            requestAnimationFrame(
-                step
-            );
-
-    }
-
-
     return {
 
         upper() {
 
-            animate(
+            animateCase(
+                element,
+                base,
                 true
             );
 
         },
 
+
         lower() {
 
-            animate(
+            animateCase(
+                element,
+                base,
                 false
             );
 
@@ -4032,15 +4263,10 @@ function buildIndex() {
 
     getChronologicalProjects()
         .forEach(
-            item => {
-
-                const project =
-                    item.project;
-
-
-                const originalIndex =
-                    item.originalIndex;
-
+            ({
+                project,
+                originalIndex
+            }) => {
 
                 const button =
                     document.createElement(
@@ -4048,91 +4274,100 @@ function buildIndex() {
                     );
 
 
-                button.className =
-                    "project-card";
-
-
                 button.type =
                     "button";
 
 
-                const videoWrap =
+                button.className =
+                    "project-card";
+
+
+                /*
+                    Reserve real space BEFORE metadata is
+                    available.
+
+                    This fixes the mobile overlap where
+                    several zero-width cards temporarily
+                    occupied the same position.
+                */
+
+                button.style.width =
+                    isPhoneLayout()
+                        ? "72vw"
+                        : "285px";
+
+
+                button.style.flexBasis =
+                    button.style.width;
+
+
+                button.style.minWidth =
+                    button.style.width;
+
+
+                const wrap =
                     document.createElement(
                         "span"
                     );
 
 
-                videoWrap.className =
+                wrap.className =
                     "card-video-wrap";
 
 
+                wrap.style.width =
+                    "100%";
+
+
+                /*
+                    Start fetching metadata while the user
+                    is still on the slide page.
+
+                    This improves mobile Index startup and
+                    also gives us the aspect ratio early.
+                */
+
                 const preview =
                     createPreviewVideo(
-                        project.videos[0]
+                        project.videos[0],
+                        {
+                            eagerMetadata:
+                                true
+                        }
                     );
 
 
-                videoWrap.appendChild(
+                wrap.appendChild(
                     preview
                 );
 
 
-                const syncCardWidth =
-                    () => {
-
-                        if (
-                            !preview.videoWidth ||
-                            !preview.videoHeight
-                        ) {
-
-                            return;
-
-                        }
-
-
-                        const rootStyle =
-                            getComputedStyle(
-                                document.documentElement
-                            );
-
-
-                        const targetHeight =
-                            parseFloat(
-                                rootStyle.getPropertyValue(
-                                    "--index-video-height"
-                                )
-                            );
-
-
-                        if (
-                            !targetHeight
-                        ) {
-
-                            return;
-
-                        }
-
-
-                        const targetWidth =
-                            targetHeight *
-                            preview.videoWidth /
-                            preview.videoHeight;
-
-
-                        button.style.width =
-                            `${targetWidth}px`;
-
-
-                        videoWrap.style.width =
-                            `${targetWidth}px`;
-
-                    };
-
-
                 preview.addEventListener(
                     "loadedmetadata",
-                    syncCardWidth
+                    () => {
+
+                        syncIndexCardSize(
+                            preview,
+                            button,
+                            wrap
+                        );
+
+                    }
                 );
+
+
+                if (
+                    preview.readyState >=
+                    1
+                ) {
+
+                    syncIndexCardSize(
+                        preview,
+                        button,
+                        wrap
+                    );
+
+                }
 
 
                 const copy =
@@ -4155,13 +4390,9 @@ function buildIndex() {
                     "card-title";
 
 
-                const titleBase =
+                title.textContent =
                     project.title
                         .toLowerCase();
-
-
-                title.textContent =
-                    titleBase;
 
 
                 const date =
@@ -4174,15 +4405,11 @@ function buildIndex() {
                     "card-date";
 
 
-                const dateBase =
+                date.textContent =
                     (
                         project.date ||
                         ""
                     ).toLowerCase();
-
-
-                date.textContent =
-                    dateBase;
 
 
                 copy.append(
@@ -4192,7 +4419,7 @@ function buildIndex() {
 
 
                 button.append(
-                    videoWrap,
+                    wrap,
                     copy
                 );
 
@@ -4200,14 +4427,15 @@ function buildIndex() {
                 const titleCase =
                     createCaseController(
                         title,
-                        titleBase
+                        project.title
                     );
 
 
                 const dateCase =
                     createCaseController(
                         date,
-                        dateBase
+                        project.date ||
+                        ""
                     );
 
 
@@ -4216,19 +4444,14 @@ function buildIndex() {
                     () => {
 
                         if (
-                            !window.matchMedia(
-                                "(hover: hover)"
-                            ).matches
+                            hasHover()
                         ) {
 
-                            return;
+                            titleCase.upper();
+
+                            dateCase.upper();
 
                         }
-
-
-                        titleCase.upper();
-
-                        dateCase.upper();
 
                     }
                 );
@@ -4239,19 +4462,14 @@ function buildIndex() {
                     () => {
 
                         if (
-                            !window.matchMedia(
-                                "(hover: hover)"
-                            ).matches
+                            hasHover()
                         ) {
 
-                            return;
+                            titleCase.lower();
+
+                            dateCase.lower();
 
                         }
-
-
-                        titleCase.lower();
-
-                        dateCase.lower();
 
                     }
                 );
@@ -4268,6 +4486,7 @@ function buildIndex() {
                             event.preventDefault();
 
                             event.stopPropagation();
+
 
                             return;
 
@@ -4306,18 +4525,6 @@ function buildIndex() {
    INDEX WORD
    ===================================================== */
 
-const indexWord =
-    "index";
-
-
-let indexWordState =
-    0;
-
-
-let indexWordFrame =
-    null;
-
-
 function renderIndexWord(
     state
 ) {
@@ -4334,10 +4541,6 @@ function renderIndexWord(
 
 }
 
-
-/* =====================================================
-   INDEX MORPH
-   ===================================================== */
 
 function morphIndexTo(
     target
@@ -4368,12 +4571,13 @@ function morphIndexTo(
             target
         );
 
+
         return Promise.resolve();
 
     }
 
 
-    const start =
+    const started =
         performance.now();
 
 
@@ -4389,13 +4593,13 @@ function morphIndexTo(
                         1,
                         (
                             now -
-                            start
+                            started
                         ) /
                         INDEX_TRANSITION_DURATION
                     );
 
 
-                const state =
+                renderIndexWord(
                     Math.round(
                         startState +
                         (
@@ -4403,11 +4607,7 @@ function morphIndexTo(
                             startState
                         ) *
                         progress
-                    );
-
-
-                renderIndexWord(
-                    state
+                    )
                 );
 
 
@@ -4461,19 +4661,16 @@ indexButton.addEventListener(
     () => {
 
         if (
-            isPhoneLayout()
+            !isPhoneLayout()
         ) {
 
-            return;
+            morphIndexTo(
+                indexMode
+                    ? 0
+                    : indexWord.length
+            );
 
         }
-
-
-        morphIndexTo(
-            indexMode
-                ? 0
-                : indexWord.length
-        );
 
     }
 );
@@ -4484,19 +4681,16 @@ indexButton.addEventListener(
     () => {
 
         if (
-            isPhoneLayout()
+            !isPhoneLayout()
         ) {
 
-            return;
+            morphIndexTo(
+                indexMode
+                    ? indexWord.length
+                    : 0
+            );
 
         }
-
-
-        morphIndexTo(
-            indexMode
-                ? indexWord.length
-                : 0
-        );
 
     }
 );
@@ -4561,16 +4755,12 @@ async function enterIndex() {
 
         await leaveProjectAll(
             {
-                resume: false
+                resume:
+                    false
             }
         );
 
     }
-
-
-    activatePreviewsIn(
-        indexGrid
-    );
 
 
     indexMode =
@@ -4588,6 +4778,25 @@ async function enterIndex() {
 
 
     restoreIndexPosition();
+
+
+    /*
+        Let layout become visible first, then play.
+
+        Metadata has already been warming in background,
+        which is faster on mobile than starting everything
+        from zero here.
+    */
+
+    requestAnimationFrame(
+        () => {
+
+            activatePreviewsIn(
+                indexGrid
+            );
+
+        }
+    );
 
 
     await morphIndexTo(
@@ -4736,7 +4945,7 @@ async function exitIndexToProject(
 
 
 /* =====================================================
-   INDEX BUTTON CLICK
+   INDEX BUTTON
    ===================================================== */
 
 indexButton.addEventListener(
@@ -4762,12 +4971,14 @@ indexButton.addEventListener(
 
             await leaveProjectAll(
                 {
-                    resume: false
+                    resume:
+                        false
                 }
             );
 
 
             await enterIndex();
+
 
             return;
 
@@ -4829,13 +5040,14 @@ indexScroller.addEventListener(
 
     },
     {
-        passive: false
+        passive:
+            false
     }
 );
 
 
 /* =====================================================
-   INDEX MOUSE DRAG
+   INDEX DRAG
    ===================================================== */
 
 let indexDragging =
@@ -5046,20 +5258,15 @@ document.addEventListener(
             event.target;
 
 
-        const isFormElement =
-            target &&
-            (
-                target.tagName ===
-                    "INPUT" ||
-                target.tagName ===
-                    "TEXTAREA" ||
-                target.tagName ===
-                    "SELECT"
-            );
-
-
         if (
-            isFormElement
+            target &&
+            [
+                "INPUT",
+                "TEXTAREA",
+                "SELECT"
+            ].includes(
+                target.tagName
+            )
         ) {
 
             return;
@@ -5081,7 +5288,8 @@ document.addEventListener(
 
                 leaveProjectAll(
                     {
-                        resume: true
+                        resume:
+                            true
                     }
                 );
 
@@ -5125,6 +5333,7 @@ document.addEventListener(
 
             event.preventDefault();
 
+
             togglePlayback();
 
         }
@@ -5137,6 +5346,7 @@ document.addEventListener(
 
             event.preventDefault();
 
+
             nextFilm();
 
         }
@@ -5148,6 +5358,7 @@ document.addEventListener(
         ) {
 
             event.preventDefault();
+
 
             previousFilm();
 
@@ -5176,7 +5387,9 @@ video.addEventListener(
 
 
         const touch =
-            event.touches[0];
+            event.touches[
+                0
+            ];
 
 
         touchStartX =
@@ -5196,7 +5409,8 @@ video.addEventListener(
 
     },
     {
-        passive: true
+        passive:
+            true
     }
 );
 
@@ -5216,23 +5430,21 @@ video.addEventListener(
 
 
         const touch =
-            event.touches[0];
-
-
-        const dx =
-            touch.clientX -
-            touchStartX;
-
-
-        const dy =
-            touch.clientY -
-            touchStartY;
+            event.touches[
+                0
+            ];
 
 
         if (
-            Math.abs(dx) >
+            Math.abs(
+                touch.clientX -
+                touchStartX
+            ) >
             10 ||
-            Math.abs(dy) >
+            Math.abs(
+                touch.clientY -
+                touchStartY
+            ) >
             10
         ) {
 
@@ -5243,7 +5455,8 @@ video.addEventListener(
 
     },
     {
-        passive: true
+        passive:
+            true
     }
 );
 
@@ -5262,15 +5475,17 @@ video.addEventListener(
 
 
         const touch =
-            event.changedTouches[0];
+            event.changedTouches[
+                0
+            ];
 
 
-        const dx =
+        const deltaX =
             touch.clientX -
             touchStartX;
 
 
-        const dy =
+        const deltaY =
             touch.clientY -
             touchStartY;
 
@@ -5280,22 +5495,28 @@ video.addEventListener(
             touchStartTime;
 
 
-        const horizontalSwipe =
-            Math.abs(dx) >=
-                50 &&
-            Math.abs(dx) >
-                Math.abs(dy) *
-                1.25 &&
+        const swipe =
+            Math.abs(
+                deltaX
+            ) >=
+            50 &&
+            Math.abs(
+                deltaX
+            ) >
+            Math.abs(
+                deltaY
+            ) *
+            1.25 &&
             elapsed <
-                700;
+            700;
 
 
         if (
-            horizontalSwipe
+            swipe
         ) {
 
             if (
-                dx <
+                deltaX <
                 0
             ) {
 
@@ -5338,9 +5559,82 @@ video.addEventListener(
 
     },
     {
-        passive: true
+        passive:
+            true
     }
 );
+
+
+/* =====================================================
+   INDEX PREWARM
+   ===================================================== */
+
+/*
+    Mobile browsers are more conservative about media
+    networking and decoding.
+
+    Index metadata is therefore warmed in small batches
+    after the main slide is ready.
+
+    We do NOT play all films here.
+    We just make their initial metadata / range available.
+*/
+
+async function warmIndexPreviews() {
+
+    const previews =
+        [
+            ...indexGrid.querySelectorAll(
+                "video[data-src]"
+            )
+        ];
+
+
+    for (
+        let i = 0;
+        i < previews.length;
+        i += 3
+    ) {
+
+        const batch =
+            previews.slice(
+                i,
+                i + 3
+            );
+
+
+        batch.forEach(
+            preview => {
+
+                if (
+                    !preview.getAttribute(
+                        "src"
+                    )
+                ) {
+
+                    preview.src =
+                        preview.dataset.src;
+
+
+                    preview.preload =
+                        "auto";
+
+
+                    preview.load();
+
+                }
+
+            }
+        );
+
+
+        await wait(
+            120
+        );
+
+    }
+
+}
 
 
 /* =====================================================
@@ -5385,14 +5679,12 @@ async function loadProjects() {
                     Array.isArray(
                         project.videos
                     ) &&
-                    project.videos.length >
-                        0
+                    project.videos.length
             );
 
 
         if (
-            projects.length ===
-            0
+            !projects.length
         ) {
 
             return;
@@ -5411,11 +5703,27 @@ async function loadProjects() {
             0;
 
 
-        updateSoundButton();
+        updateSoundButton(
+            false
+        );
 
 
         await loadCurrentVideo(
             true
+        );
+
+
+        /*
+            Start Index preparation only after the main
+            page has already received its first content.
+        */
+
+        requestAnimationFrame(
+            () => {
+
+                warmIndexPreviews();
+
+            }
         );
 
     }
@@ -5446,8 +5754,7 @@ window.addEventListener(
     () => {
 
         if (
-            resizeTimer !==
-            null
+            resizeTimer
         ) {
 
             clearTimeout(
@@ -5461,6 +5768,9 @@ window.addEventListener(
             setTimeout(
                 () => {
 
+                    fitMainVideo();
+
+
                     if (
                         projectAllMode
                     ) {
@@ -5472,65 +5782,33 @@ window.addEventListener(
 
                     document
                         .querySelectorAll(
-                            ".project-card video"
+                            ".project-card"
                         )
                         .forEach(
-                            preview => {
+                            card => {
 
-                                if (
-                                    !preview.videoWidth ||
-                                    !preview.videoHeight
-                                ) {
-
-                                    return;
-
-                                }
-
-
-                                const targetHeight =
-                                    parseFloat(
-                                        getComputedStyle(
-                                            document.documentElement
-                                        ).getPropertyValue(
-                                            "--index-video-height"
-                                        )
-                                    );
-
-
-                                const targetWidth =
-                                    targetHeight *
-                                    preview.videoWidth /
-                                    preview.videoHeight;
-
-
-                                const card =
-                                    preview.closest(
-                                        ".project-card"
+                                const preview =
+                                    card.querySelector(
+                                        "video"
                                     );
 
 
                                 const wrap =
-                                    preview.closest(
+                                    card.querySelector(
                                         ".card-video-wrap"
                                     );
 
 
                                 if (
-                                    card
-                                ) {
-
-                                    card.style.width =
-                                        `${targetWidth}px`;
-
-                                }
-
-
-                                if (
+                                    preview &&
                                     wrap
                                 ) {
 
-                                    wrap.style.width =
-                                        `${targetWidth}px`;
+                                    syncIndexCardSize(
+                                        preview,
+                                        card,
+                                        wrap
+                                    );
 
                                 }
 
@@ -5547,25 +5825,15 @@ window.addEventListener(
 
 /* =====================================================
    VISIBILITY
-
-   IMPORTANT:
-
-   The previous version always called video.play()
-   when the tab became visible again.
-
-   That meant:
-
-   user pauses video
-   -> changes browser tab
-   -> comes back
-   -> video incorrectly starts playing
-
-   Now we remember whether it was actually playing
-   BEFORE the tab became hidden.
-
-   Paused stays paused.
-   Playing resumes.
    ===================================================== */
+
+/*
+    Manually paused videos remain paused after changing
+    browser tabs.
+
+    Only a film that was genuinely playing before the
+    tab became hidden is resumed.
+*/
 
 document.addEventListener(
     "visibilitychange",
@@ -5574,10 +5842,6 @@ document.addEventListener(
         if (
             document.hidden
         ) {
-
-            /*
-                Capture playback state BEFORE pause().
-            */
 
             resumeAfterVisibility =
                 !video.paused &&
@@ -5597,13 +5861,6 @@ document.addEventListener(
         }
 
 
-        /*
-            Only resume if the film had genuinely been
-            playing before the browser tab was hidden.
-
-            A user-paused video therefore remains paused.
-        */
-
         if (
             resumeAfterVisibility &&
             !indexMode &&
@@ -5621,6 +5878,28 @@ document.addEventListener(
 
         resumeAfterVisibility =
             false;
+
+
+        if (
+            indexMode
+        ) {
+
+            activatePreviewsIn(
+                indexGrid
+            );
+
+        }
+
+
+        if (
+            projectAllMode
+        ) {
+
+            activatePreviewsIn(
+                projectAllGrid
+            );
+
+        }
 
     }
 );
