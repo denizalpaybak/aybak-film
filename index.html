@@ -71,6 +71,9 @@ button {
 
     --index-content-top: 130px;
 
+    --index-card-width: 285px;
+    --index-video-height: 365px;
+
 }
 
 
@@ -214,10 +217,14 @@ body {
 
     align-items: stretch;
 
-    width: min(
-        var(--video-max-width),
-        calc(var(--visual-height) * 16 / 9)
-    );
+    width:
+        min(
+            var(--video-max-width),
+            calc(
+                var(--visual-height) *
+                16 / 9
+            )
+        );
 
     max-width:
         calc(
@@ -239,7 +246,8 @@ body {
     width: 100%;
     height: auto;
 
-    max-height: var(--visual-height);
+    max-height:
+        var(--visual-height);
 
     aspect-ratio: 16 / 9;
 
@@ -260,6 +268,10 @@ body {
    ===================================================== */
 
 #project-meta {
+    position: relative;
+
+    z-index: 60;
+
     display: grid;
 
     grid-template-columns:
@@ -272,10 +284,14 @@ body {
 
     width: 100%;
 
-    margin-top: var(--meta-top-gap);
+    margin-top:
+        var(--meta-top-gap);
 
-    font-size: var(--font-size);
-    line-height: var(--line-height);
+    font-size:
+        var(--font-size);
+
+    line-height:
+        var(--line-height);
 
     pointer-events: none;
 }
@@ -325,6 +341,10 @@ body {
 
     line-height: inherit;
 
+    text-align: right;
+
+    white-space: nowrap;
+
     cursor: pointer;
 
     pointer-events: auto;
@@ -351,8 +371,11 @@ body {
 
     margin-top: 10px;
 
-    font-size: var(--font-size);
-    line-height: var(--line-height);
+    font-size:
+        var(--font-size);
+
+    line-height:
+        var(--line-height);
 
     pointer-events: auto;
 }
@@ -393,19 +416,39 @@ body {
 
 
 /* =====================================================
+   VIEW ALL MODE
+
+   Main video and navigation controls disappear.
+
+   Metadata stays exactly where it was:
+   PROJECT TITLE
+   DATE
+
+                    all (04)
+                    close
+   ===================================================== */
+
+body.project-all-mode #film-video {
+    visibility: hidden;
+}
+
+body.project-all-mode #controls {
+    visibility: hidden;
+}
+
+
+/* =====================================================
    VIEW ALL
    ===================================================== */
 
 #project-all-view {
     position: fixed;
 
-    inset: 0;
-
-    z-index: 100;
+    z-index: 30;
 
     display: none;
 
-    background: #fff;
+    overflow: hidden;
 
     pointer-events: auto;
 }
@@ -414,32 +457,23 @@ body.project-all-mode #project-all-view {
     display: block;
 }
 
-body.project-all-mode #video-stage {
-    visibility: hidden;
-}
-
 
 /* =====================================================
    VIEW ALL GRID
    ===================================================== */
 
 #project-all-grid {
-    position: absolute;
-
-    top: 50%;
-    left: 50%;
-
-    transform: translate(-50%, -50%);
-
     display: grid;
 
-    gap: 10px;
+    width: 100%;
+    height: 100%;
 
-    width: min(82vw, 1280px);
-    height: min(68vh, 760px);
+    place-content: center;
 
     align-items: center;
     justify-items: center;
+
+    gap: 7px;
 }
 
 .project-all-thumb {
@@ -474,14 +508,15 @@ body.project-all-mode #video-stage {
 .project-all-thumb video {
     display: block;
 
-    width: 100%;
-    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+
+    width: auto;
+    height: auto;
 
     object-fit: contain;
 
     pointer-events: none;
-
-    background: transparent;
 }
 
 
@@ -502,7 +537,8 @@ body.project-all-mode #video-stage {
 
     z-index: 600;
 
-    transform: translateX(-50%);
+    transform:
+        translateX(-50%);
 
     appearance: none;
     -webkit-appearance: none;
@@ -516,8 +552,11 @@ body.project-all-mode #video-stage {
     background: transparent;
     color: #000;
 
-    font-size: var(--font-size);
-    line-height: var(--line-height);
+    font-size:
+        var(--font-size);
+
+    line-height:
+        var(--line-height);
 
     white-space: nowrap;
 
@@ -559,7 +598,9 @@ body.index-mode #video-stage {
 #index-scroller {
     position: absolute;
 
-    top: var(--index-content-top);
+    top:
+        var(--index-content-top);
+
     left: 0;
     right: 0;
 
@@ -586,6 +627,8 @@ body.index-mode #video-stage {
     cursor: grab;
 
     outline: none;
+
+    pointer-events: auto;
 }
 
 #index-scroller::-webkit-scrollbar {
@@ -613,15 +656,21 @@ body.index-mode #video-stage {
 
     width: max-content;
 
-    padding-left: var(--side);
-    padding-right: var(--side);
+    padding-left:
+        var(--side);
 
-    transform: translateY(-8px);
+    padding-right:
+        var(--side);
+
+    transform:
+        translateY(-8px);
 }
 
 
 /* =====================================================
    INDEX CARD
+
+   Same basic dimensions as Photography index.
    ===================================================== */
 
 .project-card {
@@ -631,14 +680,15 @@ body.index-mode #video-stage {
     flex:
         0
         0
-        320px;
+        var(--index-card-width);
 
     display: flex;
     flex-direction: column;
 
     align-items: flex-start;
 
-    width: 320px;
+    width:
+        var(--index-card-width);
 
     margin: 0;
     padding: 0;
@@ -652,24 +702,37 @@ body.index-mode #video-stage {
 
     cursor: pointer;
 
+    position: relative;
+
+    z-index: 1;
+
     -webkit-tap-highlight-color: transparent;
 }
 
 
 /* =====================================================
    INDEX VIDEO
+
+   Important:
+   the media is centered inside every fixed-width card.
+
+   Therefore portrait clips receive equal empty space
+   on both sides instead of visually sticking to the
+   previous horizontal clip.
    ===================================================== */
 
 .card-video-wrap {
     display: flex;
 
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
 
     width: 100%;
-    height: 270px;
 
-    overflow: hidden;
+    height:
+        var(--index-video-height);
+
+    pointer-events: none;
 }
 
 .project-card video {
@@ -699,10 +762,14 @@ body.index-mode #video-stage {
 
     width: 100%;
 
-    margin-top: var(--meta-gap);
+    margin-top:
+        var(--meta-gap);
 
-    font-size: var(--font-size);
-    line-height: var(--line-height);
+    font-size:
+        var(--font-size);
+
+    line-height:
+        var(--line-height);
 
     text-align: left;
 
@@ -721,6 +788,8 @@ body.index-mode #video-stage {
     text-align: left;
 
     white-space: nowrap;
+
+    overflow: hidden;
 }
 
 
@@ -733,21 +802,13 @@ body.index-mode #video-stage {
     and (max-width: 1366px) {
 
     :root {
+
         --visual-height: 68vh;
         --video-max-width: 72vw;
-    }
 
-    .project-card {
-        flex:
-            0
-            0
-            285px;
+        --index-card-width: 250px;
+        --index-video-height: 325px;
 
-        width: 285px;
-    }
-
-    .card-video-wrap {
-        height: 240px;
     }
 
     #index-grid {
@@ -765,6 +826,7 @@ body.index-mode #video-stage {
     (max-width: 600px) {
 
     :root {
+
         --font-size: 13px;
 
         --side: 24px;
@@ -773,6 +835,7 @@ body.index-mode #video-stage {
         --index-bottom: 18px;
 
         --meta-gap: 5px;
+
     }
 
     .logo {
@@ -794,6 +857,13 @@ body.index-mode #video-stage {
 @media
     (max-width: 600px)
     and (orientation: portrait) {
+
+    :root {
+
+        --index-card-width: 48vw;
+        --index-video-height: 56vw;
+
+    }
 
     #video-block {
         top: 50%;
@@ -818,34 +888,23 @@ body.index-mode #video-stage {
     }
 
     #project-all-grid {
-        width:
+        gap: 5px;
+    }
+
+    #index-scroller {
+        bottom:
             calc(
-                100vw -
-                var(--side) * 2
+                var(--index-bottom) +
+                env(safe-area-inset-bottom) +
+                32px
             );
-
-        height: 58vh;
-
-        gap: 6px;
     }
 
     #index-grid {
         gap: 30px;
 
-        transform: translateY(-4px);
-    }
-
-    .project-card {
-        flex:
-            0
-            0
-            64vw;
-
-        width: 64vw;
-    }
-
-    .card-video-wrap {
-        height: 46vw;
+        transform:
+            translateY(-4px);
     }
 
 }
@@ -861,12 +920,17 @@ body.index-mode #video-stage {
     and (max-width: 1000px) {
 
     :root {
+
         --font-size: 13px;
 
         --side: 24px;
         --top: 18px;
 
         --index-bottom: 14px;
+
+        --index-card-width: 220px;
+        --index-video-height: 220px;
+
     }
 
     .logo {
@@ -881,7 +945,11 @@ body.index-mode #video-stage {
     #video-block {
         top: 50%;
 
-        width: min(58vw, 720px);
+        width:
+            min(
+                58vw,
+                720px
+            );
 
         max-height: 80vh;
     }
@@ -896,12 +964,7 @@ body.index-mode #video-stage {
     }
 
     #project-all-grid {
-        width: 62vw;
-        height: 72vh;
-
-        left: 60%;
-
-        gap: 6px;
+        gap: 4px;
     }
 
     #index-scroller {
@@ -909,20 +972,9 @@ body.index-mode #video-stage {
     }
 
     #index-grid {
-        gap: 34px;
-    }
+        gap: 26px;
 
-    .project-card {
-        flex:
-            0
-            0
-            230px;
-
-        width: 230px;
-    }
-
-    .card-video-wrap {
-        height: 160px;
+        transform: none;
     }
 
 }
@@ -936,7 +988,8 @@ body.index-mode #video-stage {
     (prefers-reduced-motion: reduce) {
 
     * {
-        scroll-behavior: auto !important;
+        scroll-behavior:
+            auto !important;
     }
 
 }
@@ -945,6 +998,7 @@ body.index-mode #video-stage {
 
 </head>
 
+
 <body>
 
 
@@ -952,7 +1006,10 @@ body.index-mode #video-stage {
      INFO
      =================================================== -->
 
-<div class="info">
+<div
+    class="info"
+    id="info"
+>
 
     <div
         class="logo"
@@ -1017,12 +1074,13 @@ body.index-mode #video-stage {
      =================================================== -->
 
 <a
-    class="section-switch case-control"
+    class="section-switch"
     id="section-switch"
     href="https://photography.denizalpaybak.com/"
-    data-word="photography"
 >
-    <span>photography</span>
+    <span id="section-switch-text">
+        photography
+    </span>
 </a>
 
 
@@ -1053,11 +1111,9 @@ body.index-mode #video-stage {
 
             <button
                 id="view-all-button"
-                class="case-control"
-                data-word="view all"
                 type="button"
             >
-                <span>view all</span>
+                view all
             </button>
 
         </div>
@@ -1067,29 +1123,23 @@ body.index-mode #video-stage {
 
             <button
                 id="previous-button"
-                class="case-control"
-                data-word="previous"
                 type="button"
             >
-                <span>previous</span>
+                previous
             </button>
 
             <button
                 id="sound-button"
-                class="case-control"
-                data-word="sound on"
                 type="button"
             >
-                <span>sound on</span>
+                sound on
             </button>
 
             <button
                 id="next-button"
-                class="case-control"
-                data-word="next"
                 type="button"
             >
-                <span>next</span>
+                next
             </button>
 
         </div>
@@ -1116,11 +1166,9 @@ body.index-mode #video-stage {
 
 <button
     id="index-button"
-    class="case-control"
-    data-word="index"
     type="button"
 >
-    <span>index</span>
+    index
 </button>
 
 
@@ -1155,6 +1203,18 @@ const FILMS_JSON =
    TIMING
    ===================================================== */
 
+const TEXT_MORPH_DURATION =
+    420;
+
+const STATE_MORPH_DURATION =
+    400;
+
+const CASE_DURATION =
+    400;
+
+const INDEX_TRANSITION_DURATION =
+    400;
+
 const WORD_TRANSITION_DURATION =
     400;
 
@@ -1169,15 +1229,56 @@ const PREVIEW_DURATION =
 
 
 /* =====================================================
+   INDEX
+   ===================================================== */
+
+const INDEX_WHEEL_MULTIPLIER =
+    1;
+
+const INDEX_KEY_STEP =
+    300;
+
+
+/* =====================================================
    ELEMENTS
    ===================================================== */
 
 const body =
     document.body;
 
+const info =
+    document.getElementById(
+        "info"
+    );
+
+const sectionSwitch =
+    document.getElementById(
+        "section-switch"
+    );
+
+const sectionSwitchText =
+    document.getElementById(
+        "section-switch-text"
+    );
+
+const videoStage =
+    document.getElementById(
+        "video-stage"
+    );
+
+const videoBlock =
+    document.getElementById(
+        "video-block"
+    );
+
 const video =
     document.getElementById(
         "film-video"
+    );
+
+const projectMeta =
+    document.getElementById(
+        "project-meta"
     );
 
 const projectTitle =
@@ -1208,6 +1309,11 @@ const nextButton =
 const soundButton =
     document.getElementById(
         "sound-button"
+    );
+
+const controls =
+    document.getElementById(
+        "controls"
     );
 
 const viewAllButton =
@@ -1259,19 +1365,93 @@ let currentProjectIndex =
 let currentVideoIndex =
     0;
 
+let renderedProjectIndex =
+    null;
+
 let soundEnabled =
     false;
 
-let indexOpen =
+let indexMode =
     false;
 
-let viewAllOpen =
+let projectAllMode =
+    false;
+
+let interfaceAnimating =
+    false;
+
+let projectViewAnimating =
+    false;
+
+let savedIndexScrollLeft =
+    0;
+
+let viewButtonHovered =
+    false;
+
+let indexDragMoved =
+    false;
+
+let autoplayBeforeIndex =
+    true;
+
+let autoplayBeforeProjectAll =
+    true;
+
+
+/* =====================================================
+   TOUCH
+   ===================================================== */
+
+let touchStartX =
+    0;
+
+let touchStartY =
+    0;
+
+let touchStartTime =
+    0;
+
+let touchMoved =
     false;
 
 
 /* =====================================================
-   HELPERS
+   GENERAL HELPERS
    ===================================================== */
+
+function isPhonePortrait() {
+
+    return (
+        window.innerWidth <= 600 &&
+        window.innerHeight >=
+        window.innerWidth
+    );
+
+}
+
+
+function isPhoneLandscape() {
+
+    return (
+        window.innerHeight <= 650 &&
+        window.innerWidth >
+        window.innerHeight &&
+        window.innerWidth <= 1000
+    );
+
+}
+
+
+function isPhoneLayout() {
+
+    return (
+        isPhonePortrait() ||
+        isPhoneLandscape()
+    );
+
+}
+
 
 function videoUrl(
     filename
@@ -1304,7 +1484,9 @@ function currentFilename() {
     if (
         !project
     ) {
+
         return null;
+
     }
 
     return project.videos[
@@ -1314,212 +1496,633 @@ function currentFilename() {
 }
 
 
-/* =====================================================
-   CASE ANIMATION
-   ===================================================== */
-
-function renderCaseWord(
-    word,
-    upperCount
-) {
-
-    let result =
-        "";
-
-    let letterIndex =
-        0;
-
-    for (
-        let i = 0;
-        i < word.length;
-        i++
-    ) {
-
-        const char =
-            word[i];
-
-        if (
-            /[a-zA-Z]/.test(
-                char
-            )
-        ) {
-
-            result +=
-                letterIndex <
-                upperCount
-                    ? char.toUpperCase()
-                    : char.toLowerCase();
-
-            letterIndex++;
-
-        }
-
-        else {
-
-            result +=
-                char;
-
-        }
-
-    }
-
-    return result;
-
-}
-
-
-function letterCount(
-    word
+function normalizeProjectIndex(
+    index
 ) {
 
     return (
-        word.match(
-            /[a-zA-Z]/g
-        ) || []
-    ).length;
+        (
+            index %
+            projects.length
+        ) +
+        projects.length
+    ) %
+    projects.length;
 
 }
 
 
-function animateCaseControl(
-    element,
-    toUpper
+/* =====================================================
+   COUNTERS
+   ===================================================== */
+
+function getCounterText(
+    index,
+    total
 ) {
 
-    const span =
-        element.querySelector(
-            "span"
-        );
+    return (
+        String(
+            index + 1
+        ).padStart(
+            2,
+            "0"
+        ) +
+        " / " +
+        String(
+            total
+        ).padStart(
+            2,
+            "0"
+        )
+    );
+
+}
+
+
+function getAllCounterText(
+    total
+) {
+
+    return (
+        "all (" +
+        String(
+            total
+        ).padStart(
+            2,
+            "0"
+        ) +
+        ")"
+    );
+
+}
+
+
+/* =====================================================
+   SIMPLE SEQUENTIAL MORPH
+   ===================================================== */
+
+function morphSequential(
+    element,
+    nextText,
+    duration =
+        TEXT_MORPH_DURATION
+) {
+
+    const oldText =
+        element.dataset.rawText !==
+        undefined
+            ? element.dataset.rawText
+            : element.textContent;
+
 
     if (
-        !span
+        oldText ===
+        nextText
     ) {
-        return;
+
+        element.textContent =
+            nextText;
+
+        element.dataset.rawText =
+            nextText;
+
+        return Promise.resolve();
+
     }
 
-    const word =
-        element.dataset.word;
 
-    const total =
-        letterCount(
-            word
+    const length =
+        Math.max(
+            oldText.length,
+            nextText.length
         );
+
+
+    const from =
+        oldText
+            .padEnd(
+                length,
+                " "
+            )
+            .split(
+                ""
+            );
+
+
+    const to =
+        nextText
+            .padEnd(
+                length,
+                " "
+            )
+            .split(
+                ""
+            );
+
+
+    const changedPositions =
+        [];
+
+
+    for (
+        let i = 0;
+        i < length;
+        i++
+    ) {
+
+        if (
+            from[i] !==
+            to[i]
+        ) {
+
+            changedPositions.push(
+                i
+            );
+
+        }
+
+    }
+
+
+    const originalWidth =
+        element
+            .getBoundingClientRect()
+            .width;
+
+
+    if (
+        originalWidth > 0
+    ) {
+
+        element.style.minWidth =
+            `${originalWidth}px`;
+
+    }
+
 
     const start =
         performance.now();
 
-    const from =
-        toUpper
-            ? 0
-            : total;
 
-    const to =
-        toUpper
-            ? total
-            : 0;
+    return new Promise(
+        resolve => {
+
+            function frame(
+                now
+            ) {
+
+                const progress =
+                    Math.min(
+                        1,
+                        (
+                            now -
+                            start
+                        ) /
+                        duration
+                    );
 
 
-    function frame(
-        now
-    ) {
+                const completed =
+                    Math.floor(
+                        progress *
+                        (
+                            changedPositions.length +
+                            1
+                        )
+                    );
 
-        const progress =
-            Math.min(
-                1,
-                (
-                    now -
-                    start
-                ) /
-                WORD_TRANSITION_DURATION
-            );
 
-        const count =
-            Math.round(
-                from +
-                (
-                    to -
-                    from
-                ) *
-                progress
-            );
+                const current =
+                    from.slice();
 
-        span.textContent =
-            renderCaseWord(
-                word,
-                count
-            );
 
-        if (
-            progress <
-            1
-        ) {
+                for (
+                    let i = 0;
+                    i < completed;
+                    i++
+                ) {
+
+                    const position =
+                        changedPositions[
+                            i
+                        ];
+
+
+                    if (
+                        position ===
+                        undefined
+                    ) {
+
+                        continue;
+
+                    }
+
+
+                    current[
+                        position
+                    ] =
+                        to[
+                            position
+                        ];
+
+                }
+
+
+                element.textContent =
+                    current
+                        .join(
+                            ""
+                        )
+                        .trimEnd();
+
+
+                if (
+                    progress <
+                    1
+                ) {
+
+                    requestAnimationFrame(
+                        frame
+                    );
+
+                }
+
+                else {
+
+                    element.textContent =
+                        nextText;
+
+                    element.dataset.rawText =
+                        nextText;
+
+                    element.style.minWidth =
+                        "";
+
+                    resolve();
+
+                }
+
+            }
+
 
             requestAnimationFrame(
                 frame
             );
 
         }
-
-    }
-
-
-    requestAnimationFrame(
-        frame
     );
 
 }
 
 
-document
-    .querySelectorAll(
-        ".case-control"
-    )
-    .forEach(
-        element => {
+/* =====================================================
+   CASE HELPERS
+   ===================================================== */
 
-            element.addEventListener(
-                "mouseenter",
-                () => {
+function getLetterPositions(
+    text
+) {
 
-                    if (
-                        window.matchMedia(
-                            "(hover: hover)"
-                        ).matches
-                    ) {
+    const result =
+        [];
 
-                        animateCaseControl(
-                            element,
-                            true
-                        );
 
-                    }
+    for (
+        let i = 0;
+        i < text.length;
+        i++
+    ) {
 
-                }
+        const character =
+            text[i];
+
+
+        if (
+            character.toLowerCase() !==
+            character.toUpperCase()
+        ) {
+
+            result.push(
+                i
             );
 
+        }
 
-            element.addEventListener(
-                "mouseleave",
-                () => {
+    }
 
-                    if (
-                        window.matchMedia(
-                            "(hover: hover)"
-                        ).matches
-                    ) {
 
-                        animateCaseControl(
-                            element,
-                            false
-                        );
+    return result;
 
-                    }
+}
+
+
+function renderPrefixCase(
+    baseText,
+    upperCount
+) {
+
+    const positions =
+        getLetterPositions(
+            baseText
+        );
+
+
+    const upper =
+        new Set(
+            positions.slice(
+                0,
+                upperCount
+            )
+        );
+
+
+    return baseText
+        .split(
+            ""
+        )
+        .map(
+            (
+                character,
+                index
+            ) => {
+
+                return upper.has(
+                    index
+                )
+                    ? character.toUpperCase()
+                    : character.toLowerCase();
+
+            }
+        )
+        .join(
+            ""
+        );
+
+}
+
+
+/* =====================================================
+   CASE ANIMATION
+   ===================================================== */
+
+function animateCase(
+    element,
+    baseText,
+    toUpper,
+    duration =
+        CASE_DURATION
+) {
+
+    const base =
+        baseText.toLowerCase();
+
+
+    const positions =
+        getLetterPositions(
+            base
+        );
+
+
+    const total =
+        positions.length;
+
+
+    const currentText =
+        element.textContent;
+
+
+    let currentState =
+        0;
+
+
+    for (
+        let i = 0;
+        i < positions.length;
+        i++
+    ) {
+
+        const position =
+            positions[i];
+
+
+        const character =
+            currentText[
+                position
+            ];
+
+
+        if (
+            character &&
+            character ===
+            character.toUpperCase() &&
+            character !==
+            character.toLowerCase()
+        ) {
+
+            currentState++;
+
+        }
+
+        else {
+
+            break;
+
+        }
+
+    }
+
+
+    const target =
+        toUpper
+            ? total
+            : 0;
+
+
+    if (
+        currentState ===
+        target
+    ) {
+
+        element.textContent =
+            renderPrefixCase(
+                base,
+                target
+            );
+
+        return Promise.resolve();
+
+    }
+
+
+    const start =
+        performance.now();
+
+
+    return new Promise(
+        resolve => {
+
+            function frame(
+                now
+            ) {
+
+                const progress =
+                    Math.min(
+                        1,
+                        (
+                            now -
+                            start
+                        ) /
+                        duration
+                    );
+
+
+                const state =
+                    Math.round(
+                        currentState +
+                        (
+                            target -
+                            currentState
+                        ) *
+                        progress
+                    );
+
+
+                element.textContent =
+                    renderPrefixCase(
+                        base,
+                        state
+                    );
+
+
+                if (
+                    progress <
+                    1
+                ) {
+
+                    requestAnimationFrame(
+                        frame
+                    );
 
                 }
+
+                else {
+
+                    element.textContent =
+                        renderPrefixCase(
+                            base,
+                            target
+                        );
+
+                    resolve();
+
+                }
+
+            }
+
+
+            requestAnimationFrame(
+                frame
             );
 
         }
     );
+
+}
+
+
+/* =====================================================
+   GENERIC HOVER CASE
+   ===================================================== */
+
+function installHoverCase(
+    element,
+    getBaseText
+) {
+
+    element.addEventListener(
+        "mouseenter",
+        () => {
+
+            if (
+                !window.matchMedia(
+                    "(hover: hover)"
+                ).matches
+            ) {
+
+                return;
+
+            }
+
+
+            animateCase(
+                element,
+                getBaseText(),
+                true
+            );
+
+        }
+    );
+
+
+    element.addEventListener(
+        "mouseleave",
+        () => {
+
+            if (
+                !window.matchMedia(
+                    "(hover: hover)"
+                ).matches
+            ) {
+
+                return;
+
+            }
+
+
+            animateCase(
+                element,
+                getBaseText(),
+                false
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   SECTION SWITCH
+   ===================================================== */
+
+installHoverCase(
+    sectionSwitchText,
+    () => "photography"
+);
+
+
+/* =====================================================
+   CONTROL HOVERS
+   ===================================================== */
+
+installHoverCase(
+    previousButton,
+    () => "previous"
+);
+
+installHoverCase(
+    nextButton,
+    () => "next"
+);
+
+installHoverCase(
+    soundButton,
+    () =>
+        soundEnabled
+            ? "sound off"
+            : "sound on"
+);
 
 
 /* =====================================================
@@ -1579,6 +2182,7 @@ function setLogoState(
 
     logoState =
         state;
+
 
     logoName.textContent =
         state === 0
@@ -1739,33 +2343,89 @@ logo.addEventListener(
 );
 
 
+logo.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.code ===
+                "Enter" ||
+            event.code ===
+                "Space"
+        ) {
+
+            event.preventDefault();
+
+        }
+
+    }
+);
+
+
 setLogoState(0);
 
 
 /* =====================================================
-   META
+   METADATA
    ===================================================== */
 
-function updateMeta() {
+async function updateMetadata(
+    targetProjectIndex,
+    targetVideoIndex
+) {
 
     const project =
-        currentProject();
+        projects[
+            targetProjectIndex
+        ];
+
+
+    const projectChanged =
+        renderedProjectIndex !==
+        targetProjectIndex;
+
+
+    projectCounter.textContent =
+        getCounterText(
+            targetVideoIndex,
+            project.videos.length
+        );
+
+    projectCounter.dataset.rawText =
+        projectCounter.textContent;
+
 
     if (
-        !project
+        projectChanged
     ) {
-        return;
+
+        await Promise.all(
+            [
+
+                morphSequential(
+                    projectTitle,
+                    project.title
+                        .toLowerCase(),
+                    TEXT_MORPH_DURATION
+                ),
+
+                morphSequential(
+                    projectDate,
+                    (
+                        project.date ||
+                        ""
+                    ).toLowerCase(),
+                    TEXT_MORPH_DURATION
+                )
+
+            ]
+        );
+
     }
 
 
-    projectTitle.textContent =
-        project.title;
-
-    projectDate.textContent =
-        project.date;
-
-    projectCounter.textContent =
-        `${currentVideoIndex + 1}/${project.videos.length}`;
+    renderedProjectIndex =
+        targetProjectIndex;
 
 }
 
@@ -1782,15 +2442,8 @@ function updateSoundButton() {
             : "sound on";
 
 
-    soundButton.dataset.word =
+    soundButton.textContent =
         text;
-
-    soundButton
-        .querySelector(
-            "span"
-        )
-        .textContent =
-            text;
 
 }
 
@@ -1846,39 +2499,49 @@ function togglePlayback() {
    LOAD VIDEO
    ===================================================== */
 
-function loadCurrentVideo(
+async function loadCurrentVideo(
     autoplay = true
 ) {
 
     const filename =
         currentFilename();
 
+
     if (
         !filename
     ) {
+
         return;
+
     }
 
 
     video.pause();
+
 
     video.src =
         videoUrl(
             filename
         );
 
+
     video.load();
+
 
     applySoundState();
 
-    updateMeta();
+
+    await updateMetadata(
+        currentProjectIndex,
+        currentVideoIndex
+    );
 
 
     if (
         autoplay
     ) {
 
-        const play =
+        const tryPlay =
             () => {
 
                 video
@@ -1887,18 +2550,29 @@ function loadCurrentVideo(
                         () => {}
                     );
 
-                video.removeEventListener(
-                    "canplay",
-                    play
-                );
-
             };
 
 
-        video.addEventListener(
-            "canplay",
-            play
-        );
+        if (
+            video.readyState >=
+            2
+        ) {
+
+            tryPlay();
+
+        }
+
+        else {
+
+            video.addEventListener(
+                "canplay",
+                tryPlay,
+                {
+                    once: true
+                }
+            );
+
+        }
 
     }
 
@@ -1906,19 +2580,25 @@ function loadCurrentVideo(
 
 
 /* =====================================================
-   NEXT / PREVIOUS
+   NEXT
    ===================================================== */
 
 function nextFilm() {
 
+    if (
+        projectAllMode ||
+        indexMode ||
+        projects.length ===
+        0
+    ) {
+
+        return;
+
+    }
+
+
     const project =
         currentProject();
-
-    if (
-        !project
-    ) {
-        return;
-    }
 
 
     if (
@@ -1934,11 +2614,10 @@ function nextFilm() {
     else {
 
         currentProjectIndex =
-            (
+            normalizeProjectIndex(
                 currentProjectIndex +
                 1
-            ) %
-            projects.length;
+            );
 
         currentVideoIndex =
             0;
@@ -1946,18 +2625,28 @@ function nextFilm() {
     }
 
 
-    loadCurrentVideo(true);
+    loadCurrentVideo(
+        true
+    );
 
 }
 
 
+/* =====================================================
+   PREVIOUS
+   ===================================================== */
+
 function previousFilm() {
 
     if (
+        projectAllMode ||
+        indexMode ||
         projects.length ===
         0
     ) {
+
         return;
+
     }
 
 
@@ -1973,12 +2662,11 @@ function previousFilm() {
     else {
 
         currentProjectIndex =
-            (
+            normalizeProjectIndex(
                 currentProjectIndex -
-                1 +
-                projects.length
-            ) %
-            projects.length;
+                1
+            );
+
 
         currentVideoIndex =
             projects[
@@ -1989,7 +2677,9 @@ function previousFilm() {
     }
 
 
-    loadCurrentVideo(true);
+    loadCurrentVideo(
+        true
+    );
 
 }
 
@@ -2003,6 +2693,14 @@ video.addEventListener(
     event => {
 
         event.stopPropagation();
+
+        if (
+            touchMoved
+        ) {
+
+            return;
+
+        }
 
         togglePlayback();
 
@@ -2075,10 +2773,12 @@ function createPreviewVideo(
             "video"
         );
 
+
     preview.dataset.src =
         videoUrl(
             filename
         );
+
 
     preview.muted =
         true;
@@ -2092,8 +2792,10 @@ function createPreviewVideo(
     preview.preload =
         "metadata";
 
+
     preview.disablePictureInPicture =
         true;
+
 
     preview.setAttribute(
         "aria-hidden",
@@ -2112,6 +2814,7 @@ function createPreviewVideo(
 
                 preview.currentTime =
                     0;
+
 
                 preview
                     .play()
@@ -2150,7 +2853,9 @@ const previewObserver =
                     ) {
 
                         if (
-                            !preview.src
+                            !preview.getAttribute(
+                                "src"
+                            )
                         ) {
 
                             preview.src =
@@ -2181,7 +2886,7 @@ const previewObserver =
         },
         {
             rootMargin:
-                "160px"
+                "180px"
         }
     );
 
@@ -2219,76 +2924,264 @@ function stopAllPreviews() {
 
 
 /* =====================================================
-   VIEW ALL GRID
+   VIEW ALL BOUNDS
    ===================================================== */
 
-function calculateViewAllGrid(
-    count
-) {
+function syncProjectAllBounds() {
 
     if (
-        count <= 1
+        !projectAllMode
     ) {
 
-        return {
-            columns: 1,
-            rows: 1
-        };
+        return;
 
     }
 
+
+    const infoRect =
+        info.getBoundingClientRect();
+
+
+    const metaRect =
+        projectMeta.getBoundingClientRect();
+
+
+    const rootStyle =
+        getComputedStyle(
+            document.documentElement
+        );
+
+
+    const side =
+        parseFloat(
+            rootStyle.getPropertyValue(
+                "--side"
+            )
+        ) || 48;
+
+
+    let topGap =
+        14;
+
+    let bottomGap =
+        14;
+
+
     if (
-        count === 2
+        isPhonePortrait()
     ) {
 
-        return {
-            columns: 2,
-            rows: 1
-        };
+        topGap =
+            10;
+
+        bottomGap =
+            10;
 
     }
 
+
     if (
-        count <= 4
+        isPhoneLandscape()
     ) {
 
-        return {
-            columns: 2,
-            rows: 2
-        };
+        topGap =
+            4;
+
+        bottomGap =
+            6;
 
     }
 
-    return {
-        columns: 3,
-        rows: 2
-    };
+
+    const top =
+        Math.ceil(
+            infoRect.bottom +
+            topGap
+        );
+
+
+    const bottom =
+        Math.floor(
+            metaRect.top -
+            bottomGap
+        );
+
+
+    projectAllView.style.left =
+        `${side}px`;
+
+
+    projectAllView.style.right =
+        `${side}px`;
+
+
+    projectAllView.style.top =
+        `${top}px`;
+
+
+    projectAllView.style.height =
+        `${Math.max(
+            80,
+            bottom -
+            top
+        )}px`;
 
 }
 
 
 /* =====================================================
-   BUILD VIEW ALL
+   VIEW ALL GRID LAYOUT
    ===================================================== */
 
-function buildViewAll() {
+function calculateProjectAllLayout(
+    count
+) {
+
+    const rect =
+        projectAllView
+            .getBoundingClientRect();
+
+
+    const gap =
+        isPhoneLandscape()
+            ? 4
+            : (
+                isPhonePortrait()
+                    ? 5
+                    : 7
+            );
+
+
+    let best =
+        {
+            columns: 1,
+            rows: count,
+            score: 0
+        };
+
+
+    for (
+        let columns = 1;
+        columns <= count;
+        columns++
+    ) {
+
+        const rows =
+            Math.ceil(
+                count /
+                columns
+            );
+
+
+        const usableWidth =
+            rect.width -
+            gap *
+            (
+                columns -
+                1
+            );
+
+
+        const usableHeight =
+            rect.height -
+            gap *
+            (
+                rows -
+                1
+            );
+
+
+        if (
+            usableWidth <= 0 ||
+            usableHeight <= 0
+        ) {
+
+            continue;
+
+        }
+
+
+        const cellWidth =
+            usableWidth /
+            columns;
+
+
+        const cellHeight =
+            usableHeight /
+            rows;
+
+
+        /*
+            Video-biased scoring.
+
+            A 16:9 video makes better use of a wider cell
+            than the photography version's generic image
+            scoring.
+        */
+
+        const visibleWidth =
+            Math.min(
+                cellWidth,
+                cellHeight *
+                16 / 9
+            );
+
+
+        const visibleHeight =
+            Math.min(
+                cellHeight,
+                cellWidth *
+                9 / 16
+            );
+
+
+        const score =
+            visibleWidth *
+            visibleHeight;
+
+
+        if (
+            score >
+            best.score
+        ) {
+
+            best =
+                {
+                    columns,
+                    rows,
+                    score
+                };
+
+        }
+
+    }
+
+
+    return best;
+
+}
+
+
+function layoutProjectAllGrid() {
+
+    syncProjectAllBounds();
+
 
     const project =
         currentProject();
 
+
     if (
         !project
     ) {
+
         return;
+
     }
 
 
-    projectAllGrid.innerHTML =
-        "";
-
-
     const layout =
-        calculateViewAllGrid(
+        calculateProjectAllLayout(
             project.videos.length
         );
 
@@ -2297,15 +3190,32 @@ function buildViewAll() {
         .gridTemplateColumns =
             `repeat(${layout.columns}, minmax(0, 1fr))`;
 
+
     projectAllGrid.style
         .gridTemplateRows =
             `repeat(${layout.rows}, minmax(0, 1fr))`;
+
+}
+
+
+/* =====================================================
+   BUILD VIEW ALL
+   ===================================================== */
+
+function buildProjectAllGrid() {
+
+    const project =
+        currentProject();
+
+
+    projectAllGrid.innerHTML =
+        "";
 
 
     project.videos.forEach(
         (
             filename,
-            videoIndex
+            index
         ) => {
 
             const button =
@@ -2313,8 +3223,10 @@ function buildViewAll() {
                     "button"
                 );
 
+
             button.type =
                 "button";
+
 
             button.className =
                 "project-all-thumb";
@@ -2333,16 +3245,21 @@ function buildViewAll() {
 
             button.addEventListener(
                 "click",
-                event => {
+                async event => {
 
                     event.stopPropagation();
 
-                    currentVideoIndex =
-                        videoIndex;
 
-                    closeViewAll(
-                        false
+                    await leaveProjectAll(
+                        {
+                            selectedIndex:
+                                index,
+
+                            resume:
+                                false
+                        }
                     );
+
 
                     loadCurrentVideo(
                         true
@@ -2368,57 +3285,282 @@ function buildViewAll() {
 
 
 /* =====================================================
-   VIEW ALL OPEN / CLOSE
+   VIEW ALL HOVER
    ===================================================== */
 
-function openViewAll() {
+viewAllButton.addEventListener(
+    "mouseenter",
+    async () => {
+
+        if (
+            !window.matchMedia(
+                "(hover: hover)"
+            ).matches ||
+            projectViewAnimating
+        ) {
+
+            return;
+
+        }
+
+
+        viewButtonHovered =
+            true;
+
+
+        const base =
+            projectAllMode
+                ? "close"
+                : "view all";
+
+
+        await animateCase(
+            viewAllButton,
+            base,
+            true
+        );
+
+    }
+);
+
+
+viewAllButton.addEventListener(
+    "mouseleave",
+    async () => {
+
+        if (
+            !window.matchMedia(
+                "(hover: hover)"
+            ).matches ||
+            projectViewAnimating
+        ) {
+
+            return;
+
+        }
+
+
+        viewButtonHovered =
+            false;
+
+
+        const base =
+            projectAllMode
+                ? "close"
+                : "view all";
+
+
+        await animateCase(
+            viewAllButton,
+            base,
+            false
+        );
+
+    }
+);
+
+
+/* =====================================================
+   ENTER VIEW ALL
+   ===================================================== */
+
+async function enterProjectAll() {
 
     if (
-        indexOpen
+        projectAllMode ||
+        projectViewAnimating ||
+        indexMode
     ) {
+
         return;
+
     }
 
 
-    viewAllOpen =
+    projectViewAnimating =
         true;
+
+
+    autoplayBeforeProjectAll =
+        !video.paused;
+
 
     video.pause();
 
-    buildViewAll();
+
+    const project =
+        currentProject();
+
+
+    buildProjectAllGrid();
+
+
+    projectAllMode =
+        true;
+
 
     body.classList.add(
         "project-all-mode"
     );
 
-    viewAllButton.dataset.word =
-        "close";
 
-    viewAllButton
-        .querySelector(
-            "span"
+    /*
+        Geometry must be calculated after the metadata
+        remains in its final position.
+    */
+
+    requestAnimationFrame(
+        () => {
+
+            layoutProjectAllGrid();
+
+        }
+    );
+
+
+    const targetButton =
+        (
+            window.matchMedia(
+                "(hover: hover)"
+            ).matches &&
+            viewButtonHovered
         )
-        .textContent =
-            "close";
+            ? "CLOSE"
+            : "close";
+
+
+    await Promise.all(
+        [
+
+            animateCase(
+                projectTitle,
+                project.title,
+                true
+            ),
+
+            animateCase(
+                projectDate,
+                project.date || "",
+                true
+            ),
+
+            morphSequential(
+                projectCounter,
+                getAllCounterText(
+                    project.videos.length
+                ),
+                STATE_MORPH_DURATION
+            ),
+
+            morphSequential(
+                viewAllButton,
+                targetButton,
+                STATE_MORPH_DURATION
+            )
+
+        ]
+    );
+
+
+    projectViewAnimating =
+        false;
 
 }
 
 
-function closeViewAll(
-    resume = true
+/* =====================================================
+   LEAVE VIEW ALL
+   ===================================================== */
+
+async function leaveProjectAll(
+    {
+        selectedIndex =
+            null,
+
+        resume =
+            true
+    } = {}
 ) {
 
     if (
-        !viewAllOpen
+        !projectAllMode ||
+        projectViewAnimating
     ) {
+
         return;
+
     }
 
 
-    viewAllOpen =
-        false;
+    projectViewAnimating =
+        true;
+
 
     stopAllPreviews();
+
+
+    const project =
+        currentProject();
+
+
+    if (
+        selectedIndex !==
+        null
+    ) {
+
+        currentVideoIndex =
+            selectedIndex;
+
+    }
+
+
+    const targetButton =
+        (
+            window.matchMedia(
+                "(hover: hover)"
+            ).matches &&
+            viewButtonHovered
+        )
+            ? "VIEW ALL"
+            : "view all";
+
+
+    await Promise.all(
+        [
+
+            animateCase(
+                projectTitle,
+                project.title,
+                false
+            ),
+
+            animateCase(
+                projectDate,
+                project.date || "",
+                false
+            ),
+
+            morphSequential(
+                projectCounter,
+                getCounterText(
+                    currentVideoIndex,
+                    project.videos.length
+                ),
+                STATE_MORPH_DURATION
+            ),
+
+            morphSequential(
+                viewAllButton,
+                targetButton,
+                STATE_MORPH_DURATION
+            )
+
+        ]
+    );
+
+
+    projectAllMode =
+        false;
 
 
     body.classList.remove(
@@ -2430,62 +3572,331 @@ function closeViewAll(
         "";
 
 
-    viewAllButton.dataset.word =
-        "view all";
-
-    viewAllButton
-        .querySelector(
-            "span"
-        )
-        .textContent =
-            "view all";
+    projectViewAnimating =
+        false;
 
 
     if (
         resume
     ) {
 
-        video
-            .play()
-            .catch(
-                () => {}
-            );
+        if (
+            autoplayBeforeProjectAll
+        ) {
+
+            video
+                .play()
+                .catch(
+                    () => {}
+                );
+
+        }
 
     }
 
 }
 
 
+/* =====================================================
+   VIEW ALL CLICK
+   ===================================================== */
+
 viewAllButton.addEventListener(
     "click",
-    event => {
+    async event => {
 
         event.stopPropagation();
 
 
         if (
-            viewAllOpen
+            projectViewAnimating
         ) {
 
-            closeViewAll(true);
+            return;
+
+        }
+
+
+        if (
+            projectAllMode
+        ) {
+
+            await leaveProjectAll(
+                {
+                    resume: true
+                }
+            );
 
         }
 
         else {
 
-            openViewAll();
+            await enterProjectAll();
 
         }
-
-
-        viewAllButton.blur();
 
     }
 );
 
 
 /* =====================================================
-   INDEX
+   INDEX SORT
+   ===================================================== */
+
+function getChronologicalProjects() {
+
+    return projects
+        .map(
+            (
+                project,
+                originalIndex
+            ) => ({
+                project,
+                originalIndex
+            })
+        )
+        .sort(
+            (
+                a,
+                b
+            ) => {
+
+                const orderA =
+                    Number.isFinite(
+                        a.project.indexOrder
+                    )
+                        ? a.project.indexOrder
+                        : 999;
+
+
+                const orderB =
+                    Number.isFinite(
+                        b.project.indexOrder
+                    )
+                        ? b.project.indexOrder
+                        : 999;
+
+
+                if (
+                    orderA !==
+                    orderB
+                ) {
+
+                    return (
+                        orderA -
+                        orderB
+                    );
+
+                }
+
+
+                return (
+                    a.originalIndex -
+                    b.originalIndex
+                );
+
+            }
+        );
+
+}
+
+
+/* =====================================================
+   INDEX CARD CASE CONTROLLER
+   ===================================================== */
+
+function createCaseController(
+    element,
+    baseText
+) {
+
+    const base =
+        baseText.toLowerCase();
+
+
+    let frame =
+        null;
+
+
+    function animate(
+        toUpper
+    ) {
+
+        if (
+            frame !==
+            null
+        ) {
+
+            cancelAnimationFrame(
+                frame
+            );
+
+            frame =
+                null;
+
+        }
+
+
+        const positions =
+            getLetterPositions(
+                base
+            );
+
+
+        const total =
+            positions.length;
+
+
+        const currentText =
+            element.textContent;
+
+
+        let startState =
+            0;
+
+
+        for (
+            let i = 0;
+            i < positions.length;
+            i++
+        ) {
+
+            const position =
+                positions[i];
+
+
+            const character =
+                currentText[
+                    position
+                ];
+
+
+            if (
+                character &&
+                character ===
+                character.toUpperCase() &&
+                character !==
+                character.toLowerCase()
+            ) {
+
+                startState++;
+
+            }
+
+            else {
+
+                break;
+
+            }
+
+        }
+
+
+        const target =
+            toUpper
+                ? total
+                : 0;
+
+
+        const start =
+            performance.now();
+
+
+        function step(
+            now
+        ) {
+
+            const progress =
+                Math.min(
+                    1,
+                    (
+                        now -
+                        start
+                    ) /
+                    CASE_DURATION
+                );
+
+
+            const state =
+                Math.round(
+                    startState +
+                    (
+                        target -
+                        startState
+                    ) *
+                    progress
+                );
+
+
+            element.textContent =
+                renderPrefixCase(
+                    base,
+                    state
+                );
+
+
+            if (
+                progress <
+                1
+            ) {
+
+                frame =
+                    requestAnimationFrame(
+                        step
+                    );
+
+            }
+
+            else {
+
+                element.textContent =
+                    renderPrefixCase(
+                        base,
+                        target
+                    );
+
+
+                frame =
+                    null;
+
+            }
+
+        }
+
+
+        frame =
+            requestAnimationFrame(
+                step
+            );
+
+    }
+
+
+    return {
+
+        upper() {
+
+            animate(
+                true
+            );
+
+        },
+
+        lower() {
+
+            animate(
+                false
+            );
+
+        }
+
+    };
+
+}
+
+
+/* =====================================================
+   BUILD INDEX
    ===================================================== */
 
 function buildIndex() {
@@ -2494,158 +3905,379 @@ function buildIndex() {
         "";
 
 
-    const ordered =
-        projects
-            .map(
-                (
-                    project,
-                    projectIndex
-                ) => ({
-                    project,
-                    projectIndex
-                })
-            )
-            .sort(
-                (
-                    a,
-                    b
-                ) =>
-                    (
-                        a.project.indexOrder ??
-                        999
-                    ) -
-                    (
-                        b.project.indexOrder ??
-                        999
-                    )
-            );
+    getChronologicalProjects()
+        .forEach(
+            item => {
+
+                const project =
+                    item.project;
 
 
-    ordered.forEach(
-        item => {
-
-            const {
-                project,
-                projectIndex
-            } =
-                item;
+                const originalIndex =
+                    item.originalIndex;
 
 
-            const card =
-                document.createElement(
-                    "button"
-                );
-
-            card.type =
-                "button";
-
-            card.className =
-                "project-card";
-
-
-            const videoWrap =
-                document.createElement(
-                    "div"
-                );
-
-            videoWrap.className =
-                "card-video-wrap";
-
-
-            const preview =
-                createPreviewVideo(
-                    project.videos[0]
-                );
-
-
-            videoWrap.appendChild(
-                preview
-            );
-
-
-            const copy =
-                document.createElement(
-                    "div"
-                );
-
-            copy.className =
-                "card-copy";
-
-
-            const title =
-                document.createElement(
-                    "span"
-                );
-
-            title.className =
-                "card-title";
-
-            title.textContent =
-                project.title;
-
-
-            const date =
-                document.createElement(
-                    "span"
-                );
-
-            date.className =
-                "card-date";
-
-            date.textContent =
-                project.date;
-
-
-            copy.appendChild(
-                title
-            );
-
-            copy.appendChild(
-                date
-            );
-
-
-            card.appendChild(
-                videoWrap
-            );
-
-            card.appendChild(
-                copy
-            );
-
-
-            card.addEventListener(
-                "click",
-                event => {
-
-                    event.stopPropagation();
-
-                    currentProjectIndex =
-                        projectIndex;
-
-                    currentVideoIndex =
-                        0;
-
-                    closeIndex(
-                        false
+                const button =
+                    document.createElement(
+                        "button"
                     );
 
-                    loadCurrentVideo(
-                        true
+
+                button.className =
+                    "project-card";
+
+
+                button.type =
+                    "button";
+
+
+                /*
+                    Native button remains the actual
+                    clickable target.
+
+                    Videos themselves have pointer-events
+                    disabled by CSS, so clicks always reach
+                    this button.
+                */
+
+
+                const videoWrap =
+                    document.createElement(
+                        "span"
                     );
+
+
+                videoWrap.className =
+                    "card-video-wrap";
+
+
+                const preview =
+                    createPreviewVideo(
+                        project.videos[0]
+                    );
+
+
+                videoWrap.appendChild(
+                    preview
+                );
+
+
+                const copy =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                copy.className =
+                    "card-copy";
+
+
+                const title =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                title.className =
+                    "card-title";
+
+
+                const titleBase =
+                    project.title
+                        .toLowerCase();
+
+
+                title.textContent =
+                    titleBase;
+
+
+                const date =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                date.className =
+                    "card-date";
+
+
+                const dateBase =
+                    (
+                        project.date ||
+                        ""
+                    ).toLowerCase();
+
+
+                date.textContent =
+                    dateBase;
+
+
+                copy.append(
+                    title,
+                    date
+                );
+
+
+                button.append(
+                    videoWrap,
+                    copy
+                );
+
+
+                const titleCase =
+                    createCaseController(
+                        title,
+                        titleBase
+                    );
+
+
+                const dateCase =
+                    createCaseController(
+                        date,
+                        dateBase
+                    );
+
+
+                button.addEventListener(
+                    "mouseenter",
+                    () => {
+
+                        if (
+                            !window.matchMedia(
+                                "(hover: hover)"
+                            ).matches
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        titleCase.upper();
+
+                        dateCase.upper();
+
+                    }
+                );
+
+
+                button.addEventListener(
+                    "mouseleave",
+                    () => {
+
+                        if (
+                            !window.matchMedia(
+                                "(hover: hover)"
+                            ).matches
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        titleCase.lower();
+
+                        dateCase.lower();
+
+                    }
+                );
+
+
+                button.addEventListener(
+                    "click",
+                    async event => {
+
+                        /*
+                            Suppress ONLY a genuine index
+                            drag. Ordinary clicks now always
+                            enter the project.
+                        */
+
+                        if (
+                            indexDragMoved
+                        ) {
+
+                            event.preventDefault();
+
+                            event.stopPropagation();
+
+                            return;
+
+                        }
+
+
+                        event.preventDefault();
+
+                        event.stopPropagation();
+
+
+                        await exitIndexToProject(
+                            originalIndex
+                        );
+
+                    }
+                );
+
+
+                indexGrid.appendChild(
+                    button
+                );
+
+
+                observePreview(
+                    preview
+                );
+
+            }
+        );
+
+}
+
+
+/* =====================================================
+   INDEX WORD
+   ===================================================== */
+
+const indexWord =
+    "index";
+
+
+let indexWordState =
+    0;
+
+
+let indexWordFrame =
+    null;
+
+
+function renderIndexWord(
+    state
+) {
+
+    indexWordState =
+        state;
+
+
+    indexButton.textContent =
+        renderPrefixCase(
+            indexWord,
+            state
+        );
+
+}
+
+
+/* =====================================================
+   INDEX MORPH
+   ===================================================== */
+
+function morphIndexTo(
+    target
+) {
+
+    if (
+        indexWordFrame !==
+        null
+    ) {
+
+        cancelAnimationFrame(
+            indexWordFrame
+        );
+
+    }
+
+
+    const startState =
+        indexWordState;
+
+
+    if (
+        startState ===
+        target
+    ) {
+
+        renderIndexWord(
+            target
+        );
+
+        return Promise.resolve();
+
+    }
+
+
+    const start =
+        performance.now();
+
+
+    return new Promise(
+        resolve => {
+
+            function frame(
+                now
+            ) {
+
+                const progress =
+                    Math.min(
+                        1,
+                        (
+                            now -
+                            start
+                        ) /
+                        INDEX_TRANSITION_DURATION
+                    );
+
+
+                const state =
+                    Math.round(
+                        startState +
+                        (
+                            target -
+                            startState
+                        ) *
+                        progress
+                    );
+
+
+                renderIndexWord(
+                    state
+                );
+
+
+                if (
+                    progress <
+                    1
+                ) {
+
+                    indexWordFrame =
+                        requestAnimationFrame(
+                            frame
+                        );
 
                 }
-            );
+
+                else {
+
+                    renderIndexWord(
+                        target
+                    );
 
 
-            indexGrid.appendChild(
-                card
-            );
+                    indexWordFrame =
+                        null;
 
 
-            observePreview(
-                preview
-            );
+                    resolve();
+
+                }
+
+            }
+
+
+            indexWordFrame =
+                requestAnimationFrame(
+                    frame
+                );
 
         }
     );
@@ -2654,99 +4286,208 @@ function buildIndex() {
 
 
 /* =====================================================
-   INDEX OPEN / CLOSE
+   INDEX HOVER
+
+   CLOSED:
+   index -> INDEX on hover
+
+   OPEN:
+   INDEX -> index on hover
    ===================================================== */
 
-function openIndex() {
+indexButton.addEventListener(
+    "mouseenter",
+    () => {
+
+        if (
+            isPhoneLayout()
+        ) {
+
+            return;
+
+        }
+
+
+        morphIndexTo(
+            indexMode
+                ? 0
+                : indexWord.length
+        );
+
+    }
+);
+
+
+indexButton.addEventListener(
+    "mouseleave",
+    () => {
+
+        if (
+            isPhoneLayout()
+        ) {
+
+            return;
+
+        }
+
+
+        morphIndexTo(
+            indexMode
+                ? indexWord.length
+                : 0
+        );
+
+    }
+);
+
+
+/* =====================================================
+   INDEX POSITION
+   ===================================================== */
+
+function saveIndexPosition() {
+
+    savedIndexScrollLeft =
+        indexScroller.scrollLeft;
+
+}
+
+
+function restoreIndexPosition() {
+
+    requestAnimationFrame(
+        () => {
+
+            indexScroller.scrollLeft =
+                savedIndexScrollLeft;
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   ENTER INDEX
+   ===================================================== */
+
+async function enterIndex() {
 
     if (
-        viewAllOpen
+        indexMode ||
+        interfaceAnimating
     ) {
 
-        closeViewAll(
-            false
-        );
+        return;
 
     }
 
 
-    indexOpen =
+    interfaceAnimating =
         true;
+
+
+    autoplayBeforeIndex =
+        !video.paused;
+
 
     video.pause();
 
 
     if (
-        indexGrid.children.length ===
-        0
+        projectAllMode
     ) {
 
-        buildIndex();
+        await leaveProjectAll(
+            {
+                resume: false
+            }
+        );
 
     }
+
+
+    indexMode =
+        true;
 
 
     body.classList.add(
         "index-mode"
     );
 
+
     indexView.classList.add(
         "visible"
     );
 
 
-    indexButton.dataset.word =
-        "close";
+    restoreIndexPosition();
 
-    indexButton
-        .querySelector(
-            "span"
-        )
-        .textContent =
-            "close";
+
+    /*
+        Same behavior as Photography:
+        entering index resolves to uppercase INDEX,
+        not "close".
+    */
+
+    await morphIndexTo(
+        indexWord.length
+    );
+
+
+    interfaceAnimating =
+        false;
 
 }
 
 
-function closeIndex(
-    resume = true
-) {
+/* =====================================================
+   RETURN FROM INDEX
+   ===================================================== */
+
+async function returnFromIndex() {
 
     if (
-        !indexOpen
+        !indexMode ||
+        interfaceAnimating
     ) {
+
         return;
+
     }
 
 
-    indexOpen =
-        false;
+    interfaceAnimating =
+        true;
+
+
+    saveIndexPosition();
+
+
+    await morphIndexTo(
+        0
+    );
+
 
     stopAllPreviews();
 
-
-    body.classList.remove(
-        "index-mode"
-    );
 
     indexView.classList.remove(
         "visible"
     );
 
 
-    indexButton.dataset.word =
-        "index";
+    indexMode =
+        false;
 
-    indexButton
-        .querySelector(
-            "span"
-        )
-        .textContent =
-            "index";
+
+    body.classList.remove(
+        "index-mode"
+    );
 
 
     if (
-        resume
+        autoplayBeforeIndex
     ) {
 
         video
@@ -2757,32 +4498,140 @@ function closeIndex(
 
     }
 
+
+    interfaceAnimating =
+        false;
+
 }
 
 
+/* =====================================================
+   INDEX -> PROJECT
+   ===================================================== */
+
+async function exitIndexToProject(
+    targetProjectIndex
+) {
+
+    if (
+        !indexMode ||
+        interfaceAnimating
+    ) {
+
+        return;
+
+    }
+
+
+    interfaceAnimating =
+        true;
+
+
+    saveIndexPosition();
+
+
+    /*
+        Photography also takes INDEX back down while
+        leaving the index.
+    */
+
+    await morphIndexTo(
+        0
+    );
+
+
+    stopAllPreviews();
+
+
+    indexView.classList.remove(
+        "visible"
+    );
+
+
+    indexMode =
+        false;
+
+
+    body.classList.remove(
+        "index-mode"
+    );
+
+
+    currentProjectIndex =
+        targetProjectIndex;
+
+
+    currentVideoIndex =
+        0;
+
+
+    renderedProjectIndex =
+        null;
+
+
+    await loadCurrentVideo(
+        true
+    );
+
+
+    interfaceAnimating =
+        false;
+
+}
+
+
+/* =====================================================
+   INDEX BUTTON CLICK
+   ===================================================== */
+
 indexButton.addEventListener(
     "click",
-    event => {
+    async event => {
 
         event.stopPropagation();
 
 
         if (
-            indexOpen
+            interfaceAnimating ||
+            projectViewAnimating
         ) {
 
-            closeIndex(true);
+            return;
+
+        }
+
+
+        if (
+            projectAllMode
+        ) {
+
+            await leaveProjectAll(
+                {
+                    resume: false
+                }
+            );
+
+
+            await enterIndex();
+
+            return;
+
+        }
+
+
+        if (
+            indexMode
+        ) {
+
+            await returnFromIndex();
 
         }
 
         else {
 
-            openIndex();
+            await enterIndex();
 
         }
-
-
-        indexButton.blur();
 
     }
 );
@@ -2797,16 +4646,18 @@ indexScroller.addEventListener(
     event => {
 
         if (
-            !indexOpen
+            !indexMode
         ) {
+
             return;
+
         }
 
 
         event.preventDefault();
 
 
-        indexScroller.scrollLeft +=
+        const movement =
             Math.abs(
                 event.deltaX
             ) >
@@ -2816,6 +4667,11 @@ indexScroller.addEventListener(
                 ? event.deltaX
                 : event.deltaY;
 
+
+        indexScroller.scrollLeft +=
+            movement *
+            INDEX_WHEEL_MULTIPLIER;
+
     },
     {
         passive: false
@@ -2824,93 +4680,212 @@ indexScroller.addEventListener(
 
 
 /* =====================================================
-   INDEX DRAG
+   INDEX MOUSE DRAG
    ===================================================== */
 
-let dragging =
+let indexDragging =
     false;
 
-let dragStartX =
+let indexDragStartX =
     0;
 
-let dragStartScroll =
+let indexDragStartScroll =
+    0;
+
+let indexDragDistance =
     0;
 
 
 indexScroller.addEventListener(
-    "pointerdown",
+    "mousedown",
     event => {
 
-        dragging =
+        if (
+            event.button !==
+            0
+        ) {
+
+            return;
+
+        }
+
+
+        indexDragging =
             true;
 
-        dragStartX =
+
+        indexDragMoved =
+            false;
+
+
+        indexDragDistance =
+            0;
+
+
+        indexDragStartX =
             event.clientX;
 
-        dragStartScroll =
+
+        indexDragStartScroll =
             indexScroller.scrollLeft;
+
 
         indexScroller.classList.add(
             "dragging"
-        );
-
-        indexScroller.setPointerCapture(
-            event.pointerId
         );
 
     }
 );
 
 
-indexScroller.addEventListener(
-    "pointermove",
+window.addEventListener(
+    "mousemove",
     event => {
 
         if (
-            !dragging
+            !indexDragging
         ) {
+
             return;
+
         }
 
 
         const delta =
             event.clientX -
-            dragStartX;
+            indexDragStartX;
+
+
+        indexDragDistance =
+            Math.max(
+                indexDragDistance,
+                Math.abs(
+                    delta
+                )
+            );
+
+
+        if (
+            indexDragDistance >
+            6
+        ) {
+
+            indexDragMoved =
+                true;
+
+        }
 
 
         indexScroller.scrollLeft =
-            dragStartScroll -
+            indexDragStartScroll -
             delta;
 
     }
 );
 
 
-function stopIndexDrag() {
+window.addEventListener(
+    "mouseup",
+    () => {
 
-    dragging =
-        false;
+        if (
+            !indexDragging
+        ) {
 
-    indexScroller.classList.remove(
-        "dragging"
-    );
+            return;
 
-}
+        }
 
 
-indexScroller.addEventListener(
-    "pointerup",
-    stopIndexDrag
-);
+        indexDragging =
+            false;
 
-indexScroller.addEventListener(
-    "pointercancel",
-    stopIndexDrag
+
+        indexScroller.classList.remove(
+            "dragging"
+        );
+
+
+        /*
+            Keep the suppression flag alive only through
+            the synthetic click generated after mouseup.
+        */
+
+        if (
+            indexDragMoved
+        ) {
+
+            setTimeout(
+                () => {
+
+                    indexDragMoved =
+                        false;
+
+                },
+                0
+            );
+
+        }
+
+    }
 );
 
 
 /* =====================================================
-   KEYBOARD
+   INDEX KEYBOARD
+   ===================================================== */
+
+indexScroller.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key ===
+            "ArrowRight"
+        ) {
+
+            event.preventDefault();
+
+
+            indexScroller.scrollBy(
+                {
+                    left:
+                        INDEX_KEY_STEP,
+
+                    behavior:
+                        "smooth"
+                }
+            );
+
+        }
+
+
+        else if (
+            event.key ===
+            "ArrowLeft"
+        ) {
+
+            event.preventDefault();
+
+
+            indexScroller.scrollBy(
+                {
+                    left:
+                        -INDEX_KEY_STEP,
+
+                    behavior:
+                        "smooth"
+                }
+            );
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   GLOBAL KEYBOARD
    ===================================================== */
 
 document.addEventListener(
@@ -2919,6 +4894,7 @@ document.addEventListener(
 
         const target =
             event.target;
+
 
         const isFormElement =
             target &&
@@ -2935,7 +4911,9 @@ document.addEventListener(
         if (
             isFormElement
         ) {
+
             return;
+
         }
 
 
@@ -2945,12 +4923,18 @@ document.addEventListener(
         ) {
 
             if (
-                viewAllOpen
+                projectAllMode
             ) {
 
                 event.preventDefault();
 
-                closeViewAll(true);
+
+                leaveProjectAll(
+                    {
+                        resume: true
+                    }
+                );
+
 
                 return;
 
@@ -2958,12 +4942,14 @@ document.addEventListener(
 
 
             if (
-                indexOpen
+                indexMode
             ) {
 
                 event.preventDefault();
 
-                closeIndex(true);
+
+                returnFromIndex();
+
 
                 return;
 
@@ -2973,47 +4959,12 @@ document.addEventListener(
 
 
         if (
-            indexOpen
+            indexMode ||
+            projectAllMode
         ) {
-
-            if (
-                event.code ===
-                "ArrowRight"
-            ) {
-
-                event.preventDefault();
-
-                indexScroller.scrollBy({
-                    left: 320,
-                    behavior: "smooth"
-                });
-
-            }
-
-            else if (
-                event.code ===
-                "ArrowLeft"
-            ) {
-
-                event.preventDefault();
-
-                indexScroller.scrollBy({
-                    left: -320,
-                    behavior: "smooth"
-                });
-
-            }
-
 
             return;
 
-        }
-
-
-        if (
-            viewAllOpen
-        ) {
-            return;
         }
 
 
@@ -3028,6 +4979,7 @@ document.addEventListener(
 
         }
 
+
         else if (
             event.code ===
             "ArrowRight"
@@ -3038,6 +4990,7 @@ document.addEventListener(
             nextFilm();
 
         }
+
 
         else if (
             event.code ===
@@ -3058,19 +5011,6 @@ document.addEventListener(
    MOBILE SWIPE
    ===================================================== */
 
-let touchStartX =
-    0;
-
-let touchStartY =
-    0;
-
-let touchStartTime =
-    0;
-
-let touchMoved =
-    false;
-
-
 video.addEventListener(
     "touchstart",
     event => {
@@ -3079,7 +5019,9 @@ video.addEventListener(
             event.touches.length !==
             1
         ) {
+
             return;
+
         }
 
 
@@ -3090,11 +5032,14 @@ video.addEventListener(
         touchStartX =
             touch.clientX;
 
+
         touchStartY =
             touch.clientY;
 
+
         touchStartTime =
             performance.now();
+
 
         touchMoved =
             false;
@@ -3114,16 +5059,20 @@ video.addEventListener(
             event.touches.length !==
             1
         ) {
+
             return;
+
         }
 
 
         const touch =
             event.touches[0];
 
+
         const dx =
             touch.clientX -
             touchStartX;
+
 
         const dy =
             touch.clientY -
@@ -3156,20 +5105,25 @@ video.addEventListener(
         if (
             !event.changedTouches.length
         ) {
+
             return;
+
         }
 
 
         const touch =
             event.changedTouches[0];
 
+
         const dx =
             touch.clientX -
             touchStartX;
 
+
         const dy =
             touch.clientY -
             touchStartY;
+
 
         const elapsed =
             performance.now() -
@@ -3206,18 +5160,41 @@ video.addEventListener(
             }
 
 
+            /*
+                Delay reset so the synthetic click following
+                touchend cannot toggle play/pause.
+            */
+
+            setTimeout(
+                () => {
+
+                    touchMoved =
+                        false;
+
+                },
+                150
+            );
+
+
             return;
 
         }
 
 
-        if (
-            !touchMoved
-        ) {
+        /*
+            Let the native click event handle ordinary
+            tap -> play/pause.
+        */
 
-            togglePlayback();
+        setTimeout(
+            () => {
 
-        }
+                touchMoved =
+                    false;
+
+            },
+            150
+        );
 
     },
     {
@@ -3227,7 +5204,7 @@ video.addEventListener(
 
 
 /* =====================================================
-   LOAD DATA
+   LOAD PROJECTS
    ===================================================== */
 
 async function loadProjects() {
@@ -3277,12 +5254,25 @@ async function loadProjects() {
             projects.length ===
             0
         ) {
+
             return;
+
         }
+
+
+        /*
+            Build the index once.
+
+            Preview videos still do not load their actual
+            source until IntersectionObserver activates them.
+        */
+
+        buildIndex();
 
 
         currentProjectIndex =
             0;
+
 
         currentVideoIndex =
             0;
@@ -3290,7 +5280,8 @@ async function loadProjects() {
 
         updateSoundButton();
 
-        loadCurrentVideo(
+
+        await loadCurrentVideo(
             true
         );
 
@@ -3307,6 +5298,50 @@ async function loadProjects() {
     }
 
 }
+
+
+/* =====================================================
+   RESIZE
+   ===================================================== */
+
+let resizeTimer =
+    null;
+
+
+window.addEventListener(
+    "resize",
+    () => {
+
+        if (
+            resizeTimer !==
+            null
+        ) {
+
+            clearTimeout(
+                resizeTimer
+            );
+
+        }
+
+
+        resizeTimer =
+            setTimeout(
+                () => {
+
+                    if (
+                        projectAllMode
+                    ) {
+
+                        layoutProjectAllGrid();
+
+                    }
+
+                },
+                100
+            );
+
+    }
+);
 
 
 /* =====================================================
@@ -3331,8 +5366,8 @@ document.addEventListener(
 
 
         if (
-            !indexOpen &&
-            !viewAllOpen
+            !indexMode &&
+            !projectAllMode
         ) {
 
             video
@@ -3350,6 +5385,11 @@ document.addEventListener(
 /* =====================================================
    INIT
    ===================================================== */
+
+renderIndexWord(
+    0
+);
+
 
 loadProjects();
 
