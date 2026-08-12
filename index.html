@@ -71,7 +71,6 @@ button {
 
     --index-content-top: 130px;
 
-    --index-card-width: 285px;
     --index-video-height: 365px;
 
 }
@@ -417,15 +416,6 @@ body {
 
 /* =====================================================
    VIEW ALL MODE
-
-   Main video and navigation controls disappear.
-
-   Metadata stays exactly where it was:
-   PROJECT TITLE
-   DATE
-
-                    all (04)
-                    close
    ===================================================== */
 
 body.project-all-mode #film-video {
@@ -669,26 +659,20 @@ body.index-mode #video-stage {
 
 /* =====================================================
    INDEX CARD
-
-   Same basic dimensions as Photography index.
    ===================================================== */
 
 .project-card {
     appearance: none;
     -webkit-appearance: none;
 
-    flex:
-        0
-        0
-        var(--index-card-width);
+    flex: 0 0 auto;
 
     display: flex;
     flex-direction: column;
 
     align-items: flex-start;
 
-    width:
-        var(--index-card-width);
+    width: auto;
 
     margin: 0;
     padding: 0;
@@ -712,25 +696,13 @@ body.index-mode #video-stage {
 
 /* =====================================================
    INDEX VIDEO
-
-   Important:
-   the media is centered inside every fixed-width card.
-
-   Therefore portrait clips receive equal empty space
-   on both sides instead of visually sticking to the
-   previous horizontal clip.
    ===================================================== */
 
 .card-video-wrap {
-    display: flex;
+    display: block;
 
-    align-items: center;
-    justify-content: center;
-
-    width: 100%;
-
-    height:
-        var(--index-video-height);
+    width: auto;
+    height: var(--index-video-height);
 
     pointer-events: none;
 }
@@ -738,11 +710,11 @@ body.index-mode #video-stage {
 .project-card video {
     display: block;
 
-    max-width: 100%;
-    max-height: 100%;
-
     width: auto;
-    height: auto;
+    height: var(--index-video-height);
+
+    max-width: none;
+    max-height: none;
 
     object-fit: contain;
 
@@ -806,7 +778,6 @@ body.index-mode #video-stage {
         --visual-height: 68vh;
         --video-max-width: 72vw;
 
-        --index-card-width: 250px;
         --index-video-height: 325px;
 
     }
@@ -860,7 +831,6 @@ body.index-mode #video-stage {
 
     :root {
 
-        --index-card-width: 48vw;
         --index-video-height: 56vw;
 
     }
@@ -928,7 +898,6 @@ body.index-mode #video-stage {
 
         --index-bottom: 14px;
 
-        --index-card-width: 220px;
         --index-video-height: 220px;
 
     }
@@ -1131,9 +1100,8 @@ body.index-mode #video-stage {
             <button
                 id="sound-button"
                 type="button"
-            >
-                sound on
-            </button>
+                aria-label="sound on"
+            ><span id="sound-label">sound&nbsp;</span><span id="sound-state">on</span></button>
 
             <button
                 id="next-button"
@@ -1221,8 +1189,8 @@ const WORD_TRANSITION_DURATION =
 const LOGO_STEP_DURATION =
     80;
 
-const LOGO_MOBILE_HOLD =
-    2000;
+const LANDING_URL =
+    "https://denizalpaybak.com/";
 
 const PREVIEW_DURATION =
     5;
@@ -1311,6 +1279,11 @@ const soundButton =
         "sound-button"
     );
 
+const soundState =
+    document.getElementById(
+        "sound-state"
+    );
+
 const controls =
     document.getElementById(
         "controls"
@@ -1389,6 +1362,9 @@ let savedIndexScrollLeft =
 let viewButtonHovered =
     false;
 
+let soundButtonHovered =
+    false;
+
 let indexDragMoved =
     false;
 
@@ -1397,6 +1373,19 @@ let autoplayBeforeIndex =
 
 let autoplayBeforeProjectAll =
     true;
+
+
+/*
+    Remembers whether the main film was actually playing
+    at the exact moment the browser tab became hidden.
+
+    If the user had manually paused the film before
+    changing tabs, this stays false and the film will
+    remain paused when they return.
+*/
+
+let resumeAfterVisibility =
+    false;
 
 
 /* =====================================================
@@ -1481,6 +1470,7 @@ function currentFilename() {
     const project =
         currentProject();
 
+
     if (
         !project
     ) {
@@ -1488,6 +1478,7 @@ function currentFilename() {
         return null;
 
     }
+
 
     return project.videos[
         currentVideoIndex
@@ -2116,14 +2107,6 @@ installHoverCase(
     () => "next"
 );
 
-installHoverCase(
-    soundButton,
-    () =>
-        soundEnabled
-            ? "sound off"
-            : "sound on"
-);
-
 
 /* =====================================================
    LOGO
@@ -2172,9 +2155,6 @@ let logoTarget =
 let logoTimer =
     null;
 
-let logoReturnTimer =
-    null;
-
 
 function setLogoState(
     state
@@ -2207,59 +2187,67 @@ function setLogoState(
 }
 
 
-function moveLogo() {
-
-    if (
-        logoState ===
-        logoTarget
-    ) {
-
-        logoTimer =
-            null;
-
-        return;
-
-    }
-
-
-    setLogoState(
-        logoState <
-        logoTarget
-            ? logoState + 1
-            : logoState - 1
-    );
-
-
-    logoTimer =
-        setTimeout(
-            moveLogo,
-            LOGO_STEP_DURATION
-        );
-
-}
-
-
 function animateLogoTo(
     target
 ) {
 
-    logoTarget =
-        target;
+    return new Promise(
+        resolve => {
+
+            logoTarget =
+                target;
 
 
-    if (
-        logoTimer !==
-        null
-    ) {
+            if (
+                logoTimer !==
+                null
+            ) {
 
-        clearTimeout(
-            logoTimer
-        );
+                clearTimeout(
+                    logoTimer
+                );
 
-    }
+            }
 
 
-    moveLogo();
+            function step() {
+
+                if (
+                    logoState ===
+                    logoTarget
+                ) {
+
+                    logoTimer =
+                        null;
+
+                    resolve();
+
+                    return;
+
+                }
+
+
+                setLogoState(
+                    logoState <
+                    logoTarget
+                        ? logoState + 1
+                        : logoState - 1
+                );
+
+
+                logoTimer =
+                    setTimeout(
+                        step,
+                        LOGO_STEP_DURATION
+                    );
+
+            }
+
+
+            step();
+
+        }
+    );
 
 }
 
@@ -2274,7 +2262,9 @@ logo.addEventListener(
             ).matches
         ) {
 
-            animateLogoTo(5);
+            animateLogoTo(
+                5
+            );
 
         }
 
@@ -2292,7 +2282,9 @@ logo.addEventListener(
             ).matches
         ) {
 
-            animateLogoTo(0);
+            animateLogoTo(
+                0
+            );
 
         }
 
@@ -2302,7 +2294,7 @@ logo.addEventListener(
 
 logo.addEventListener(
     "click",
-    event => {
+    async event => {
 
         event.preventDefault();
 
@@ -2313,31 +2305,15 @@ logo.addEventListener(
             ).matches
         ) {
 
-            if (
-                logoReturnTimer
-            ) {
-
-                clearTimeout(
-                    logoReturnTimer
-                );
-
-            }
-
-
-            animateLogoTo(5);
-
-
-            logoReturnTimer =
-                setTimeout(
-                    () => {
-
-                        animateLogoTo(0);
-
-                    },
-                    LOGO_MOBILE_HOLD
-                );
+            await animateLogoTo(
+                5
+            );
 
         }
+
+
+        window.location.href =
+            LANDING_URL;
 
     }
 );
@@ -2356,13 +2332,17 @@ logo.addEventListener(
 
             event.preventDefault();
 
+            logo.click();
+
         }
 
     }
 );
 
 
-setLogoState(0);
+setLogoState(
+    0
+);
 
 
 /* =====================================================
@@ -2434,16 +2414,69 @@ async function updateMetadata(
    SOUND
    ===================================================== */
 
-function updateSoundButton() {
+function soundStateBaseText() {
 
-    const text =
+    return soundEnabled
+        ? "off"
+        : "on";
+
+}
+
+
+function updateSoundAriaLabel() {
+
+    soundButton.setAttribute(
+        "aria-label",
         soundEnabled
             ? "sound off"
-            : "sound on";
+            : "sound on"
+    );
+
+}
 
 
-    soundButton.textContent =
-        text;
+async function updateSoundButton(
+    animate = false
+) {
+
+    const base =
+        soundStateBaseText();
+
+    const target =
+        (
+            window.matchMedia(
+                "(hover: hover)"
+            ).matches &&
+            soundButtonHovered
+        )
+            ? base.toUpperCase()
+            : base.toLowerCase();
+
+
+    updateSoundAriaLabel();
+
+
+    if (
+        animate
+    ) {
+
+        await morphSequential(
+            soundState,
+            target,
+            STATE_MORPH_DURATION
+        );
+
+    }
+
+    else {
+
+        soundState.textContent =
+            target;
+
+        soundState.dataset.rawText =
+            target;
+
+    }
 
 }
 
@@ -2456,16 +2489,76 @@ function applySoundState() {
 }
 
 
-function toggleSound() {
+async function toggleSound() {
 
     soundEnabled =
         !soundEnabled;
 
     applySoundState();
 
-    updateSoundButton();
+    await updateSoundButton(
+        true
+    );
 
 }
+
+
+soundButton.addEventListener(
+    "mouseenter",
+    () => {
+
+        if (
+            !window.matchMedia(
+                "(hover: hover)"
+            ).matches
+        ) {
+
+            return;
+
+        }
+
+
+        soundButtonHovered =
+            true;
+
+
+        animateCase(
+            soundState,
+            soundStateBaseText(),
+            true
+        );
+
+    }
+);
+
+
+soundButton.addEventListener(
+    "mouseleave",
+    () => {
+
+        if (
+            !window.matchMedia(
+                "(hover: hover)"
+            ).matches
+        ) {
+
+            return;
+
+        }
+
+
+        soundButtonHovered =
+            false;
+
+
+        animateCase(
+            soundState,
+            soundStateBaseText(),
+            false
+        );
+
+    }
+);
 
 
 /* =====================================================
@@ -2694,6 +2787,7 @@ video.addEventListener(
 
         event.stopPropagation();
 
+
         if (
             touchMoved
         ) {
@@ -2701,6 +2795,7 @@ video.addEventListener(
             return;
 
         }
+
 
         togglePlayback();
 
@@ -2753,8 +2848,6 @@ soundButton.addEventListener(
         event.stopPropagation();
 
         toggleSound();
-
-        soundButton.blur();
 
     }
 );
@@ -2898,6 +2991,51 @@ function observePreview(
     previewObserver.observe(
         preview
     );
+
+}
+
+
+function activatePreview(
+    preview
+) {
+
+    if (
+        !preview.getAttribute(
+            "src"
+        )
+    ) {
+
+        preview.src =
+            preview.dataset.src;
+
+        preview.preload =
+            "auto";
+
+        preview.load();
+
+    }
+
+
+    preview
+        .play()
+        .catch(
+            () => {}
+        );
+
+}
+
+
+function activatePreviewsIn(
+    container
+) {
+
+    container
+        .querySelectorAll(
+            "video[data-src]"
+        )
+        .forEach(
+            activatePreview
+        );
 
 }
 
@@ -3110,14 +3248,6 @@ function calculateProjectAllLayout(
             usableHeight /
             rows;
 
-
-        /*
-            Video-biased scoring.
-
-            A 16:9 video makes better use of a wider cell
-            than the photography version's generic image
-            scoring.
-        */
 
         const visibleWidth =
             Math.min(
@@ -3395,6 +3525,11 @@ async function enterProjectAll() {
     buildProjectAllGrid();
 
 
+    activatePreviewsIn(
+        projectAllGrid
+    );
+
+
     projectAllMode =
         true;
 
@@ -3403,11 +3538,6 @@ async function enterProjectAll() {
         "project-all-mode"
     );
 
-
-    /*
-        Geometry must be calculated after the metadata
-        remains in its final position.
-    */
 
     requestAnimationFrame(
         () => {
@@ -3577,20 +3707,15 @@ async function leaveProjectAll(
 
 
     if (
-        resume
+        resume &&
+        autoplayBeforeProjectAll
     ) {
 
-        if (
-            autoplayBeforeProjectAll
-        ) {
-
-            video
-                .play()
-                .catch(
-                    () => {}
-                );
-
-        }
+        video
+            .play()
+            .catch(
+                () => {}
+            );
 
     }
 
@@ -3931,16 +4056,6 @@ function buildIndex() {
                     "button";
 
 
-                /*
-                    Native button remains the actual
-                    clickable target.
-
-                    Videos themselves have pointer-events
-                    disabled by CSS, so clicks always reach
-                    this button.
-                */
-
-
                 const videoWrap =
                     document.createElement(
                         "span"
@@ -3959,6 +4074,64 @@ function buildIndex() {
 
                 videoWrap.appendChild(
                     preview
+                );
+
+
+                const syncCardWidth =
+                    () => {
+
+                        if (
+                            !preview.videoWidth ||
+                            !preview.videoHeight
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        const rootStyle =
+                            getComputedStyle(
+                                document.documentElement
+                            );
+
+
+                        const targetHeight =
+                            parseFloat(
+                                rootStyle.getPropertyValue(
+                                    "--index-video-height"
+                                )
+                            );
+
+
+                        if (
+                            !targetHeight
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        const targetWidth =
+                            targetHeight *
+                            preview.videoWidth /
+                            preview.videoHeight;
+
+
+                        button.style.width =
+                            `${targetWidth}px`;
+
+
+                        videoWrap.style.width =
+                            `${targetWidth}px`;
+
+                    };
+
+
+                preview.addEventListener(
+                    "loadedmetadata",
+                    syncCardWidth
                 );
 
 
@@ -4087,12 +4260,6 @@ function buildIndex() {
                 button.addEventListener(
                     "click",
                     async event => {
-
-                        /*
-                            Suppress ONLY a genuine index
-                            drag. Ordinary clicks now always
-                            enter the project.
-                        */
 
                         if (
                             indexDragMoved
@@ -4287,12 +4454,6 @@ function morphIndexTo(
 
 /* =====================================================
    INDEX HOVER
-
-   CLOSED:
-   index -> INDEX on hover
-
-   OPEN:
-   INDEX -> index on hover
    ===================================================== */
 
 indexButton.addEventListener(
@@ -4407,6 +4568,11 @@ async function enterIndex() {
     }
 
 
+    activatePreviewsIn(
+        indexGrid
+    );
+
+
     indexMode =
         true;
 
@@ -4423,12 +4589,6 @@ async function enterIndex() {
 
     restoreIndexPosition();
 
-
-    /*
-        Same behavior as Photography:
-        entering index resolves to uppercase INDEX,
-        not "close".
-    */
 
     await morphIndexTo(
         indexWord.length
@@ -4529,11 +4689,6 @@ async function exitIndexToProject(
 
     saveIndexPosition();
 
-
-    /*
-        Photography also takes INDEX back down while
-        leaving the index.
-    */
 
     await morphIndexTo(
         0
@@ -4805,11 +4960,6 @@ window.addEventListener(
             "dragging"
         );
 
-
-        /*
-            Keep the suppression flag alive only through
-            the synthetic click generated after mouseup.
-        */
 
         if (
             indexDragMoved
@@ -5160,11 +5310,6 @@ video.addEventListener(
             }
 
 
-            /*
-                Delay reset so the synthetic click following
-                touchend cannot toggle play/pause.
-            */
-
             setTimeout(
                 () => {
 
@@ -5180,11 +5325,6 @@ video.addEventListener(
 
         }
 
-
-        /*
-            Let the native click event handle ordinary
-            tap -> play/pause.
-        */
 
         setTimeout(
             () => {
@@ -5260,13 +5400,6 @@ async function loadProjects() {
         }
 
 
-        /*
-            Build the index once.
-
-            Preview videos still do not load their actual
-            source until IntersectionObserver activates them.
-        */
-
         buildIndex();
 
 
@@ -5336,6 +5469,74 @@ window.addEventListener(
 
                     }
 
+
+                    document
+                        .querySelectorAll(
+                            ".project-card video"
+                        )
+                        .forEach(
+                            preview => {
+
+                                if (
+                                    !preview.videoWidth ||
+                                    !preview.videoHeight
+                                ) {
+
+                                    return;
+
+                                }
+
+
+                                const targetHeight =
+                                    parseFloat(
+                                        getComputedStyle(
+                                            document.documentElement
+                                        ).getPropertyValue(
+                                            "--index-video-height"
+                                        )
+                                    );
+
+
+                                const targetWidth =
+                                    targetHeight *
+                                    preview.videoWidth /
+                                    preview.videoHeight;
+
+
+                                const card =
+                                    preview.closest(
+                                        ".project-card"
+                                    );
+
+
+                                const wrap =
+                                    preview.closest(
+                                        ".card-video-wrap"
+                                    );
+
+
+                                if (
+                                    card
+                                ) {
+
+                                    card.style.width =
+                                        `${targetWidth}px`;
+
+                                }
+
+
+                                if (
+                                    wrap
+                                ) {
+
+                                    wrap.style.width =
+                                        `${targetWidth}px`;
+
+                                }
+
+                            }
+                        );
+
                 },
                 100
             );
@@ -5346,6 +5547,24 @@ window.addEventListener(
 
 /* =====================================================
    VISIBILITY
+
+   IMPORTANT:
+
+   The previous version always called video.play()
+   when the tab became visible again.
+
+   That meant:
+
+   user pauses video
+   -> changes browser tab
+   -> comes back
+   -> video incorrectly starts playing
+
+   Now we remember whether it was actually playing
+   BEFORE the tab became hidden.
+
+   Paused stays paused.
+   Playing resumes.
    ===================================================== */
 
 document.addEventListener(
@@ -5356,16 +5575,37 @@ document.addEventListener(
             document.hidden
         ) {
 
+            /*
+                Capture playback state BEFORE pause().
+            */
+
+            resumeAfterVisibility =
+                !video.paused &&
+                !video.ended &&
+                !indexMode &&
+                !projectAllMode;
+
+
             video.pause();
 
+
             stopAllPreviews();
+
 
             return;
 
         }
 
 
+        /*
+            Only resume if the film had genuinely been
+            playing before the browser tab was hidden.
+
+            A user-paused video therefore remains paused.
+        */
+
         if (
+            resumeAfterVisibility &&
             !indexMode &&
             !projectAllMode
         ) {
@@ -5377,6 +5617,10 @@ document.addEventListener(
                 );
 
         }
+
+
+        resumeAfterVisibility =
+            false;
 
     }
 );
