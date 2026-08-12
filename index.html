@@ -1079,7 +1079,12 @@ body.index-mode #video-stage {
             Caption width must not collapse to the width of a
             very narrow portrait film. Smaller thumbnails + a
             stable copy width make both title and date readable.
+
+            The margin is the exact visible-thumbnail offset
+            calculated by JS, so title/date always begin on the
+            thumbnail's actual left edge.
         */
+        margin-left: var(--landscape-preview-offset, 0px);
         min-width: 178px;
         width: 100%;
         overflow: visible;
@@ -3220,8 +3225,8 @@ function fitMainVideo() {
               visually meets the view-all row
         */
 
-        const metaTop =
-            projectMeta.getBoundingClientRect().top;
+        const metaRect =
+            projectMeta.getBoundingClientRect();
 
 
         /*
@@ -3239,8 +3244,22 @@ function fitMainVideo() {
             18;
 
 
+        /*
+            Photography landscape lets the artwork continue
+            vertically alongside the outer metadata columns.
+            Therefore the media does NOT need to stop above
+            the metadata row. Its lower edge may reach the
+            bottom of the view-all row itself. This uses the
+            otherwise empty centre area without creating a
+            collision, because title/date and counter/view-all
+            live at the far left and far right.
+        */
+
         const mediaBottomBoundary =
-            metaTop - 8;
+            Math.min(
+                window.innerHeight - 54,
+                metaRect.bottom + 2
+            );
 
 
         const maxMediaWidth =
@@ -5316,6 +5335,35 @@ function syncIndexCardSize(
         `${cardWidth}px`;
 
 
+    if (
+        isPhoneLandscape()
+    ) {
+
+        const previewOffset =
+            Math.max(
+                0,
+                (
+                    cardWidth -
+                    width
+                ) /
+                2
+            );
+
+
+        /*
+            Store the visible thumbnail's true left edge on
+            the card itself. This works even when video
+            metadata resolves before .card-copy has been
+            appended to the DOM.
+        */
+        button.style.setProperty(
+            "--landscape-preview-offset",
+            `${previewOffset}px`
+        );
+
+    }
+
+
     wrap.style.width =
         `${cardWidth}px`;
 
@@ -5422,19 +5470,8 @@ function syncIndexCardSize(
             copy
         ) {
 
-            const previewOffset =
-                Math.max(
-                    0,
-                    (
-                        cardWidth -
-                        width
-                    ) /
-                    2
-                );
-
-
             copy.style.marginLeft =
-                `${previewOffset}px`;
+                `var(--landscape-preview-offset, 0px)`;
 
 
             copy.style.width =
