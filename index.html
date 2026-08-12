@@ -902,7 +902,12 @@ body.index-mode #video-stage {
 
         --index-bottom: 14px;
 
-        --index-gap: 34px;
+        /*
+            Photography-site rhythm:
+            relatively small works + generous horizontal air.
+        */
+
+        --index-gap: 92px;
 
     }
 
@@ -919,33 +924,112 @@ body.index-mode #video-stage {
 
 
     /*
-        Do NOT let long project names wrap inside a tiny
-        portrait-video width.
+        LANDSCAPE SLIDE
+
+        The photography site does not treat the left info
+        block and the artwork as two rigid columns.
+
+        Instead:
+        - identity/contact stays in the upper-left
+        - content remains visually centered in the viewport
+        - title/date anchors to the lower-left
+        - counter/view-all anchors to the lower-right
+        - INDEX remains centered at the bottom
+
+        Film keeps its extra previous / sound / next row,
+        but that row also spans the viewport rather than
+        collapsing to the current video's width.
     */
+
+    #video-block {
+        width:
+            calc(
+                100vw -
+                var(--side) * 2
+            );
+
+        height: 100%;
+
+        max-width: none;
+    }
+
+
+    #media-holder {
+        position: absolute;
+
+        left: 0;
+        right: 0;
+
+        top: 18px;
+        bottom: 88px;
+
+        width: 100%;
+
+        display: flex;
+
+        align-items: center;
+        justify-content: center;
+    }
+
+
+    #project-meta {
+        position: absolute;
+
+        left: 0;
+        right: 0;
+
+        bottom: 58px;
+
+        width: 100%;
+
+        margin: 0;
+
+        grid-template-columns:
+            minmax(0, 1fr)
+            auto;
+
+        font-size: 13px;
+        line-height: 1.15;
+    }
+
 
     #project-title,
     #project-date {
-        overflow: hidden;
+        overflow: visible;
 
         text-overflow: clip;
+
+        white-space: nowrap;
     }
 
 
     #project-counter {
-        padding-left: 18px;
+        padding-left: 24px;
     }
 
 
-    #project-meta,
     #controls {
+        position: absolute;
+
+        left: 0;
+        right: 0;
+
+        bottom: 32px;
+
+        width: 100%;
+
+        margin: 0;
+
         font-size: 13px;
+        line-height: 1.15;
     }
 
 
-    #controls {
-        margin-top: 7px;
-    }
-
+    /*
+        VIEW ALL uses the same broad horizontal field as
+        photography. The actual top/bottom bounds are
+        calculated in JS from the info and metadata.
+    */
 
     #project-all-grid {
         gap: 5px;
@@ -953,12 +1037,21 @@ body.index-mode #video-stage {
 
 
     /*
-        Actual left/right/top/bottom values are set by JS,
-        because they depend on the real info block width.
+        INDEX should feel like the photography landscape
+        index: small works, common visual height, generous
+        horizontal spacing, captions aligned below.
     */
 
     #index-scroller {
+        left: 0;
+        right: 0;
+
         align-items: center;
+    }
+
+
+    #index-grid {
+        align-items: flex-start;
     }
 
 }
@@ -2782,42 +2875,38 @@ function getPhonePortraitSlideBounds() {
 
 function getPhoneLandscapeArea() {
 
-    const infoRect =
-        info.getBoundingClientRect();
+    /*
+        Photography-landscape reference:
 
+        The content is NOT pushed into a rigid right column.
+        The useful field is almost the entire viewport.
 
-    const left =
-        Math.max(
-            window.innerWidth * 0.31,
-            infoRect.right + 26
-        );
-
-
-    const right =
-        window.innerWidth -
-        24;
-
-
-    const top =
-        22;
-
+        The info block simply occupies the upper-left portion
+        of that field, while media can remain centered.
+    */
 
     const indexRect =
         indexButton.getBoundingClientRect();
 
 
+    const top =
+        14;
+
+
     const bottom =
         Math.min(
-            window.innerHeight - 20,
-            indexRect.top - 18
+            window.innerHeight - 12,
+            indexRect.top - 8
         );
 
 
     return {
 
-        left,
+        left:
+            24,
 
-        right,
+        right:
+            window.innerWidth - 24,
 
         top,
 
@@ -2826,15 +2915,13 @@ function getPhoneLandscapeArea() {
         width:
             Math.max(
                 1,
-                right -
-                left
+                window.innerWidth - 48
             ),
 
         height:
             Math.max(
                 1,
-                bottom -
-                top
+                bottom - top
             )
 
     };
@@ -2986,6 +3073,10 @@ function fitMainVideo() {
             mediaWidth;
 
 
+        videoBlock.style.height =
+            "";
+
+
         videoBlock.style.width =
             `${blockWidth}px`;
 
@@ -3063,33 +3154,28 @@ function fitMainVideo() {
 
 
         /*
-            Keep sufficient width for text and controls
-            even if current film is portrait.
+            Match photography landscape:
+
+            - the video is centered in the viewport
+            - it does NOT inherit the left contact column
+            - portrait / landscape videos are both allowed
+              to become substantial
+            - metadata and controls span the full safe width
+              independently from the video's own aspect ratio
         */
 
-        const minControlWidth =
+        const maxMediaWidth =
             Math.min(
-                area.width,
-                390
+                area.width * 0.54,
+                window.innerWidth * 0.54
             );
-
-
-        const interfaceHeight =
-            projectMeta.offsetHeight +
-            controls.offsetHeight +
-            22;
 
 
         const maxMediaHeight =
-            Math.max(
-                80,
-                area.height -
-                interfaceHeight
+            Math.min(
+                window.innerHeight * 0.72,
+                area.height * 0.80
             );
-
-
-        const maxMediaWidth =
-            area.width;
 
 
         mediaWidth =
@@ -3117,26 +3203,62 @@ function fitMainVideo() {
         }
 
 
+        /*
+            Portrait video:
+            use more of the vertical field, like a portrait
+            image on photography.denizalpaybak.com.
+        */
+
+        if (
+            ratio <
+            1
+        ) {
+
+            mediaHeight =
+                maxMediaHeight;
+
+
+            mediaWidth =
+                mediaHeight *
+                ratio;
+
+
+            if (
+                mediaWidth >
+                maxMediaWidth
+            ) {
+
+                mediaWidth =
+                    maxMediaWidth;
+
+
+                mediaHeight =
+                    mediaWidth /
+                    ratio;
+
+            }
+
+        }
+
+
         blockWidth =
-            Math.min(
-                area.width,
-                Math.max(
-                    mediaWidth,
-                    minControlWidth
-                )
-            );
+            area.width;
 
 
         videoBlock.style.width =
             `${blockWidth}px`;
 
 
+        videoBlock.style.height =
+            "100%";
+
+
         mediaHolder.style.width =
-            `${blockWidth}px`;
+            "100%";
 
 
         mediaHolder.style.height =
-            `${mediaHeight}px`;
+            "";
 
 
         video.style.width =
@@ -3148,21 +3270,15 @@ function fitMainVideo() {
 
 
         videoBlock.style.left =
-            `${
-                area.left +
-                area.width / 2
-            }px`;
+            "24px";
 
 
         videoBlock.style.top =
-            `${
-                area.top +
-                area.height / 2
-            }px`;
+            "0px";
 
 
         videoBlock.style.transform =
-            "translate(-50%, -50%)";
+            "none";
 
 
         return;
@@ -3213,6 +3329,10 @@ function fitMainVideo() {
 
     blockWidth =
         mediaWidth;
+
+
+    videoBlock.style.height =
+        "";
 
 
     videoBlock.style.width =
@@ -3767,46 +3887,53 @@ function syncProjectAllBounds() {
 
     /*
         LANDSCAPE:
-        use right-hand content zone rather than laying
-        previews underneath the identity/contact block.
+        match photography's broad central field.
+
+        Previews are allowed to spread almost edge-to-edge
+        horizontally. The info block remains above them,
+        while the title/date + all/close row remains below.
     */
 
     if (
         isPhoneLandscape()
     ) {
 
-        const area =
-            getPhoneLandscapeArea();
+        const infoRect =
+            info.getBoundingClientRect();
 
 
         const metaRect =
-            projectMeta
-                .getBoundingClientRect();
+            projectMeta.getBoundingClientRect();
+
+
+        const top =
+            Math.ceil(
+                infoRect.bottom + 8
+            );
 
 
         const bottom =
-            Math.min(
-                area.bottom,
+            Math.floor(
                 metaRect.top - 8
             );
 
 
         projectAllView.style.left =
-            `${area.left}px`;
+            "24px";
 
 
         projectAllView.style.right =
-            `${window.innerWidth - area.right}px`;
+            "24px";
 
 
         projectAllView.style.top =
-            `${area.top}px`;
+            `${top}px`;
 
 
         projectAllView.style.height =
             `${Math.max(
-                70,
-                bottom - area.top
+                82,
+                bottom - top
             )}px`;
 
 
@@ -4766,36 +4893,41 @@ function getIndexGeometry() {
     /* -------------------------------------------------
        MOBILE LANDSCAPE
 
-       Same conceptual scale as portrait:
-       two-ish substantial items rather than a row of
-       miniature videos.
+       Photography reference:
+       thumbnails are intentionally much smaller than
+       portrait-mobile thumbnails and separated by
+       generous horizontal air. Several projects remain
+       visible at once.
        ------------------------------------------------- */
 
     if (
         isPhoneLandscape()
     ) {
 
-        const area =
-            getPhoneLandscapeArea();
-
-
         return {
 
             mediaHeight:
                 clamp(
-                    area.height * 0.66,
-                    150,
-                    220
+                    window.innerHeight * 0.30,
+                    96,
+                    126
                 ),
 
             maxLandscapeWidth:
-                area.width * 0.46,
+                Math.min(
+                    window.innerWidth * 0.24,
+                    210
+                ),
 
             gap:
-                34,
+                clamp(
+                    window.innerWidth * 0.105,
+                    72,
+                    100
+                ),
 
             leftPadding:
-                0,
+                24,
 
             rightPadding:
                 24
@@ -5076,30 +5208,43 @@ function layoutIndexViewport() {
         isPhoneLandscape()
     ) {
 
-        const area =
-            getPhoneLandscapeArea();
+        const infoRect =
+            info.getBoundingClientRect();
 
+
+        const indexRect =
+            indexButton.getBoundingClientRect();
+
+
+        /*
+            Same full-width rail logic as photography:
+            start below the identity/contact block,
+            finish safely above INDEX.
+        */
 
         indexScroller.style.left =
-            `${area.left}px`;
+            "0px";
 
 
         indexScroller.style.right =
-            `${
-                window.innerWidth -
-                area.right
-            }px`;
+            "0px";
 
 
         indexScroller.style.top =
-            `${area.top}px`;
+            `${Math.ceil(
+                infoRect.bottom + 10
+            )}px`;
 
 
         indexScroller.style.bottom =
-            `${
-                window.innerHeight -
-                area.bottom
-            }px`;
+            `${Math.max(
+                34,
+                Math.ceil(
+                    window.innerHeight -
+                    indexRect.top +
+                    24
+                )
+            )}px`;
 
 
         return;
