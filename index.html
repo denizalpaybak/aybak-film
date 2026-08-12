@@ -41,7 +41,14 @@ button {
 
     --index-content-top: 130px;
 
+    /*
+        IMPORTANT:
+        Every desktop index preview now shares the
+        same visual height. This keeps all copy on
+        the same baseline regardless of aspect ratio.
+    */
     --index-video-height: 365px;
+
     --index-gap: 54px;
 }
 
@@ -161,15 +168,6 @@ body {
 
     pointer-events: none;
 }
-
-
-/*
-    The block width is set dynamically from the actual
-    video's aspect ratio.
-
-    This means the metadata and controls below always
-    align with the real left and right edges of the film.
-*/
 
 #video-block {
     position: absolute;
@@ -365,6 +363,19 @@ body {
 
 #next-button {
     justify-self: end;
+}
+
+
+/*
+    Sound is rendered as one complete text string.
+
+    This is intentional:
+    both SOUND and ON/OFF must participate in the
+    uppercase/lowercase hover animation.
+*/
+
+#sound-label {
+    display: inline;
 }
 
 
@@ -594,7 +605,7 @@ body.index-mode #video-stage {
     flex-direction: row;
     flex-wrap: nowrap;
 
-    align-items: center;
+    align-items: flex-start;
 
     gap:
         var(--index-gap);
@@ -606,9 +617,6 @@ body.index-mode #video-stage {
 
     padding-right:
         var(--side);
-
-    transform:
-        translateY(-8px);
 }
 
 
@@ -655,6 +663,16 @@ body.index-mode #video-stage {
    INDEX VIDEO
    ===================================================== */
 
+/*
+    The wrapper and video use one shared fixed height.
+
+    Aspect ratio only determines width.
+
+    Therefore:
+    portrait, square and landscape media all END at
+    exactly the same vertical position.
+*/
+
 .card-video-wrap {
     display: block;
 
@@ -663,7 +681,12 @@ body.index-mode #video-stage {
     height:
         var(--index-video-height);
 
+    flex: 0 0
+        var(--index-video-height);
+
     pointer-events: none;
+
+    overflow: hidden;
 }
 
 .project-card video {
@@ -759,7 +782,13 @@ body.index-mode #video-stage {
 
         --meta-gap: 5px;
 
-        --index-gap: 26px;
+        /*
+            Photography-style mobile index:
+            approximately two substantial projects
+            visible at once rather than 4 tiny previews.
+        */
+        --index-video-height: 218px;
+        --index-gap: 54px;
     }
 
     .logo {
@@ -782,8 +811,15 @@ body.index-mode #video-stage {
     (max-width: 600px)
     and (orientation: portrait) {
 
-    :root {
-        --index-video-height: 52vw;
+    /*
+        Main film block sits lower than before.
+
+        The top of tall portrait films therefore clears
+        the contact information instead of entering it.
+    */
+
+    #video-block {
+        top: 57%;
     }
 
     #controls {
@@ -794,18 +830,39 @@ body.index-mode #video-stage {
         gap: 5px;
     }
 
+
+    /*
+        Index follows the visual structure of the
+        photography reference:
+
+        - large cards
+        - two-ish projects visible
+        - generous but deliberate spacing
+        - centered vertically in the available white area
+    */
+
     #index-scroller {
+        top: 190px;
+
         bottom:
             calc(
                 var(--index-bottom) +
                 env(safe-area-inset-bottom) +
-                32px
+                54px
             );
+
+        align-items: center;
     }
 
     #index-grid {
-        transform:
-            translateY(-4px);
+        align-items: flex-start;
+
+        gap: 54px;
+
+        padding-left: 24px;
+        padding-right: 24px;
+
+        transform: translateY(8px);
     }
 
 }
@@ -828,9 +885,9 @@ body.index-mode #video-stage {
 
         --index-bottom: 14px;
 
-        --index-video-height: 52vh;
+        --index-video-height: 48vh;
 
-        --index-gap: 22px;
+        --index-gap: 32px;
     }
 
     .logo {
@@ -840,6 +897,10 @@ body.index-mode #video-stage {
 
     .logo-aybak {
         top: 15px;
+    }
+
+    #video-block {
+        top: 53%;
     }
 
     #project-meta,
@@ -1013,7 +1074,7 @@ body.index-mode #video-stage {
                 type="button"
                 aria-label="sound on"
             >
-                <span>sound&nbsp;</span><span id="sound-state">on</span>
+                <span id="sound-label">sound on</span>
             </button>
 
             <button
@@ -1095,23 +1156,31 @@ const STATE_MORPH_DURATION =
 const CASE_DURATION =
     400;
 
+
+/*
+    Sound is deliberately faster than the other
+    interface morphs.
+
+    The old animation felt sluggish because ON/OFF was
+    changing separately and using the full generic
+    morph duration.
+*/
+
+const SOUND_CASE_DURATION =
+    180;
+
+const SOUND_STATE_DURATION =
+    180;
+
+
 const INDEX_TRANSITION_DURATION =
     400;
 
 const LOGO_STEP_DURATION =
     80;
 
-
-/*
-    Short pause after the mobile navigation animation.
-
-    This allows the user to actually register the final
-    uppercase state before navigation happens.
-*/
-
 const MOBILE_NAV_HOLD =
     520;
-
 
 const PREVIEW_DURATION =
     5;
@@ -1223,9 +1292,9 @@ const soundButton =
         "sound-button"
     );
 
-const soundState =
+const soundLabel =
     document.getElementById(
-        "sound-state"
+        "sound-label"
     );
 
 
@@ -1314,15 +1383,6 @@ let autoplayBeforeIndex =
 
 let autoplayBeforeProjectAll =
     true;
-
-
-/*
-    Used for the browser-tab pause bug.
-
-    If the film was already manually paused before
-    leaving the tab, returning to the tab does NOT
-    restart it.
-*/
 
 let resumeAfterVisibility =
     false;
@@ -2230,17 +2290,6 @@ logo.addEventListener(
 );
 
 
-/*
-    MOBILE:
-    Denizalp aybak
-    ->
-    denizalp AYBAK
-    ->
-    short hold
-    ->
-    landing
-*/
-
 logo.addEventListener(
     "click",
     async event => {
@@ -2293,21 +2342,14 @@ logo.addEventListener(
 );
 
 
+setLogoState(
+    0
+);
+
+
 /* =====================================================
    MOBILE PHOTOGRAPHY TAP
    ===================================================== */
-
-/*
-    Same logic as the mobile logo:
-
-    photography
-    ->
-    PHOTOGRAPHY
-    ->
-    short hold
-    ->
-    photography site
-*/
 
 sectionSwitch.addEventListener(
     "click",
@@ -2341,11 +2383,6 @@ sectionSwitch.addEventListener(
             PHOTOGRAPHY_URL;
 
     }
-);
-
-
-setLogoState(
-    0
 );
 
 
@@ -2413,11 +2450,39 @@ async function updateMetadata(
    SOUND
    ===================================================== */
 
-function soundStateBaseText() {
+/*
+    The sound control is treated as ONE phrase:
+
+        sound on
+        SOUND ON
+        SOUND OFF
+        sound off
+
+    This fixes the previous version where only ON/OFF
+    participated in the animation.
+*/
+
+function getSoundBaseText() {
 
     return soundEnabled
-        ? "off"
-        : "on";
+        ? "sound off"
+        : "sound on";
+
+}
+
+
+function getSoundDisplayText() {
+
+    const base =
+        getSoundBaseText();
+
+
+    return (
+        hasHover() &&
+        soundButtonHovered
+    )
+        ? base.toUpperCase()
+        : base.toLowerCase();
 
 }
 
@@ -2426,65 +2491,45 @@ function updateSoundAria() {
 
     soundButton.setAttribute(
         "aria-label",
-        soundEnabled
-            ? "sound off"
-            : "sound on"
+        getSoundBaseText()
     );
 
 }
 
 
-async function updateSoundButton(
-    animate =
-        false
-) {
+function setSoundLabelImmediately() {
 
-    const base =
-        soundStateBaseText();
+    const text =
+        getSoundDisplayText();
 
 
-    const target =
-        (
-            hasHover() &&
-            soundButtonHovered
-        )
-            ? base.toUpperCase()
-            : base.toLowerCase();
+    soundLabel.textContent =
+        text;
+
+
+    soundLabel.dataset.rawText =
+        text;
 
 
     updateSoundAria();
 
-
-    if (
-        animate
-    ) {
-
-        await morphSequential(
-            soundState,
-            target,
-            STATE_MORPH_DURATION
-        );
-
-    }
-
-    else {
-
-        soundState.textContent =
-            target;
-
-
-        soundState.dataset.rawText =
-            target;
-
-    }
-
 }
 
 
-function applySoundState() {
+async function animateSoundCase(
+    toUpper
+) {
 
-    video.muted =
-        !soundEnabled;
+    await animateCase(
+        soundLabel,
+        getSoundBaseText(),
+        toUpper,
+        SOUND_CASE_DURATION
+    );
+
+
+    soundLabel.dataset.rawText =
+        soundLabel.textContent;
 
 }
 
@@ -2495,11 +2540,21 @@ async function toggleSound() {
         !soundEnabled;
 
 
-    applySoundState();
+    video.muted =
+        !soundEnabled;
 
 
-    await updateSoundButton(
-        true
+    updateSoundAria();
+
+
+    const target =
+        getSoundDisplayText();
+
+
+    await morphSequential(
+        soundLabel,
+        target,
+        SOUND_STATE_DURATION
     );
 
 }
@@ -2522,9 +2577,7 @@ soundButton.addEventListener(
             true;
 
 
-        animateCase(
-            soundState,
-            soundStateBaseText(),
+        animateSoundCase(
             true
         );
 
@@ -2549,11 +2602,22 @@ soundButton.addEventListener(
             false;
 
 
-        animateCase(
-            soundState,
-            soundStateBaseText(),
+        animateSoundCase(
             false
         );
+
+    }
+);
+
+
+soundButton.addEventListener(
+    "click",
+    event => {
+
+        event.stopPropagation();
+
+
+        toggleSound();
 
     }
 );
@@ -2589,22 +2653,6 @@ function togglePlayback() {
 /* =====================================================
    MAIN VIDEO FIT
    ===================================================== */
-
-/*
-    The main slide no longer lives inside a forced
-    16:9 element.
-
-    The video's intrinsic ratio controls the width.
-
-    Desktop:
-    - vertical position stays fixed
-    - width contracts/expands with media
-    - metadata and controls inherit exactly that width
-
-    Mobile portrait:
-    - portrait videos are allowed to use much more height
-    - no more tiny vertical image inside a 16:9 box
-*/
 
 function fitMainVideo() {
 
@@ -2654,9 +2702,17 @@ function fitMainVideo() {
             side * 2;
 
 
+        /*
+            Slightly smaller maximum height than before.
+
+            Combined with the lower block position this
+            prevents tall portrait media from touching
+            the contact copy.
+        */
+
         maxHeight =
             viewportHeight *
-            0.60;
+            0.54;
 
     }
 
@@ -2672,7 +2728,7 @@ function fitMainVideo() {
 
         maxHeight =
             viewportHeight *
-            0.66;
+            0.64;
 
     }
 
@@ -2722,8 +2778,9 @@ function fitMainVideo() {
 
 
     /*
-        Give portrait film substantially more vertical
-        presence on a portrait phone.
+        Portrait mobile video can still be large,
+        but its top edge now remains safely below
+        the information block.
     */
 
     if (
@@ -2735,11 +2792,8 @@ function fitMainVideo() {
         height =
             Math.min(
                 viewportHeight *
-                0.64,
-
-                maxHeight +
-                viewportHeight *
-                0.04
+                0.54,
+                maxHeight
             );
 
 
@@ -2817,7 +2871,8 @@ async function loadCurrentVideo(
     video.load();
 
 
-    applySoundState();
+    video.muted =
+        !soundEnabled;
 
 
     await updateMetadata(
@@ -3062,19 +3117,6 @@ nextButton.addEventListener(
 );
 
 
-soundButton.addEventListener(
-    "click",
-    event => {
-
-        event.stopPropagation();
-
-
-        toggleSound();
-
-    }
-);
-
-
 /* =====================================================
    PREVIEW VIDEO
    ===================================================== */
@@ -3151,15 +3193,6 @@ function createPreviewVideo(
         }
     );
 
-
-    /*
-        Index metadata begins loading before the user
-        opens Index.
-
-        This is important on mobile because the card
-        width can be known before the rail is shown,
-        avoiding collapsed / overlapping cards.
-    */
 
     if (
         eagerMetadata
@@ -3600,13 +3633,6 @@ function buildProjectAllGrid() {
                 "project-all-thumb";
 
 
-            /*
-                View All only contains a few films, so
-                metadata is fetched immediately.
-
-                This reduces the mobile delay considerably.
-            */
-
             const preview =
                 createPreviewVideo(
                     filename,
@@ -3776,11 +3802,6 @@ async function enterProjectAll() {
 
             layoutProjectAllGrid();
 
-
-            /*
-                Start all small previews right after the
-                overlay receives its final geometry.
-            */
 
             activatePreviewsIn(
                 projectAllGrid
@@ -4059,16 +4080,15 @@ function getChronologicalProjects() {
    ===================================================== */
 
 /*
-    Mobile:
-    landscape thumbnails are allowed to scale down if
-    their natural width would exceed the available screen.
+    Photography-style behaviour:
 
-    This prevents cards from collapsing / overlapping.
+    - EVERY thumbnail has exactly the same height.
+    - Aspect ratio controls width only.
+    - There is no portrait-specific height boost.
+    - Therefore every title/date starts on one baseline.
 
-    Desktop:
-    portrait clips receive an 18% height boost because
-    equal-height portrait cards read visually much smaller
-    than landscape cards.
+    On mobile the maximum width is constrained so very
+    wide films do not swallow the entire viewport.
 */
 
 function getIndexMetrics(
@@ -4089,17 +4109,36 @@ function getIndexMetrics(
         ) || 365;
 
 
-    let maxWidth =
-        Infinity;
+    let width =
+        height *
+        ratio;
 
 
     if (
         isPhonePortrait()
     ) {
 
-        maxWidth =
-            window.innerWidth -
-            48;
+        const maxWidth =
+            window.innerWidth *
+            0.47;
+
+
+        if (
+            width >
+            maxWidth
+        ) {
+
+            /*
+                Wide clips are width-constrained, but their
+                wrapper remains at the shared index height.
+
+                The video itself is vertically centered.
+            */
+
+            width =
+                maxWidth;
+
+        }
 
     }
 
@@ -4108,50 +4147,35 @@ function getIndexMetrics(
         isPhoneLandscape()
     ) {
 
-        maxWidth =
+        const maxWidth =
             window.innerWidth *
-            0.72;
-
-    }
+            0.36;
 
 
-    if (
-        maxWidth <
-        Infinity &&
-        height *
-        ratio >
-        maxWidth
-    ) {
+        if (
+            width >
+            maxWidth
+        ) {
 
-        height =
-            maxWidth /
-            ratio;
+            width =
+                maxWidth;
 
-    }
-
-
-    if (
-        !isPhoneLayout() &&
-        ratio <
-        0.9
-    ) {
-
-        height *=
-            1.18;
+        }
 
     }
 
 
     return {
         height,
-
-        width:
-            height *
-            ratio
+        width
     };
 
 }
 
+
+/* =====================================================
+   SYNC INDEX CARD
+   ===================================================== */
 
 function syncIndexCardSize(
     preview,
@@ -4200,12 +4224,25 @@ function syncIndexCardSize(
         `${metrics.height}px`;
 
 
+    /*
+        Desktop:
+        always same height.
+
+        Mobile:
+        same maximum visual height, but landscape media
+        can be width-constrained. contain keeps the ratio.
+    */
+
+    preview.style.width =
+        `${metrics.width}px`;
+
+
     preview.style.height =
         `${metrics.height}px`;
 
 
-    preview.style.width =
-        `${metrics.width}px`;
+    preview.style.objectFit =
+        "contain";
 
 }
 
@@ -4283,26 +4320,38 @@ function buildIndex() {
 
 
                 /*
-                    Reserve real space BEFORE metadata is
-                    available.
-
-                    This fixes the mobile overlap where
-                    several zero-width cards temporarily
-                    occupied the same position.
+                    A realistic placeholder is reserved
+                    immediately, preventing the mobile
+                    rail from collapsing while metadata
+                    is still arriving.
                 */
 
+                const fallbackWidth =
+                    isPhonePortrait()
+                        ? Math.round(
+                            window.innerWidth *
+                            0.40
+                        )
+                        : (
+                            isPhoneLandscape()
+                                ? Math.round(
+                                    window.innerWidth *
+                                    0.30
+                                )
+                                : 300
+                        );
+
+
                 button.style.width =
-                    isPhoneLayout()
-                        ? "72vw"
-                        : "285px";
+                    `${fallbackWidth}px`;
 
 
                 button.style.flexBasis =
-                    button.style.width;
+                    `${fallbackWidth}px`;
 
 
                 button.style.minWidth =
-                    button.style.width;
+                    `${fallbackWidth}px`;
 
 
                 const wrap =
@@ -4316,16 +4365,8 @@ function buildIndex() {
 
 
                 wrap.style.width =
-                    "100%";
+                    `${fallbackWidth}px`;
 
-
-                /*
-                    Start fetching metadata while the user
-                    is still on the slide page.
-
-                    This improves mobile Index startup and
-                    also gives us the aspect ratio early.
-                */
 
                 const preview =
                     createPreviewVideo(
@@ -4779,14 +4820,6 @@ async function enterIndex() {
 
     restoreIndexPosition();
 
-
-    /*
-        Let layout become visible first, then play.
-
-        Metadata has already been warming in background,
-        which is faster on mobile than starting everything
-        from zero here.
-    */
 
     requestAnimationFrame(
         () => {
@@ -5569,17 +5602,6 @@ video.addEventListener(
    INDEX PREWARM
    ===================================================== */
 
-/*
-    Mobile browsers are more conservative about media
-    networking and decoding.
-
-    Index metadata is therefore warmed in small batches
-    after the main slide is ready.
-
-    We do NOT play all films here.
-    We just make their initial metadata / range available.
-*/
-
 async function warmIndexPreviews() {
 
     const previews =
@@ -5590,16 +5612,33 @@ async function warmIndexPreviews() {
         ];
 
 
+    /*
+        Mobile gets smaller batches so Safari is not
+        asked to initialise every movie simultaneously.
+    */
+
+    const batchSize =
+        isPhoneLayout()
+            ? 2
+            : 3;
+
+
+    const pause =
+        isPhoneLayout()
+            ? 80
+            : 120;
+
+
     for (
         let i = 0;
         i < previews.length;
-        i += 3
+        i += batchSize
     ) {
 
         const batch =
             previews.slice(
                 i,
-                i + 3
+                i + batchSize
             );
 
 
@@ -5617,7 +5656,7 @@ async function warmIndexPreviews() {
 
 
                     preview.preload =
-                        "auto";
+                        "metadata";
 
 
                     preview.load();
@@ -5629,7 +5668,7 @@ async function warmIndexPreviews() {
 
 
         await wait(
-            120
+            pause
         );
 
     }
@@ -5703,20 +5742,13 @@ async function loadProjects() {
             0;
 
 
-        updateSoundButton(
-            false
-        );
+        setSoundLabelImmediately();
 
 
         await loadCurrentVideo(
             true
         );
 
-
-        /*
-            Start Index preparation only after the main
-            page has already received its first content.
-        */
 
         requestAnimationFrame(
             () => {
@@ -5826,14 +5858,6 @@ window.addEventListener(
 /* =====================================================
    VISIBILITY
    ===================================================== */
-
-/*
-    Manually paused videos remain paused after changing
-    browser tabs.
-
-    Only a film that was genuinely playing before the
-    tab became hidden is resumed.
-*/
 
 document.addEventListener(
     "visibilitychange",
