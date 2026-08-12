@@ -3,11 +3,19 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+>
 
 <title>Denizalp Aybak — Film</title>
 
 <style>
+
+/* =====================================================
+   RESET
+   ===================================================== */
 
 * {
     box-sizing: border-box;
@@ -21,59 +29,95 @@ body {
     width: 100%;
     height: 100%;
 
-    background: #fff;
     overflow: hidden;
 
-    -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
-}
-
-body {
-    cursor: default;
-}
-
-
-/* =========================
-   LEFT INFORMATION
-   ========================= */
-
-.info {
-    position: fixed;
-
-    top: 32px;
-    left: 48px;
-
-    z-index: 10;
+    background: #fff;
+    color: #000;
 
     font-family:
         Arial,
         Helvetica,
         sans-serif;
 
-    font-size: 15px;
-    font-weight: 400;
-    line-height: 1.15;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+button {
+    font: inherit;
 }
 
 
-/* =========================
+/* =====================================================
+   VARIABLES
+   ===================================================== */
+
+:root {
+
+    --font-size: 15px;
+    --line-height: 1.15;
+
+    --side: 48px;
+    --top: 32px;
+
+    --index-bottom: 24px;
+
+    --meta-gap: 6px;
+
+    --visual-height: 72vh;
+    --video-max-width: 76vw;
+
+    --meta-top-gap: 10px;
+
+    --index-content-top: 130px;
+
+}
+
+
+/* =====================================================
+   BODY
+   ===================================================== */
+
+body {
+    cursor: default;
+}
+
+
+/* =====================================================
+   INFO
+   ===================================================== */
+
+.info {
+    position: fixed;
+
+    top: var(--top);
+    left: var(--side);
+
+    z-index: 500;
+
+    font-size: var(--font-size);
+    line-height: var(--line-height);
+}
+
+
+/* =====================================================
    LOGO
-   ========================= */
+   ===================================================== */
 
 .logo {
     position: relative;
+
     display: block;
 
     width: 190px;
     height: 52px;
 
-    margin: 0;
-    padding: 0;
-
     color: inherit;
     text-decoration: none;
 
     cursor: pointer;
+
+    -webkit-tap-highlight-color: transparent;
 }
 
 .logo-name {
@@ -81,8 +125,6 @@ body {
 
     top: 0;
     left: 0;
-
-    font-size: 15px;
 
     white-space: nowrap;
 }
@@ -93,22 +135,18 @@ body {
     top: 17px;
     left: 0;
 
-    font-size: 15px;
-
     white-space: nowrap;
 }
 
-.logo-aybak span {
-    display: inline;
-}
 
+/* =====================================================
+   CONTACT
+   ===================================================== */
 
-/* =========================
-   CONTACT / SOCIAL
-   ========================= */
-
-.contact {
+.contact,
+.social {
     margin: 0;
+    padding: 0;
 }
 
 .social {
@@ -121,118 +159,200 @@ body {
     text-decoration: none;
 }
 
-.info a:hover {
+.contact a:hover,
+.social a:hover {
     text-decoration: underline;
 }
 
 
-/* =========================
-   SECTION SWITCH
-   ========================= */
+/* =====================================================
+   PHOTOGRAPHY SWITCH
+   ===================================================== */
 
 .section-switch {
     position: fixed;
 
-    top: 32px;
-    right: 48px;
+    top: var(--top);
+    right: var(--side);
 
-    z-index: 20;
+    z-index: 500;
 
     color: #000;
     text-decoration: none;
 
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
+    font-size: var(--font-size);
+    line-height: var(--line-height);
 
-    font-size: 15px;
-    line-height: 1.15;
-
-    white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
 }
 
 
-/* =========================
+/* =====================================================
    VIDEO STAGE
-   ========================= */
+   ===================================================== */
 
 #video-stage {
     position: fixed;
 
     inset: 0;
 
-    width: 100vw;
-    height: 100vh;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    z-index: 10;
 
     pointer-events: none;
 }
-
-
-/* =========================
-   VIDEO BLOCK
-   ========================= */
 
 #video-block {
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
 
-    width: auto;
-    height: auto;
+    align-items: stretch;
+
+    width: min(
+        var(--video-max-width),
+        calc(var(--visual-height) * 16 / 9)
+    );
+
+    max-width:
+        calc(
+            100vw -
+            var(--side) * 2
+        );
 
     pointer-events: none;
 }
 
 
-/* =========================
-   VIDEO
-   ========================= */
+/* =====================================================
+   MAIN VIDEO
+   ===================================================== */
 
 #film-video {
     display: block;
 
-    width: auto;
+    width: 100%;
     height: auto;
 
-    max-width: 64vw;
-    max-height: 76vh;
+    max-height: var(--visual-height);
+
+    aspect-ratio: 16 / 9;
 
     object-fit: contain;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    pointer-events: auto;
+
+    -webkit-tap-highlight-color: transparent;
+}
+
+
+/* =====================================================
+   PROJECT META
+   ===================================================== */
+
+#project-meta {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        auto;
+
+    grid-template-rows:
+        auto
+        auto;
+
+    width: 100%;
+
+    margin-top: var(--meta-top-gap);
+
+    font-size: var(--font-size);
+    line-height: var(--line-height);
 
     pointer-events: none;
 }
 
+#project-title {
+    grid-column: 1;
+    grid-row: 1;
 
-/* =========================
+    white-space: nowrap;
+}
+
+#project-date {
+    grid-column: 1;
+    grid-row: 2;
+
+    white-space: nowrap;
+}
+
+#project-counter {
+    grid-column: 2;
+    grid-row: 1;
+
+    justify-self: end;
+
+    padding-left: 28px;
+
+    white-space: nowrap;
+}
+
+#view-all-button {
+    grid-column: 2;
+    grid-row: 2;
+
+    justify-self: end;
+
+    appearance: none;
+    -webkit-appearance: none;
+
+    margin: 0;
+    padding: 0;
+
+    border: 0;
+    outline: 0;
+
+    background: transparent;
+    color: inherit;
+
+    line-height: inherit;
+
+    cursor: pointer;
+
+    pointer-events: auto;
+
+    -webkit-tap-highlight-color: transparent;
+}
+
+
+/* =====================================================
    CONTROLS
-   ========================= */
+   ===================================================== */
 
 #controls {
-    display: flex;
+    display: grid;
 
-    width: auto;
+    grid-template-columns:
+        1fr
+        auto
+        1fr;
 
     align-items: center;
-    justify-content: space-between;
+
+    width: 100%;
 
     margin-top: 10px;
 
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
-    font-size: 15px;
-    font-weight: 400;
-    line-height: 1.15;
-
-    white-space: nowrap;
+    font-size: var(--font-size);
+    line-height: var(--line-height);
 
     pointer-events: auto;
 }
@@ -245,138 +365,414 @@ body {
     padding: 0;
 
     border: 0;
-    outline: none;
+    outline: 0;
 
     background: transparent;
-
     color: #000;
 
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
-    font-size: 15px;
-    font-weight: 400;
-    line-height: 1.15;
-
-    text-decoration: none;
+    line-height: inherit;
 
     cursor: pointer;
 
-    -webkit-tap-highlight-color:
-        transparent;
+    white-space: nowrap;
+
+    -webkit-tap-highlight-color: transparent;
 }
 
+#previous-button {
+    justify-self: start;
+}
 
-/*
-    Fixed-width morph buttons.
-
-    Their LEFT EDGE never moves.
-    Therefore:
-    p in play/pause stays fixed.
-    sound o stays fixed.
-*/
-
-#play-button,
 #sound-button {
-    display: inline-block;
+    justify-self: center;
+}
 
-    text-align: left;
+#next-button {
+    justify-self: end;
 }
 
 
-#controls button:hover,
-#controls button:focus,
-#controls button:focus-visible,
-#controls button:active {
-    text-decoration: none;
+/* =====================================================
+   VIEW ALL
+   ===================================================== */
+
+#project-all-view {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 100;
+
+    display: none;
+
+    background: #fff;
+
+    pointer-events: auto;
+}
+
+body.project-all-mode #project-all-view {
+    display: block;
+}
+
+body.project-all-mode #video-stage {
+    visibility: hidden;
+}
+
+
+/* =====================================================
+   VIEW ALL GRID
+   ===================================================== */
+
+#project-all-grid {
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    display: grid;
+
+    gap: 10px;
+
+    width: min(82vw, 1280px);
+    height: min(68vh, 760px);
+
+    align-items: center;
+    justify-items: center;
+}
+
+.project-all-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    height: 100%;
+
+    min-width: 0;
+    min-height: 0;
+
+    margin: 0;
+    padding: 0;
+
+    border: 0;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    overflow: hidden;
+
+    -webkit-tap-highlight-color: transparent;
+}
+
+.project-all-thumb video {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+
+    pointer-events: none;
+
+    background: transparent;
+}
+
+
+/* =====================================================
+   INDEX BUTTON
+   ===================================================== */
+
+#index-button {
+    position: fixed;
+
+    left: 50%;
+
+    bottom:
+        calc(
+            var(--index-bottom) +
+            env(safe-area-inset-bottom)
+        );
+
+    z-index: 600;
+
+    transform: translateX(-50%);
+
+    appearance: none;
+    -webkit-appearance: none;
+
+    margin: 0;
+    padding: 0;
+
+    border: 0;
+    outline: 0;
+
+    background: transparent;
+    color: #000;
+
+    font-size: var(--font-size);
+    line-height: var(--line-height);
+
+    white-space: nowrap;
+
+    cursor: pointer;
+
+    -webkit-tap-highlight-color: transparent;
+}
+
+
+/* =====================================================
+   INDEX VIEW
+   ===================================================== */
+
+#index-view {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 100;
+
+    display: none;
+
+    background: #fff;
+}
+
+#index-view.visible {
+    display: block;
+}
+
+body.index-mode #video-stage {
+    visibility: hidden;
+}
+
+
+/* =====================================================
+   INDEX SCROLLER
+   ===================================================== */
+
+#index-scroller {
+    position: absolute;
+
+    top: var(--index-content-top);
+    left: 0;
+    right: 0;
+
+    bottom:
+        calc(
+            var(--index-bottom) +
+            env(safe-area-inset-bottom) +
+            34px
+        );
+
+    display: flex;
+
+    align-items: center;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    scrollbar-width: none;
+
+    -webkit-overflow-scrolling: touch;
+
+    user-select: none;
+
+    cursor: grab;
+
     outline: none;
 }
 
+#index-scroller::-webkit-scrollbar {
+    display: none;
+}
 
-/* =========================
-   MOBILE
-   ========================= */
+#index-scroller.dragging {
+    cursor: grabbing;
+}
 
-@media (max-width: 600px) {
 
-    .info {
-        top: 20px;
-        left: 24px;
+/* =====================================================
+   INDEX RAIL
+   ===================================================== */
 
-        font-size: 13px;
+#index-grid {
+    display: flex;
+
+    flex-direction: row;
+    flex-wrap: nowrap;
+
+    align-items: center;
+
+    gap: 54px;
+
+    width: max-content;
+
+    padding-left: var(--side);
+    padding-right: var(--side);
+
+    transform: translateY(-8px);
+}
+
+
+/* =====================================================
+   INDEX CARD
+   ===================================================== */
+
+.project-card {
+    appearance: none;
+    -webkit-appearance: none;
+
+    flex:
+        0
+        0
+        320px;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    width: 320px;
+
+    margin: 0;
+    padding: 0;
+
+    border: 0;
+
+    background: transparent;
+    color: #000;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    -webkit-tap-highlight-color: transparent;
+}
+
+
+/* =====================================================
+   INDEX VIDEO
+   ===================================================== */
+
+.card-video-wrap {
+    display: flex;
+
+    align-items: center;
+    justify-content: flex-start;
+
+    width: 100%;
+    height: 270px;
+
+    overflow: hidden;
+}
+
+.project-card video {
+    display: block;
+
+    max-width: 100%;
+    max-height: 100%;
+
+    width: auto;
+    height: auto;
+
+    object-fit: contain;
+
+    pointer-events: none;
+}
+
+
+/* =====================================================
+   INDEX COPY
+   ===================================================== */
+
+.card-copy {
+    display: flex;
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    width: 100%;
+
+    margin-top: var(--meta-gap);
+
+    font-size: var(--font-size);
+    line-height: var(--line-height);
+
+    text-align: left;
+
+    pointer-events: none;
+}
+
+.card-title,
+.card-date {
+    display: block;
+
+    margin: 0;
+    padding: 0;
+
+    max-width: 100%;
+
+    text-align: left;
+
+    white-space: nowrap;
+}
+
+
+/* =====================================================
+   TABLET
+   ===================================================== */
+
+@media
+    (min-width: 601px)
+    and (max-width: 1366px) {
+
+    :root {
+        --visual-height: 68vh;
+        --video-max-width: 72vw;
     }
 
-    .logo {
-        width: 160px;
-        height: 45px;
+    .project-card {
+        flex:
+            0
+            0
+            285px;
+
+        width: 285px;
     }
 
-    .logo-name {
-        font-size: 13px;
+    .card-video-wrap {
+        height: 240px;
     }
 
-    .logo-aybak {
-        top: 15px;
-
-        font-size: 13px;
-    }
-
-    .section-switch {
-        top: 20px;
-        right: 24px;
-
-        font-size: 13px;
-    }
-
-    #video-stage {
-        top: 92px;
-        bottom: 18px;
-
-        height: auto;
-
-        padding: 0 24px;
-    }
-
-    #video-block {
-        width: 100%;
-        max-width: 84vw;
-    }
-
-    #film-video {
-        max-width: 84vw;
-        max-height: 60vh;
-    }
-
-    #controls {
-        width: auto;
-
-        margin-top: 10px;
-
-        font-size: 13px;
-    }
-
-    #controls button {
-        font-size: 13px;
+    #index-grid {
+        gap: 46px;
     }
 
 }
 
 
-/* =========================
-   SHORT LANDSCAPE
-   ========================= */
+/* =====================================================
+   PHONE BASE
+   ===================================================== */
 
 @media
-    (orientation: landscape)
-    and (max-height: 700px) {
+    (max-width: 600px) {
 
-    .info {
-        top: 20px;
-        left: 24px;
+    :root {
+        --font-size: 13px;
 
-        font-size: 13px;
+        --side: 24px;
+        --top: 20px;
+
+        --index-bottom: 18px;
+
+        --meta-gap: 5px;
     }
 
     .logo {
@@ -384,58 +780,163 @@ body {
         height: 45px;
     }
 
-    .logo-name,
-    .logo-aybak {
-        font-size: 13px;
-    }
-
     .logo-aybak {
         top: 15px;
     }
 
-    .section-switch {
-        top: 20px;
-        right: 24px;
+}
 
-        font-size: 13px;
-    }
 
-    #video-stage {
-        inset: 0;
+/* =====================================================
+   PHONE PORTRAIT
+   ===================================================== */
 
-        left: 190px;
+@media
+    (max-width: 600px)
+    and (orientation: portrait) {
+
+    #video-block {
+        top: 50%;
 
         width:
             calc(
                 100vw -
-                214px
+                var(--side) * 2
             );
 
-        height: 100vh;
-
-        padding: 16px 24px;
-    }
-
-    #video-block {
-        width: 100%;
         max-width: none;
     }
 
     #film-video {
-        max-width: 62vw;
-        max-height: 60vh;
+        width: 100%;
+
+        max-height: 52vh;
     }
 
     #controls {
-        width: auto;
+        margin-top: 9px;
+    }
 
-        margin-top: 8px;
+    #project-all-grid {
+        width:
+            calc(
+                100vw -
+                var(--side) * 2
+            );
 
+        height: 58vh;
+
+        gap: 6px;
+    }
+
+    #index-grid {
+        gap: 30px;
+
+        transform: translateY(-4px);
+    }
+
+    .project-card {
+        flex:
+            0
+            0
+            64vw;
+
+        width: 64vw;
+    }
+
+    .card-video-wrap {
+        height: 46vw;
+    }
+
+}
+
+
+/* =====================================================
+   PHONE LANDSCAPE
+   ===================================================== */
+
+@media
+    (max-height: 650px)
+    and (orientation: landscape)
+    and (max-width: 1000px) {
+
+    :root {
+        --font-size: 13px;
+
+        --side: 24px;
+        --top: 18px;
+
+        --index-bottom: 14px;
+    }
+
+    .logo {
+        width: 160px;
+        height: 45px;
+    }
+
+    .logo-aybak {
+        top: 15px;
+    }
+
+    #video-block {
+        top: 50%;
+
+        width: min(58vw, 720px);
+
+        max-height: 80vh;
+    }
+
+    #film-video {
+        max-height: 60vh;
+    }
+
+    #project-meta,
+    #controls {
         font-size: 13px;
     }
 
-    #controls button {
-        font-size: 13px;
+    #project-all-grid {
+        width: 62vw;
+        height: 72vh;
+
+        left: 60%;
+
+        gap: 6px;
+    }
+
+    #index-scroller {
+        top: 92px;
+    }
+
+    #index-grid {
+        gap: 34px;
+    }
+
+    .project-card {
+        flex:
+            0
+            0
+            230px;
+
+        width: 230px;
+    }
+
+    .card-video-wrap {
+        height: 160px;
+    }
+
+}
+
+
+/* =====================================================
+   REDUCED MOTION
+   ===================================================== */
+
+@media
+    (prefers-reduced-motion: reduce) {
+
+    * {
+        scroll-behavior: auto !important;
     }
 
 }
@@ -444,15 +945,21 @@ body {
 
 </head>
 
-
 <body>
 
 
+<!-- ===================================================
+     INFO
+     =================================================== -->
+
 <div class="info">
 
-    <a
+    <div
         class="logo"
-        href="https://denizalpaybak.com/"
+        id="logo"
+        role="button"
+        tabindex="0"
+        aria-label="Denizalp Aybak"
     >
 
         <span
@@ -463,12 +970,10 @@ body {
         </span>
 
         <span class="logo-aybak">
-
             <span id="letter-a">a</span><span id="letter-y">y</span><span id="letter-b">b</span><span id="letter-a2">a</span><span id="letter-k">k</span>
-
         </span>
 
-    </a>
+    </div>
 
 
     <div class="contact">
@@ -507,14 +1012,23 @@ body {
 </div>
 
 
+<!-- ===================================================
+     PHOTOGRAPHY
+     =================================================== -->
+
 <a
-    class="section-switch"
+    class="section-switch case-control"
     id="section-switch"
     href="https://photography.denizalpaybak.com/"
+    data-word="photography"
 >
-    <span id="section-switch-text">photography</span>
+    <span>photography</span>
 </a>
 
+
+<!-- ===================================================
+     MAIN VIDEO
+     =================================================== -->
 
 <div id="video-stage">
 
@@ -529,34 +1043,53 @@ body {
         ></video>
 
 
+        <div id="project-meta">
+
+            <span id="project-title"></span>
+
+            <span id="project-counter"></span>
+
+            <span id="project-date"></span>
+
+            <button
+                id="view-all-button"
+                class="case-control"
+                data-word="view all"
+                type="button"
+            >
+                <span>view all</span>
+            </button>
+
+        </div>
+
+
         <div id="controls">
 
             <button
                 id="previous-button"
+                class="case-control"
+                data-word="previous"
                 type="button"
             >
-                previous
-            </button>
-
-            <button
-                id="play-button"
-                type="button"
-            >
-                pause
+                <span>previous</span>
             </button>
 
             <button
                 id="sound-button"
+                class="case-control"
+                data-word="sound on"
                 type="button"
             >
-                sound on
+                <span>sound on</span>
             </button>
 
             <button
                 id="next-button"
+                class="case-control"
+                data-word="next"
                 type="button"
             >
-                next
+                <span>next</span>
             </button>
 
         </div>
@@ -566,7 +1099,56 @@ body {
 </div>
 
 
+<!-- ===================================================
+     VIEW ALL
+     =================================================== -->
+
+<div id="project-all-view">
+
+    <div id="project-all-grid"></div>
+
+</div>
+
+
+<!-- ===================================================
+     INDEX
+     =================================================== -->
+
+<button
+    id="index-button"
+    class="case-control"
+    data-word="index"
+    type="button"
+>
+    <span>index</span>
+</button>
+
+
+<div id="index-view">
+
+    <div
+        id="index-scroller"
+        tabindex="0"
+    >
+
+        <div id="index-grid"></div>
+
+    </div>
+
+</div>
+
+
 <script>
+
+/* =====================================================
+   DATA
+   ===================================================== */
+
+const R2_BASE =
+    "https://pub-14d397941aeb40e5bd3f66ac028fef80.r2.dev/films/";
+
+const FILMS_JSON =
+    "./films.json";
 
 
 /* =====================================================
@@ -574,41 +1156,43 @@ body {
    ===================================================== */
 
 const WORD_TRANSITION_DURATION =
-    600;
+    400;
 
-const CONTROL_FRAME_SPEED =
-    90;
+const LOGO_STEP_DURATION =
+    80;
 
+const LOGO_MOBILE_HOLD =
+    2000;
 
-/* =====================================================
-   R2 / FILMS.JSON
-   ===================================================== */
-
-const R2_BASE =
-    "https://pub-14d397941aeb40e5bd3f66ac028fef80.r2.dev/";
-
-let films =
-    [];
-
-let currentFilm =
-    0;
-
-let soundEnabled =
-    false;
+const PREVIEW_DURATION =
+    5;
 
 
 /* =====================================================
    ELEMENTS
    ===================================================== */
 
+const body =
+    document.body;
+
 const video =
     document.getElementById(
         "film-video"
     );
 
-const controls =
+const projectTitle =
     document.getElementById(
-        "controls"
+        "project-title"
+    );
+
+const projectDate =
+    document.getElementById(
+        "project-date"
+    );
+
+const projectCounter =
+    document.getElementById(
+        "project-counter"
     );
 
 const previousButton =
@@ -616,9 +1200,9 @@ const previousButton =
         "previous-button"
     );
 
-const playButton =
+const nextButton =
     document.getElementById(
-        "play-button"
+        "next-button"
     );
 
 const soundButton =
@@ -626,719 +1210,316 @@ const soundButton =
         "sound-button"
     );
 
-const nextButton =
+const viewAllButton =
     document.getElementById(
-        "next-button"
+        "view-all-button"
+    );
+
+const projectAllView =
+    document.getElementById(
+        "project-all-view"
+    );
+
+const projectAllGrid =
+    document.getElementById(
+        "project-all-grid"
+    );
+
+const indexButton =
+    document.getElementById(
+        "index-button"
+    );
+
+const indexView =
+    document.getElementById(
+        "index-view"
+    );
+
+const indexScroller =
+    document.getElementById(
+        "index-scroller"
+    );
+
+const indexGrid =
+    document.getElementById(
+        "index-grid"
     );
 
 
 /* =====================================================
-   CONTROL BAR WIDTH
+   STATE
    ===================================================== */
 
-function syncControlsWidth() {
+let projects =
+    [];
 
-    const videoWidth =
-        video
-            .getBoundingClientRect()
-            .width;
+let currentProjectIndex =
+    0;
 
+let currentVideoIndex =
+    0;
 
-    if (
-        videoWidth >
-        0
-    ) {
+let soundEnabled =
+    false;
 
-        controls.style.width =
-            `${videoWidth}px`;
+let indexOpen =
+    false;
 
-    }
-
-}
+let viewAllOpen =
+    false;
 
 
 /* =====================================================
-   LOCK MORPH BUTTON WIDTHS
-
-   Makes first character positions fixed.
+   HELPERS
    ===================================================== */
 
-function measureButtonTextWidth(
-    button,
-    text
+function videoUrl(
+    filename
 ) {
 
-    const measurement =
-        document.createElement(
-            "span"
-        );
-
-
-    const style =
-        window.getComputedStyle(
-            button
-        );
-
-
-    measurement.textContent =
-        text;
-
-
-    measurement.style.position =
-        "fixed";
-
-    measurement.style.visibility =
-        "hidden";
-
-    measurement.style.whiteSpace =
-        "nowrap";
-
-    measurement.style.pointerEvents =
-        "none";
-
-    measurement.style.fontFamily =
-        style.fontFamily;
-
-    measurement.style.fontSize =
-        style.fontSize;
-
-    measurement.style.fontWeight =
-        style.fontWeight;
-
-    measurement.style.lineHeight =
-        style.lineHeight;
-
-
-    document.body.appendChild(
-        measurement
-    );
-
-
-    const width =
-        measurement
-            .getBoundingClientRect()
-            .width;
-
-
-    measurement.remove();
-
-
-    return width;
-
-}
-
-
-function lockMorphButtonWidths() {
-
-    const playWidth =
-        Math.max(
-            measureButtonTextWidth(
-                playButton,
-                "play"
-            ),
-            measureButtonTextWidth(
-                playButton,
-                "pause"
-            )
-        );
-
-
-    const soundWidth =
-        Math.max(
-            measureButtonTextWidth(
-                soundButton,
-                "sound on"
-            ),
-            measureButtonTextWidth(
-                soundButton,
-                "sound off"
-            )
-        );
-
-
-    playButton.style.width =
-        `${Math.ceil(playWidth)}px`;
-
-
-    soundButton.style.width =
-        `${Math.ceil(soundWidth)}px`;
-
-}
-
-
-/* =====================================================
-   BUTTON MORPH
-   ===================================================== */
-
-const activeAnimations =
-    new WeakMap();
-
-
-function animateButtonText(
-    element,
-    frames
-) {
-
-    if (
-        activeAnimations.has(
-            element
+    return (
+        R2_BASE +
+        encodeURIComponent(
+            filename
         )
+    );
+
+}
+
+
+function currentProject() {
+
+    return projects[
+        currentProjectIndex
+    ];
+
+}
+
+
+function currentFilename() {
+
+    const project =
+        currentProject();
+
+    if (
+        !project
     ) {
-
-        clearTimeout(
-            activeAnimations.get(
-                element
-            )
-        );
-
+        return null;
     }
 
+    return project.videos[
+        currentVideoIndex
+    ];
 
-    let frameIndex =
+}
+
+
+/* =====================================================
+   CASE ANIMATION
+   ===================================================== */
+
+function renderCaseWord(
+    word,
+    upperCount
+) {
+
+    let result =
+        "";
+
+    let letterIndex =
         0;
 
+    for (
+        let i = 0;
+        i < word.length;
+        i++
+    ) {
 
-    function nextFrame() {
-
-        element.textContent =
-            frames[
-                frameIndex
-            ];
-
-
-        frameIndex++;
-
+        const char =
+            word[i];
 
         if (
-            frameIndex >=
-            frames.length
+            /[a-zA-Z]/.test(
+                char
+            )
         ) {
 
-            activeAnimations.delete(
-                element
-            );
+            result +=
+                letterIndex <
+                upperCount
+                    ? char.toUpperCase()
+                    : char.toLowerCase();
 
-            return;
+            letterIndex++;
 
         }
 
+        else {
 
-        const timer =
-            setTimeout(
-                nextFrame,
-                CONTROL_FRAME_SPEED
+            result +=
+                char;
+
+        }
+
+    }
+
+    return result;
+
+}
+
+
+function letterCount(
+    word
+) {
+
+    return (
+        word.match(
+            /[a-zA-Z]/g
+        ) || []
+    ).length;
+
+}
+
+
+function animateCaseControl(
+    element,
+    toUpper
+) {
+
+    const span =
+        element.querySelector(
+            "span"
+        );
+
+    if (
+        !span
+    ) {
+        return;
+    }
+
+    const word =
+        element.dataset.word;
+
+    const total =
+        letterCount(
+            word
+        );
+
+    const start =
+        performance.now();
+
+    const from =
+        toUpper
+            ? 0
+            : total;
+
+    const to =
+        toUpper
+            ? total
+            : 0;
+
+
+    function frame(
+        now
+    ) {
+
+        const progress =
+            Math.min(
+                1,
+                (
+                    now -
+                    start
+                ) /
+                WORD_TRANSITION_DURATION
             );
 
+        const count =
+            Math.round(
+                from +
+                (
+                    to -
+                    from
+                ) *
+                progress
+            );
 
-        activeAnimations.set(
-            element,
-            timer
-        );
+        span.textContent =
+            renderCaseWord(
+                word,
+                count
+            );
+
+        if (
+            progress <
+            1
+        ) {
+
+            requestAnimationFrame(
+                frame
+            );
+
+        }
 
     }
 
 
-    nextFrame();
-
-}
-
-
-/* =========================
-   PLAY → PAUSE
-   ========================= */
-
-function animateToPause() {
-
-    animateButtonText(
-        playButton,
-        [
-            "play",
-            "plau",
-            "paau",
-            "paus",
-            "pause"
-        ]
+    requestAnimationFrame(
+        frame
     );
 
 }
 
 
-/* =========================
-   PAUSE → PLAY
-   ========================= */
+document
+    .querySelectorAll(
+        ".case-control"
+    )
+    .forEach(
+        element => {
 
-function animateToPlay() {
+            element.addEventListener(
+                "mouseenter",
+                () => {
 
-    animateButtonText(
-        playButton,
-        [
-            "pause",
-            "paus",
-            "paau",
-            "plau",
-            "play"
-        ]
-    );
+                    if (
+                        window.matchMedia(
+                            "(hover: hover)"
+                        ).matches
+                    ) {
 
-}
+                        animateCaseControl(
+                            element,
+                            true
+                        );
 
+                    }
 
-/* =========================
-   SOUND ON → OFF LABEL
-   ========================= */
-
-function animateToSoundOff() {
-
-    animateButtonText(
-        soundButton,
-        [
-            "sound on",
-            "sound of",
-            "sound off"
-        ]
-    );
-
-}
-
-
-/* =========================
-   SOUND OFF → ON LABEL
-   ========================= */
-
-function animateToSoundOn() {
-
-    animateButtonText(
-        soundButton,
-        [
-            "sound off",
-            "sound of",
-            "sound on"
-        ]
-    );
-
-}
-
-
-/* =====================================================
-   FILMS.JSON
-   ===================================================== */
-
-async function loadFilmList() {
-
-    try {
-
-        const response =
-            await fetch(
-                "./films.json",
-                {
-                    cache:
-                        "no-store"
                 }
             );
 
 
-        if (
-            !response.ok
-        ) {
+            element.addEventListener(
+                "mouseleave",
+                () => {
 
-            throw new Error(
-                "films.json could not be loaded"
+                    if (
+                        window.matchMedia(
+                            "(hover: hover)"
+                        ).matches
+                    ) {
+
+                        animateCaseControl(
+                            element,
+                            false
+                        );
+
+                    }
+
+                }
             );
 
         }
-
-
-        const data =
-            await response.json();
-
-
-        films =
-            data.filter(
-                item =>
-                    typeof item ===
-                    "string" &&
-                    item.trim() !==
-                    ""
-            );
-
-
-        if (
-            films.length ===
-            0
-        ) {
-
-            return;
-
-        }
-
-
-        loadFilm(
-            0,
-            true
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            error
-        );
-
-    }
-
-}
-
-
-/* =====================================================
-   SOUND
-   ===================================================== */
-
-function applySoundState() {
-
-    video.muted =
-        !soundEnabled;
-
-}
-
-
-function toggleSound() {
-
-    if (
-        !soundEnabled
-    ) {
-
-        soundEnabled =
-            true;
-
-
-        applySoundState();
-
-
-        animateToSoundOff();
-
-    }
-
-    else {
-
-        soundEnabled =
-            false;
-
-
-        applySoundState();
-
-
-        animateToSoundOn();
-
-    }
-
-}
-
-
-/* =====================================================
-   PLAY / PAUSE
-   ===================================================== */
-
-function togglePlayback() {
-
-    if (
-        video.paused
-    ) {
-
-        video
-            .play()
-            .catch(
-                () => {}
-            );
-
-
-        animateToPause();
-
-    }
-
-    else {
-
-        video.pause();
-
-
-        animateToPlay();
-
-    }
-
-}
-
-
-/* =====================================================
-   LOAD FILM
-   ===================================================== */
-
-function loadFilm(
-    index,
-    autoplay = true
-) {
-
-    if (
-        films.length ===
-        0
-    ) {
-
-        return;
-
-    }
-
-
-    if (
-        index <
-        0
-    ) {
-
-        index =
-            films.length -
-            1;
-
-    }
-
-
-    if (
-        index >=
-        films.length
-    ) {
-
-        index =
-            0;
-
-    }
-
-
-    currentFilm =
-        index;
-
-
-    video.pause();
-
-
-    video.src =
-        R2_BASE +
-        films[
-            currentFilm
-        ];
-
-
-    video.load();
-
-
-    applySoundState();
-
-
-    setTimeout(
-        () => {
-
-            syncControlsWidth();
-
-            lockMorphButtonWidths();
-
-        },
-        50
     );
-
-
-    if (
-        autoplay
-    ) {
-
-        video
-            .play()
-            .catch(
-                () => {}
-            );
-
-
-        playButton.textContent =
-            "pause";
-
-    }
-
-    else {
-
-        playButton.textContent =
-            "play";
-
-    }
-
-
-    soundButton.textContent =
-        soundEnabled
-            ? "sound off"
-            : "sound on";
-
-}
-
-
-/* =====================================================
-   NEXT / PREVIOUS
-   ===================================================== */
-
-function nextFilm() {
-
-    loadFilm(
-        currentFilm +
-        1,
-        true
-    );
-
-}
-
-
-function previousFilm() {
-
-    loadFilm(
-        currentFilm -
-        1,
-        true
-    );
-
-}
-
-
-/* =====================================================
-   BUTTONS
-   ===================================================== */
-
-previousButton.addEventListener(
-    "click",
-    () => {
-
-        previousFilm();
-
-        previousButton.blur();
-
-    }
-);
-
-
-nextButton.addEventListener(
-    "click",
-    () => {
-
-        nextFilm();
-
-        nextButton.blur();
-
-    }
-);
-
-
-playButton.addEventListener(
-    "click",
-    () => {
-
-        togglePlayback();
-
-        playButton.blur();
-
-    }
-);
-
-
-soundButton.addEventListener(
-    "click",
-    () => {
-
-        toggleSound();
-
-        soundButton.blur();
-
-    }
-);
-
-
-/* =====================================================
-   VIDEO EVENTS
-   ===================================================== */
-
-video.addEventListener(
-    "ended",
-    nextFilm
-);
-
-
-video.addEventListener(
-    "loadedmetadata",
-    () => {
-
-        syncControlsWidth();
-
-        lockMorphButtonWidths();
-
-    }
-);
-
-
-video.addEventListener(
-    "loadeddata",
-    syncControlsWidth
-);
-
-
-video.addEventListener(
-    "canplay",
-    syncControlsWidth
-);
-
-
-video.addEventListener(
-    "resize",
-    syncControlsWidth
-);
-
-
-window.addEventListener(
-    "resize",
-    () => {
-
-        requestAnimationFrame(
-            () => {
-
-                syncControlsWidth();
-
-                lockMorphButtonWidths();
-
-            }
-        );
-
-    }
-);
-
-
-window.addEventListener(
-    "orientationchange",
-    () => {
-
-        setTimeout(
-            () => {
-
-                syncControlsWidth();
-
-                lockMorphButtonWidths();
-
-            },
-            150
-        );
-
-
-        setTimeout(
-            () => {
-
-                syncControlsWidth();
-
-                lockMorphButtonWidths();
-
-            },
-            400
-        );
-
-    }
-);
 
 
 /* =====================================================
@@ -1346,8 +1527,8 @@ window.addEventListener(
    ===================================================== */
 
 const logo =
-    document.querySelector(
-        ".logo"
+    document.getElementById(
+        "logo"
     );
 
 const logoName =
@@ -1355,7 +1536,7 @@ const logoName =
         "logo-name"
     );
 
-const letters = [
+const logoLetters = [
     document.getElementById("letter-a"),
     document.getElementById("letter-y"),
     document.getElementById("letter-b"),
@@ -1388,6 +1569,9 @@ let logoTarget =
 let logoTimer =
     null;
 
+let logoReturnTimer =
+    null;
+
 
 function setLogoState(
     state
@@ -1396,25 +1580,23 @@ function setLogoState(
     logoState =
         state;
 
-
     logoName.textContent =
-        state ===
-        0
+        state === 0
             ? "Denizalp"
             : "denizalp";
 
 
     for (
         let i = 0;
-        i < letters.length;
+        i < logoLetters.length;
         i++
     ) {
 
-        letters[i]
+        logoLetters[i]
             .textContent =
-            i < state
-                ? uppercase[i]
-                : lowercase[i];
+                i < state
+                    ? uppercase[i]
+                    : lowercase[i];
 
     }
 
@@ -1447,13 +1629,13 @@ function moveLogo() {
     logoTimer =
         setTimeout(
             moveLogo,
-            120
+            LOGO_STEP_DURATION
         );
 
 }
 
 
-function animateTo(
+function animateLogoTo(
     target
 ) {
 
@@ -1462,7 +1644,8 @@ function animateTo(
 
 
     if (
-        logoTimer
+        logoTimer !==
+        null
     ) {
 
         clearTimeout(
@@ -1477,22 +1660,17 @@ function animateTo(
 }
 
 
-/* =========================
-   DESKTOP LOGO
-   ========================= */
-
 logo.addEventListener(
     "mouseenter",
     () => {
 
         if (
-            window.innerWidth >
-            600
+            window.matchMedia(
+                "(hover: hover)"
+            ).matches
         ) {
 
-            animateTo(
-                5
-            );
+            animateLogoTo(5);
 
         }
 
@@ -1505,13 +1683,12 @@ logo.addEventListener(
     () => {
 
         if (
-            window.innerWidth >
-            600
+            window.matchMedia(
+                "(hover: hover)"
+            ).matches
         ) {
 
-            animateTo(
-                0
-            );
+            animateLogoTo(0);
 
         }
 
@@ -1519,312 +1696,1662 @@ logo.addEventListener(
 );
 
 
-/* =========================
-   MOBILE LOGO
-   ========================= */
+logo.addEventListener(
+    "click",
+    event => {
 
-function mobileLogoCycle() {
-
-    setTimeout(
-        () => {
-
-            animateTo(
-                5
-            );
+        event.preventDefault();
 
 
-            setTimeout(
-                () => {
+        if (
+            window.matchMedia(
+                "(hover: none)"
+            ).matches
+        ) {
 
-                    animateTo(
-                        0
-                    );
+            if (
+                logoReturnTimer
+            ) {
 
+                clearTimeout(
+                    logoReturnTimer
+                );
 
-                    setTimeout(
-                        mobileLogoCycle,
-                        2600
-                    );
-
-                },
-                2600
-            );
-
-        },
-        2000
-    );
-
-}
+            }
 
 
-if (
-    window.innerWidth <=
-    600
-) {
-
-    setLogoState(
-        0
-    );
+            animateLogoTo(5);
 
 
-    mobileLogoCycle();
+            logoReturnTimer =
+                setTimeout(
+                    () => {
+
+                        animateLogoTo(0);
+
+                    },
+                    LOGO_MOBILE_HOLD
+                );
+
+        }
+
+    }
+);
+
+
+setLogoState(0);
+
+
+/* =====================================================
+   META
+   ===================================================== */
+
+function updateMeta() {
+
+    const project =
+        currentProject();
+
+    if (
+        !project
+    ) {
+        return;
+    }
+
+
+    projectTitle.textContent =
+        project.title;
+
+    projectDate.textContent =
+        project.date;
+
+    projectCounter.textContent =
+        `${currentVideoIndex + 1}/${project.videos.length}`;
 
 }
 
 
 /* =====================================================
-   SECTION SWITCH
-   Exact 600ms full transition
+   SOUND
    ===================================================== */
 
-const sectionSwitch =
-    document.getElementById(
-        "section-switch"
-    );
+function updateSoundButton() {
 
-const sectionSwitchText =
-    document.getElementById(
-        "section-switch-text"
-    );
-
-const switchWord =
-    "photography";
-
-let switchState =
-    0;
-
-let switchAnimationFrame =
-    null;
+    const text =
+        soundEnabled
+            ? "sound off"
+            : "sound on";
 
 
-/* =========================
-   RENDER SWITCH
-   ========================= */
+    soundButton.dataset.word =
+        text;
 
-function renderSwitch(
-    upperCount
-) {
-
-    switchState =
-        upperCount;
-
-
-    let result =
-        "";
-
-
-    for (
-        let i = 0;
-        i < switchWord.length;
-        i++
-    ) {
-
-        result +=
-            i < upperCount
-                ? switchWord[i]
-                    .toUpperCase()
-                : switchWord[i]
-                    .toLowerCase();
-
-    }
-
-
-    sectionSwitchText.textContent =
-        result;
+    soundButton
+        .querySelector(
+            "span"
+        )
+        .textContent =
+            text;
 
 }
 
 
-/* =========================
-   MORPH SWITCH
-   ========================= */
+function applySoundState() {
 
-function morphSwitchTo(
-    target
-) {
+    video.muted =
+        !soundEnabled;
+
+}
+
+
+function toggleSound() {
+
+    soundEnabled =
+        !soundEnabled;
+
+    applySoundState();
+
+    updateSoundButton();
+
+}
+
+
+/* =====================================================
+   PLAY / PAUSE
+   ===================================================== */
+
+function togglePlayback() {
 
     if (
-        switchAnimationFrame !==
-        null
+        video.paused
     ) {
 
-        cancelAnimationFrame(
-            switchAnimationFrame
+        video
+            .play()
+            .catch(
+                () => {}
+            );
+
+    }
+
+    else {
+
+        video.pause();
+
+    }
+
+}
+
+
+/* =====================================================
+   LOAD VIDEO
+   ===================================================== */
+
+function loadCurrentVideo(
+    autoplay = true
+) {
+
+    const filename =
+        currentFilename();
+
+    if (
+        !filename
+    ) {
+        return;
+    }
+
+
+    video.pause();
+
+    video.src =
+        videoUrl(
+            filename
+        );
+
+    video.load();
+
+    applySoundState();
+
+    updateMeta();
+
+
+    if (
+        autoplay
+    ) {
+
+        const play =
+            () => {
+
+                video
+                    .play()
+                    .catch(
+                        () => {}
+                    );
+
+                video.removeEventListener(
+                    "canplay",
+                    play
+                );
+
+            };
+
+
+        video.addEventListener(
+            "canplay",
+            play
         );
 
     }
 
-
-    const startState =
-        switchState;
+}
 
 
-    const distance =
-        Math.abs(
-            target -
-            startState
-        );
+/* =====================================================
+   NEXT / PREVIOUS
+   ===================================================== */
+
+function nextFilm() {
+
+    const project =
+        currentProject();
+
+    if (
+        !project
+    ) {
+        return;
+    }
 
 
     if (
-        distance ===
+        currentVideoIndex <
+        project.videos.length -
+        1
+    ) {
+
+        currentVideoIndex++;
+
+    }
+
+    else {
+
+        currentProjectIndex =
+            (
+                currentProjectIndex +
+                1
+            ) %
+            projects.length;
+
+        currentVideoIndex =
+            0;
+
+    }
+
+
+    loadCurrentVideo(true);
+
+}
+
+
+function previousFilm() {
+
+    if (
+        projects.length ===
+        0
+    ) {
+        return;
+    }
+
+
+    if (
+        currentVideoIndex >
         0
     ) {
 
-        return;
+        currentVideoIndex--;
+
+    }
+
+    else {
+
+        currentProjectIndex =
+            (
+                currentProjectIndex -
+                1 +
+                projects.length
+            ) %
+            projects.length;
+
+        currentVideoIndex =
+            projects[
+                currentProjectIndex
+            ].videos.length -
+            1;
 
     }
 
 
-    const duration =
-        WORD_TRANSITION_DURATION *
-        (
-            distance /
-            switchWord.length
+    loadCurrentVideo(true);
+
+}
+
+
+/* =====================================================
+   MAIN VIDEO EVENTS
+   ===================================================== */
+
+video.addEventListener(
+    "click",
+    event => {
+
+        event.stopPropagation();
+
+        togglePlayback();
+
+    }
+);
+
+
+video.addEventListener(
+    "ended",
+    nextFilm
+);
+
+
+/* =====================================================
+   CONTROL EVENTS
+   ===================================================== */
+
+previousButton.addEventListener(
+    "click",
+    event => {
+
+        event.stopPropagation();
+
+        previousFilm();
+
+        previousButton.blur();
+
+    }
+);
+
+
+nextButton.addEventListener(
+    "click",
+    event => {
+
+        event.stopPropagation();
+
+        nextFilm();
+
+        nextButton.blur();
+
+    }
+);
+
+
+soundButton.addEventListener(
+    "click",
+    event => {
+
+        event.stopPropagation();
+
+        toggleSound();
+
+        soundButton.blur();
+
+    }
+);
+
+
+/* =====================================================
+   PREVIEW VIDEO
+   ===================================================== */
+
+function createPreviewVideo(
+    filename
+) {
+
+    const preview =
+        document.createElement(
+            "video"
         );
 
+    preview.dataset.src =
+        videoUrl(
+            filename
+        );
 
-    const startTime =
-        performance.now();
+    preview.muted =
+        true;
+
+    preview.defaultMuted =
+        true;
+
+    preview.playsInline =
+        true;
+
+    preview.preload =
+        "metadata";
+
+    preview.disablePictureInPicture =
+        true;
+
+    preview.setAttribute(
+        "aria-hidden",
+        "true"
+    );
 
 
-    function frame(
-        now
+    preview.addEventListener(
+        "timeupdate",
+        () => {
+
+            if (
+                preview.currentTime >=
+                PREVIEW_DURATION
+            ) {
+
+                preview.currentTime =
+                    0;
+
+                preview
+                    .play()
+                    .catch(
+                        () => {}
+                    );
+
+            }
+
+        }
+    );
+
+
+    return preview;
+
+}
+
+
+/* =====================================================
+   PREVIEW OBSERVER
+   ===================================================== */
+
+const previewObserver =
+    new IntersectionObserver(
+        entries => {
+
+            entries.forEach(
+                entry => {
+
+                    const preview =
+                        entry.target;
+
+
+                    if (
+                        entry.isIntersecting
+                    ) {
+
+                        if (
+                            !preview.src
+                        ) {
+
+                            preview.src =
+                                preview.dataset.src;
+
+                            preview.load();
+
+                        }
+
+
+                        preview
+                            .play()
+                            .catch(
+                                () => {}
+                            );
+
+                    }
+
+                    else {
+
+                        preview.pause();
+
+                    }
+
+                }
+            );
+
+        },
+        {
+            rootMargin:
+                "160px"
+        }
+    );
+
+
+function observePreview(
+    preview
+) {
+
+    previewObserver.observe(
+        preview
+    );
+
+}
+
+
+/* =====================================================
+   STOP PREVIEWS
+   ===================================================== */
+
+function stopAllPreviews() {
+
+    document
+        .querySelectorAll(
+            "#index-view video, #project-all-view video"
+        )
+        .forEach(
+            preview => {
+
+                preview.pause();
+
+            }
+        );
+
+}
+
+
+/* =====================================================
+   VIEW ALL GRID
+   ===================================================== */
+
+function calculateViewAllGrid(
+    count
+) {
+
+    if (
+        count <= 1
     ) {
 
-        const progress =
-            Math.min(
-                1,
-                (
-                    now -
-                    startTime
-                ) /
-                duration
-            );
+        return {
+            columns: 1,
+            rows: 1
+        };
+
+    }
+
+    if (
+        count === 2
+    ) {
+
+        return {
+            columns: 2,
+            rows: 1
+        };
+
+    }
+
+    if (
+        count <= 4
+    ) {
+
+        return {
+            columns: 2,
+            rows: 2
+        };
+
+    }
+
+    return {
+        columns: 3,
+        rows: 2
+    };
+
+}
 
 
-        const value =
-            Math.round(
-                startState +
-                (
-                    target -
-                    startState
-                ) *
-                progress
-            );
+/* =====================================================
+   BUILD VIEW ALL
+   ===================================================== */
+
+function buildViewAll() {
+
+    const project =
+        currentProject();
+
+    if (
+        !project
+    ) {
+        return;
+    }
 
 
-        renderSwitch(
-            value
+    projectAllGrid.innerHTML =
+        "";
+
+
+    const layout =
+        calculateViewAllGrid(
+            project.videos.length
         );
+
+
+    projectAllGrid.style
+        .gridTemplateColumns =
+            `repeat(${layout.columns}, minmax(0, 1fr))`;
+
+    projectAllGrid.style
+        .gridTemplateRows =
+            `repeat(${layout.rows}, minmax(0, 1fr))`;
+
+
+    project.videos.forEach(
+        (
+            filename,
+            videoIndex
+        ) => {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+            button.type =
+                "button";
+
+            button.className =
+                "project-all-thumb";
+
+
+            const preview =
+                createPreviewVideo(
+                    filename
+                );
+
+
+            button.appendChild(
+                preview
+            );
+
+
+            button.addEventListener(
+                "click",
+                event => {
+
+                    event.stopPropagation();
+
+                    currentVideoIndex =
+                        videoIndex;
+
+                    closeViewAll(
+                        false
+                    );
+
+                    loadCurrentVideo(
+                        true
+                    );
+
+                }
+            );
+
+
+            projectAllGrid.appendChild(
+                button
+            );
+
+
+            observePreview(
+                preview
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   VIEW ALL OPEN / CLOSE
+   ===================================================== */
+
+function openViewAll() {
+
+    if (
+        indexOpen
+    ) {
+        return;
+    }
+
+
+    viewAllOpen =
+        true;
+
+    video.pause();
+
+    buildViewAll();
+
+    body.classList.add(
+        "project-all-mode"
+    );
+
+    viewAllButton.dataset.word =
+        "close";
+
+    viewAllButton
+        .querySelector(
+            "span"
+        )
+        .textContent =
+            "close";
+
+}
+
+
+function closeViewAll(
+    resume = true
+) {
+
+    if (
+        !viewAllOpen
+    ) {
+        return;
+    }
+
+
+    viewAllOpen =
+        false;
+
+    stopAllPreviews();
+
+
+    body.classList.remove(
+        "project-all-mode"
+    );
+
+
+    projectAllGrid.innerHTML =
+        "";
+
+
+    viewAllButton.dataset.word =
+        "view all";
+
+    viewAllButton
+        .querySelector(
+            "span"
+        )
+        .textContent =
+            "view all";
+
+
+    if (
+        resume
+    ) {
+
+        video
+            .play()
+            .catch(
+                () => {}
+            );
+
+    }
+
+}
+
+
+viewAllButton.addEventListener(
+    "click",
+    event => {
+
+        event.stopPropagation();
 
 
         if (
-            progress <
-            1
+            viewAllOpen
         ) {
 
-            switchAnimationFrame =
-                requestAnimationFrame(
-                    frame
-                );
+            closeViewAll(true);
 
         }
 
         else {
 
-            renderSwitch(
-                target
-            );
-
-
-            switchAnimationFrame =
-                null;
+            openViewAll();
 
         }
 
-    }
 
-
-    switchAnimationFrame =
-        requestAnimationFrame(
-            frame
-        );
-
-}
-
-
-/* =========================
-   SWITCH HOVER
-   ========================= */
-
-sectionSwitch.addEventListener(
-    "mouseenter",
-    () => {
-
-        if (
-            window.innerWidth >
-            600
-        ) {
-
-            morphSwitchTo(
-                switchWord.length
-            );
-
-        }
+        viewAllButton.blur();
 
     }
-);
-
-
-sectionSwitch.addEventListener(
-    "mouseleave",
-    () => {
-
-        if (
-            window.innerWidth >
-            600
-        ) {
-
-            morphSwitchTo(
-                0
-            );
-
-        }
-
-    }
-);
-
-
-renderSwitch(
-    0
 );
 
 
 /* =====================================================
-   START
+   INDEX
    ===================================================== */
 
-setLogoState(
-    0
+function buildIndex() {
+
+    indexGrid.innerHTML =
+        "";
+
+
+    const ordered =
+        projects
+            .map(
+                (
+                    project,
+                    projectIndex
+                ) => ({
+                    project,
+                    projectIndex
+                })
+            )
+            .sort(
+                (
+                    a,
+                    b
+                ) =>
+                    (
+                        a.project.indexOrder ??
+                        999
+                    ) -
+                    (
+                        b.project.indexOrder ??
+                        999
+                    )
+            );
+
+
+    ordered.forEach(
+        item => {
+
+            const {
+                project,
+                projectIndex
+            } =
+                item;
+
+
+            const card =
+                document.createElement(
+                    "button"
+                );
+
+            card.type =
+                "button";
+
+            card.className =
+                "project-card";
+
+
+            const videoWrap =
+                document.createElement(
+                    "div"
+                );
+
+            videoWrap.className =
+                "card-video-wrap";
+
+
+            const preview =
+                createPreviewVideo(
+                    project.videos[0]
+                );
+
+
+            videoWrap.appendChild(
+                preview
+            );
+
+
+            const copy =
+                document.createElement(
+                    "div"
+                );
+
+            copy.className =
+                "card-copy";
+
+
+            const title =
+                document.createElement(
+                    "span"
+                );
+
+            title.className =
+                "card-title";
+
+            title.textContent =
+                project.title;
+
+
+            const date =
+                document.createElement(
+                    "span"
+                );
+
+            date.className =
+                "card-date";
+
+            date.textContent =
+                project.date;
+
+
+            copy.appendChild(
+                title
+            );
+
+            copy.appendChild(
+                date
+            );
+
+
+            card.appendChild(
+                videoWrap
+            );
+
+            card.appendChild(
+                copy
+            );
+
+
+            card.addEventListener(
+                "click",
+                event => {
+
+                    event.stopPropagation();
+
+                    currentProjectIndex =
+                        projectIndex;
+
+                    currentVideoIndex =
+                        0;
+
+                    closeIndex(
+                        false
+                    );
+
+                    loadCurrentVideo(
+                        true
+                    );
+
+                }
+            );
+
+
+            indexGrid.appendChild(
+                card
+            );
+
+
+            observePreview(
+                preview
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   INDEX OPEN / CLOSE
+   ===================================================== */
+
+function openIndex() {
+
+    if (
+        viewAllOpen
+    ) {
+
+        closeViewAll(
+            false
+        );
+
+    }
+
+
+    indexOpen =
+        true;
+
+    video.pause();
+
+
+    if (
+        indexGrid.children.length ===
+        0
+    ) {
+
+        buildIndex();
+
+    }
+
+
+    body.classList.add(
+        "index-mode"
+    );
+
+    indexView.classList.add(
+        "visible"
+    );
+
+
+    indexButton.dataset.word =
+        "close";
+
+    indexButton
+        .querySelector(
+            "span"
+        )
+        .textContent =
+            "close";
+
+}
+
+
+function closeIndex(
+    resume = true
+) {
+
+    if (
+        !indexOpen
+    ) {
+        return;
+    }
+
+
+    indexOpen =
+        false;
+
+    stopAllPreviews();
+
+
+    body.classList.remove(
+        "index-mode"
+    );
+
+    indexView.classList.remove(
+        "visible"
+    );
+
+
+    indexButton.dataset.word =
+        "index";
+
+    indexButton
+        .querySelector(
+            "span"
+        )
+        .textContent =
+            "index";
+
+
+    if (
+        resume
+    ) {
+
+        video
+            .play()
+            .catch(
+                () => {}
+            );
+
+    }
+
+}
+
+
+indexButton.addEventListener(
+    "click",
+    event => {
+
+        event.stopPropagation();
+
+
+        if (
+            indexOpen
+        ) {
+
+            closeIndex(true);
+
+        }
+
+        else {
+
+            openIndex();
+
+        }
+
+
+        indexButton.blur();
+
+    }
 );
 
 
-applySoundState();
+/* =====================================================
+   INDEX WHEEL
+   ===================================================== */
+
+indexScroller.addEventListener(
+    "wheel",
+    event => {
+
+        if (
+            !indexOpen
+        ) {
+            return;
+        }
 
 
-playButton.textContent =
-    "pause";
+        event.preventDefault();
 
 
-soundButton.textContent =
-    "sound on";
+        indexScroller.scrollLeft +=
+            Math.abs(
+                event.deltaX
+            ) >
+            Math.abs(
+                event.deltaY
+            )
+                ? event.deltaX
+                : event.deltaY;
+
+    },
+    {
+        passive: false
+    }
+);
 
 
-lockMorphButtonWidths();
+/* =====================================================
+   INDEX DRAG
+   ===================================================== */
+
+let dragging =
+    false;
+
+let dragStartX =
+    0;
+
+let dragStartScroll =
+    0;
 
 
-loadFilmList();
+indexScroller.addEventListener(
+    "pointerdown",
+    event => {
+
+        dragging =
+            true;
+
+        dragStartX =
+            event.clientX;
+
+        dragStartScroll =
+            indexScroller.scrollLeft;
+
+        indexScroller.classList.add(
+            "dragging"
+        );
+
+        indexScroller.setPointerCapture(
+            event.pointerId
+        );
+
+    }
+);
+
+
+indexScroller.addEventListener(
+    "pointermove",
+    event => {
+
+        if (
+            !dragging
+        ) {
+            return;
+        }
+
+
+        const delta =
+            event.clientX -
+            dragStartX;
+
+
+        indexScroller.scrollLeft =
+            dragStartScroll -
+            delta;
+
+    }
+);
+
+
+function stopIndexDrag() {
+
+    dragging =
+        false;
+
+    indexScroller.classList.remove(
+        "dragging"
+    );
+
+}
+
+
+indexScroller.addEventListener(
+    "pointerup",
+    stopIndexDrag
+);
+
+indexScroller.addEventListener(
+    "pointercancel",
+    stopIndexDrag
+);
+
+
+/* =====================================================
+   KEYBOARD
+   ===================================================== */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        const target =
+            event.target;
+
+        const isFormElement =
+            target &&
+            (
+                target.tagName ===
+                    "INPUT" ||
+                target.tagName ===
+                    "TEXTAREA" ||
+                target.tagName ===
+                    "SELECT"
+            );
+
+
+        if (
+            isFormElement
+        ) {
+            return;
+        }
+
+
+        if (
+            event.code ===
+            "Escape"
+        ) {
+
+            if (
+                viewAllOpen
+            ) {
+
+                event.preventDefault();
+
+                closeViewAll(true);
+
+                return;
+
+            }
+
+
+            if (
+                indexOpen
+            ) {
+
+                event.preventDefault();
+
+                closeIndex(true);
+
+                return;
+
+            }
+
+        }
+
+
+        if (
+            indexOpen
+        ) {
+
+            if (
+                event.code ===
+                "ArrowRight"
+            ) {
+
+                event.preventDefault();
+
+                indexScroller.scrollBy({
+                    left: 320,
+                    behavior: "smooth"
+                });
+
+            }
+
+            else if (
+                event.code ===
+                "ArrowLeft"
+            ) {
+
+                event.preventDefault();
+
+                indexScroller.scrollBy({
+                    left: -320,
+                    behavior: "smooth"
+                });
+
+            }
+
+
+            return;
+
+        }
+
+
+        if (
+            viewAllOpen
+        ) {
+            return;
+        }
+
+
+        if (
+            event.code ===
+            "Space"
+        ) {
+
+            event.preventDefault();
+
+            togglePlayback();
+
+        }
+
+        else if (
+            event.code ===
+            "ArrowRight"
+        ) {
+
+            event.preventDefault();
+
+            nextFilm();
+
+        }
+
+        else if (
+            event.code ===
+            "ArrowLeft"
+        ) {
+
+            event.preventDefault();
+
+            previousFilm();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   MOBILE SWIPE
+   ===================================================== */
+
+let touchStartX =
+    0;
+
+let touchStartY =
+    0;
+
+let touchStartTime =
+    0;
+
+let touchMoved =
+    false;
+
+
+video.addEventListener(
+    "touchstart",
+    event => {
+
+        if (
+            event.touches.length !==
+            1
+        ) {
+            return;
+        }
+
+
+        const touch =
+            event.touches[0];
+
+
+        touchStartX =
+            touch.clientX;
+
+        touchStartY =
+            touch.clientY;
+
+        touchStartTime =
+            performance.now();
+
+        touchMoved =
+            false;
+
+    },
+    {
+        passive: true
+    }
+);
+
+
+video.addEventListener(
+    "touchmove",
+    event => {
+
+        if (
+            event.touches.length !==
+            1
+        ) {
+            return;
+        }
+
+
+        const touch =
+            event.touches[0];
+
+        const dx =
+            touch.clientX -
+            touchStartX;
+
+        const dy =
+            touch.clientY -
+            touchStartY;
+
+
+        if (
+            Math.abs(dx) >
+            10 ||
+            Math.abs(dy) >
+            10
+        ) {
+
+            touchMoved =
+                true;
+
+        }
+
+    },
+    {
+        passive: true
+    }
+);
+
+
+video.addEventListener(
+    "touchend",
+    event => {
+
+        if (
+            !event.changedTouches.length
+        ) {
+            return;
+        }
+
+
+        const touch =
+            event.changedTouches[0];
+
+        const dx =
+            touch.clientX -
+            touchStartX;
+
+        const dy =
+            touch.clientY -
+            touchStartY;
+
+        const elapsed =
+            performance.now() -
+            touchStartTime;
+
+
+        const horizontalSwipe =
+            Math.abs(dx) >=
+                50 &&
+            Math.abs(dx) >
+                Math.abs(dy) *
+                1.25 &&
+            elapsed <
+                700;
+
+
+        if (
+            horizontalSwipe
+        ) {
+
+            if (
+                dx <
+                0
+            ) {
+
+                nextFilm();
+
+            }
+
+            else {
+
+                previousFilm();
+
+            }
+
+
+            return;
+
+        }
+
+
+        if (
+            !touchMoved
+        ) {
+
+            togglePlayback();
+
+        }
+
+    },
+    {
+        passive: true
+    }
+);
+
+
+/* =====================================================
+   LOAD DATA
+   ===================================================== */
+
+async function loadProjects() {
+
+    try {
+
+        const response =
+            await fetch(
+                FILMS_JSON,
+                {
+                    cache:
+                        "no-store"
+                }
+            );
+
+
+        if (
+            !response.ok
+        ) {
+
+            throw new Error(
+                "films.json could not be loaded"
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        projects =
+            data.filter(
+                project =>
+                    project &&
+                    typeof project.title ===
+                        "string" &&
+                    Array.isArray(
+                        project.videos
+                    ) &&
+                    project.videos.length >
+                        0
+            );
+
+
+        if (
+            projects.length ===
+            0
+        ) {
+            return;
+        }
+
+
+        currentProjectIndex =
+            0;
+
+        currentVideoIndex =
+            0;
+
+
+        updateSoundButton();
+
+        loadCurrentVideo(
+            true
+        );
+
+    }
+
+    catch (
+        error
+    ) {
+
+        console.error(
+            error
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   VISIBILITY
+   ===================================================== */
+
+document.addEventListener(
+    "visibilitychange",
+    () => {
+
+        if (
+            document.hidden
+        ) {
+
+            video.pause();
+
+            stopAllPreviews();
+
+            return;
+
+        }
+
+
+        if (
+            !indexOpen &&
+            !viewAllOpen
+        ) {
+
+            video
+                .play()
+                .catch(
+                    () => {}
+                );
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   INIT
+   ===================================================== */
+
+loadProjects();
 
 </script>
 
