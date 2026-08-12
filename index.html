@@ -1,11 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+>
+
 <title>Denizalp Aybak — Film</title>
 
+
 <style>
+
+/* =====================================================
+   RESET
+   ===================================================== */
+
 * {
     box-sizing: border-box;
 }
@@ -13,12 +25,21 @@
 html,
 body {
     margin: 0;
+    padding: 0;
+
     width: 100%;
     height: 100%;
+
     overflow: hidden;
+
     background: #fff;
     color: #000;
-    font-family: Arial, Helvetica, sans-serif;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
 }
@@ -27,7 +48,13 @@ button {
     font: inherit;
 }
 
+
+/* =====================================================
+   VARIABLES
+   ===================================================== */
+
 :root {
+
     --font-size: 15px;
     --line-height: 1.15;
 
@@ -42,15 +69,33 @@ button {
     --index-content-top: 130px;
 
     /*
-        IMPORTANT:
-        Every desktop index preview now shares the
-        same visual height. This keeps all copy on
-        the same baseline regardless of aspect ratio.
-    */
-    --index-video-height: 365px;
+        Desktop Index is intentionally more restrained
+        than before.
 
-    --index-gap: 54px;
+        It now has the same rhythm as the mobile version:
+        substantial thumbnails, but several works can
+        coexist inside the viewport.
+    */
+
+    --index-video-height:
+        clamp(
+            220px,
+            28vh,
+            300px
+        );
+
+    --index-max-width:
+        27vw;
+
+    --index-gap:
+        56px;
+
 }
+
+
+/* =====================================================
+   BODY
+   ===================================================== */
 
 body {
     cursor: default;
@@ -63,8 +108,10 @@ body {
 
 .info {
     position: fixed;
+
     top: var(--top);
     left: var(--side);
+
     z-index: 500;
 
     font-size: var(--font-size);
@@ -78,6 +125,7 @@ body {
 
 .logo {
     position: relative;
+
     display: block;
 
     width: 190px;
@@ -93,6 +141,7 @@ body {
 
 .logo-name {
     position: absolute;
+
     top: 0;
     left: 0;
 
@@ -101,6 +150,7 @@ body {
 
 .logo-aybak {
     position: absolute;
+
     top: 17px;
     left: 0;
 
@@ -135,7 +185,7 @@ body {
 
 
 /* =====================================================
-   PHOTOGRAPHY SWITCH
+   PHOTOGRAPHY LINK
    ===================================================== */
 
 .section-switch {
@@ -162,6 +212,7 @@ body {
 
 #video-stage {
     position: fixed;
+
     inset: 0;
 
     z-index: 10;
@@ -169,26 +220,32 @@ body {
     pointer-events: none;
 }
 
+
+/* =====================================================
+   VIDEO BLOCK
+   ===================================================== */
+
 #video-block {
     position: absolute;
 
     top: 50%;
     left: 50%;
 
-    transform: translate(-50%, -50%);
+    transform:
+        translate(-50%, -50%);
 
     display: flex;
     flex-direction: column;
 
     align-items: stretch;
 
-    pointer-events: none;
-
     max-width:
         calc(
             100vw -
             var(--side) * 2
         );
+
+    pointer-events: none;
 }
 
 
@@ -363,19 +420,6 @@ body {
 
 #next-button {
     justify-self: end;
-}
-
-
-/*
-    Sound is rendered as one complete text string.
-
-    This is intentional:
-    both SOUND and ON/OFF must participate in the
-    uppercase/lowercase hover animation.
-*/
-
-#sound-label {
-    display: inline;
 }
 
 
@@ -637,8 +681,6 @@ body.index-mode #video-stage {
 
     width: auto;
 
-    min-width: 1px;
-
     margin: 0;
     padding: 0;
 
@@ -660,47 +702,54 @@ body.index-mode #video-stage {
 
 
 /* =====================================================
-   INDEX VIDEO
+   INDEX VIDEO WRAP
    ===================================================== */
 
 /*
-    The wrapper and video use one shared fixed height.
+    IMPORTANT:
 
-    Aspect ratio only determines width.
+    Every project's MEDIA AREA has the same height.
 
-    Therefore:
-    portrait, square and landscape media all END at
-    exactly the same vertical position.
+    This guarantees that title/date copy starts at
+    exactly the same baseline on desktop.
+
+    Very wide films can be width-constrained, but their
+    wrapper keeps the common vertical height.
 */
 
 .card-video-wrap {
-    display: block;
+    display: flex;
+
+    align-items: flex-end;
+    justify-content: flex-start;
 
     width: auto;
 
     height:
         var(--index-video-height);
 
-    flex: 0 0
+    flex:
+        0 0
         var(--index-video-height);
 
     pointer-events: none;
-
-    overflow: hidden;
 }
+
+
+/* =====================================================
+   INDEX VIDEO
+   ===================================================== */
 
 .project-card video {
     display: block;
 
-    width: auto;
-
-    height:
-        var(--index-video-height);
-
-    max-width: none;
-    max-height: none;
+    width: 100%;
+    height: 100%;
 
     object-fit: contain;
+
+    object-position:
+        left bottom;
 
     pointer-events: none;
 }
@@ -741,9 +790,9 @@ body.index-mode #video-stage {
 
     max-width: 100%;
 
-    text-align: left;
-
     white-space: nowrap;
+
+    text-align: left;
 
     overflow: hidden;
 }
@@ -758,8 +807,20 @@ body.index-mode #video-stage {
     and (max-width: 1366px) {
 
     :root {
-        --index-video-height: 325px;
-        --index-gap: 46px;
+
+        --index-video-height:
+            clamp(
+                200px,
+                27vh,
+                275px
+            );
+
+        --index-max-width:
+            29vw;
+
+        --index-gap:
+            44px;
+
     }
 
 }
@@ -773,6 +834,7 @@ body.index-mode #video-stage {
     (max-width: 600px) {
 
     :root {
+
         --font-size: 13px;
 
         --side: 24px;
@@ -783,18 +845,31 @@ body.index-mode #video-stage {
         --meta-gap: 5px;
 
         /*
-            Photography-style mobile index:
-            approximately two substantial projects
-            visible at once rather than 4 tiny previews.
+            This is deliberately much larger than the
+            old film Index.
+
+            It matches the rhythm shown in the photography
+            screenshot: roughly two substantial works
+            occupy the viewport.
         */
-        --index-video-height: 218px;
-        --index-gap: 54px;
+
+        --index-video-height:
+            218px;
+
+        --index-max-width:
+            47vw;
+
+        --index-gap:
+            54px;
+
     }
+
 
     .logo {
         width: 160px;
         height: 45px;
     }
+
 
     .logo-aybak {
         top: 15px;
@@ -812,34 +887,27 @@ body.index-mode #video-stage {
     and (orientation: portrait) {
 
     /*
-        Main film block sits lower than before.
+        JS dynamically places the block in the safe area
+        below contact information.
 
-        The top of tall portrait films therefore clears
-        the contact information instead of entering it.
+        Therefore we remove the old arbitrary 57%.
     */
 
     #video-block {
-        top: 57%;
+        transform:
+            translateX(-50%);
     }
+
 
     #controls {
         margin-top: 9px;
     }
 
+
     #project-all-grid {
         gap: 5px;
     }
 
-
-    /*
-        Index follows the visual structure of the
-        photography reference:
-
-        - large cards
-        - two-ish projects visible
-        - generous but deliberate spacing
-        - centered vertically in the available white area
-    */
 
     #index-scroller {
         top: 190px;
@@ -854,15 +922,12 @@ body.index-mode #video-stage {
         align-items: center;
     }
 
+
     #index-grid {
-        align-items: flex-start;
-
-        gap: 54px;
-
         padding-left: 24px;
         padding-right: 24px;
 
-        transform: translateY(8px);
+        gap: 54px;
     }
 
 }
@@ -878,6 +943,7 @@ body.index-mode #video-stage {
     and (max-width: 1000px) {
 
     :root {
+
         --font-size: 13px;
 
         --side: 24px;
@@ -885,39 +951,47 @@ body.index-mode #video-stage {
 
         --index-bottom: 14px;
 
-        --index-video-height: 48vh;
+        --index-video-height:
+            48vh;
 
-        --index-gap: 32px;
+        --index-max-width:
+            36vw;
+
+        --index-gap:
+            32px;
+
     }
+
 
     .logo {
         width: 160px;
         height: 45px;
     }
 
+
     .logo-aybak {
         top: 15px;
     }
 
+
     #video-block {
         top: 53%;
     }
+
 
     #project-meta,
     #controls {
         font-size: 13px;
     }
 
+
     #project-all-grid {
         gap: 4px;
     }
 
+
     #index-scroller {
         top: 92px;
-    }
-
-    #index-grid {
-        transform: none;
     }
 
 }
@@ -938,7 +1012,9 @@ body.index-mode #video-stage {
 }
 
 </style>
+
 </head>
+
 
 <body>
 
@@ -1069,13 +1145,17 @@ body.index-mode #video-stage {
                 previous
             </button>
 
+
             <button
                 id="sound-button"
                 type="button"
                 aria-label="sound on"
             >
-                <span id="sound-label">sound on</span>
+                <span id="sound-label">
+                    sound on
+                </span>
             </button>
+
 
             <button
                 id="next-button"
@@ -1096,7 +1176,9 @@ body.index-mode #video-stage {
      =================================================== -->
 
 <div id="project-all-view">
+
     <div id="project-all-grid"></div>
+
 </div>
 
 
@@ -1118,7 +1200,9 @@ body.index-mode #video-stage {
         id="index-scroller"
         tabindex="0"
     >
+
         <div id="index-grid"></div>
+
     </div>
 
 </div>
@@ -1144,43 +1228,54 @@ const PHOTOGRAPHY_URL =
 
 
 /* =====================================================
-   TIMING
+   ONE SHARED UI RHYTHM
    ===================================================== */
 
+/*
+    Everything now derives from one timing:
+
+    logo
+    controls
+    photography
+    sound
+    view all
+    index
+
+    ~360ms
+
+    Logo has five AYBAK steps:
+    5 x 72 = 360ms.
+*/
+
+const UI_DURATION =
+    360;
+
+const LOGO_STEP_DURATION =
+    UI_DURATION / 5;
+
 const TEXT_MORPH_DURATION =
-    420;
+    UI_DURATION;
 
 const STATE_MORPH_DURATION =
-    400;
+    UI_DURATION;
 
 const CASE_DURATION =
-    400;
+    UI_DURATION;
+
+const INDEX_TRANSITION_DURATION =
+    UI_DURATION;
 
 
 /*
-    Sound is deliberately faster than the other
-    interface morphs.
+    Navigation hold is separate from animation speed.
 
-    The old animation felt sluggish because ON/OFF was
-    changing separately and using the full generic
-    morph duration.
+    This is the short moment in which mobile users see
+    the completed state before navigation.
 */
-
-const SOUND_CASE_DURATION =
-    180;
-
-const SOUND_STATE_DURATION =
-    180;
-
-
-const INDEX_TRANSITION_DURATION =
-    400;
-
-const LOGO_STEP_DURATION =
-    80;
 
 const MOBILE_NAV_HOLD =
     520;
+
 
 const PREVIEW_DURATION =
     5;
@@ -1204,20 +1299,24 @@ const INDEX_KEY_STEP =
 const body =
     document.body;
 
+
 const info =
     document.getElementById(
         "info"
     );
+
 
 const logo =
     document.getElementById(
         "logo"
     );
 
+
 const logoName =
     document.getElementById(
         "logo-name"
     );
+
 
 const logoLetters =
     [
@@ -1239,6 +1338,7 @@ const sectionSwitch =
         "section-switch"
     );
 
+
 const sectionSwitchText =
     document.getElementById(
         "section-switch-text"
@@ -1249,6 +1349,7 @@ const videoBlock =
     document.getElementById(
         "video-block"
     );
+
 
 const video =
     document.getElementById(
@@ -1261,15 +1362,18 @@ const projectMeta =
         "project-meta"
     );
 
+
 const projectTitle =
     document.getElementById(
         "project-title"
     );
 
+
 const projectDate =
     document.getElementById(
         "project-date"
     );
+
 
 const projectCounter =
     document.getElementById(
@@ -1282,15 +1386,18 @@ const previousButton =
         "previous-button"
     );
 
+
 const nextButton =
     document.getElementById(
         "next-button"
     );
 
+
 const soundButton =
     document.getElementById(
         "sound-button"
     );
+
 
 const soundLabel =
     document.getElementById(
@@ -1303,10 +1410,12 @@ const viewAllButton =
         "view-all-button"
     );
 
+
 const projectAllView =
     document.getElementById(
         "project-all-view"
     );
+
 
 const projectAllGrid =
     document.getElementById(
@@ -1319,15 +1428,18 @@ const indexButton =
         "index-button"
     );
 
+
 const indexView =
     document.getElementById(
         "index-view"
     );
 
+
 const indexScroller =
     document.getElementById(
         "index-scroller"
     );
+
 
 const indexGrid =
     document.getElementById(
@@ -1342,47 +1454,62 @@ const indexGrid =
 let projects =
     [];
 
+
 let currentProjectIndex =
     0;
+
 
 let currentVideoIndex =
     0;
 
+
 let renderedProjectIndex =
     null;
+
 
 let soundEnabled =
     false;
 
-let indexMode =
-    false;
-
-let projectAllMode =
-    false;
-
-let interfaceAnimating =
-    false;
-
-let projectViewAnimating =
-    false;
-
-let savedIndexScrollLeft =
-    0;
-
-let viewButtonHovered =
-    false;
 
 let soundButtonHovered =
     false;
 
+
+let indexMode =
+    false;
+
+
+let projectAllMode =
+    false;
+
+
+let interfaceAnimating =
+    false;
+
+
+let projectViewAnimating =
+    false;
+
+
+let savedIndexScrollLeft =
+    0;
+
+
+let viewButtonHovered =
+    false;
+
+
 let indexDragMoved =
     false;
+
 
 let autoplayBeforeIndex =
     true;
 
+
 let autoplayBeforeProjectAll =
     true;
+
 
 let resumeAfterVisibility =
     false;
@@ -1395,25 +1522,30 @@ let resumeAfterVisibility =
 let touchStartX =
     0;
 
+
 let touchStartY =
     0;
 
+
 let touchStartTime =
     0;
+
 
 let touchMoved =
     false;
 
 
 /* =====================================================
-   LOGO STATE
+   LOGO
    ===================================================== */
 
 let logoState =
     0;
 
+
 let logoTarget =
     0;
+
 
 let logoTimer =
     null;
@@ -1440,17 +1572,19 @@ const logoUpper =
 
 
 /* =====================================================
-   INDEX WORD STATE
+   INDEX WORD
    ===================================================== */
+
+const indexWord =
+    "index";
+
 
 let indexWordState =
     0;
 
+
 let indexWordFrame =
     null;
-
-const indexWord =
-    "index";
 
 
 /* =====================================================
@@ -1548,11 +1682,18 @@ function currentFilename() {
         currentProject();
 
 
-    return project
-        ? project.videos[
-            currentVideoIndex
-        ]
-        : null;
+    if (
+        !project
+    ) {
+
+        return null;
+
+    }
+
+
+    return project.videos[
+        currentVideoIndex
+    ];
 
 }
 
@@ -1620,14 +1761,14 @@ function getAllCounterText(
 
 
 /* =====================================================
-   CASE HELPERS
+   LETTER HELPERS
    ===================================================== */
 
 function getLetterPositions(
     text
 ) {
 
-    const result =
+    const positions =
         [];
 
 
@@ -1646,7 +1787,7 @@ function getLetterPositions(
             character.toUpperCase()
         ) {
 
-            result.push(
+            positions.push(
                 i
             );
 
@@ -1655,7 +1796,7 @@ function getLetterPositions(
     }
 
 
-    return result;
+    return positions;
 
 }
 
@@ -1671,7 +1812,7 @@ function renderPrefixCase(
         );
 
 
-    const upper =
+    const uppercasePositions =
         new Set(
             positions.slice(
                 0,
@@ -1686,13 +1827,24 @@ function renderPrefixCase(
             (
                 character,
                 index
-            ) =>
+            ) => {
 
-                upper.has(
-                    index
-                )
-                    ? character.toUpperCase()
-                    : character.toLowerCase()
+                if (
+                    uppercasePositions.has(
+                        index
+                    )
+                ) {
+
+                    return character
+                        .toUpperCase();
+
+                }
+
+
+                return character
+                    .toLowerCase();
+
+            }
         )
         .join("");
 
@@ -1701,20 +1853,20 @@ function renderPrefixCase(
 
 function currentUpperPrefixCount(
     element,
-    base
+    baseText
 ) {
 
     const positions =
         getLetterPositions(
-            base
+            baseText
         );
 
 
-    const text =
+    const current =
         element.textContent;
 
 
-    let result =
+    let count =
         0;
 
 
@@ -1724,7 +1876,7 @@ function currentUpperPrefixCount(
     ) {
 
         const character =
-            text[
+            current[
                 position
             ];
 
@@ -1737,7 +1889,7 @@ function currentUpperPrefixCount(
                 character.toLowerCase()
         ) {
 
-            result++;
+            count++;
 
         }
 
@@ -1750,7 +1902,7 @@ function currentUpperPrefixCount(
     }
 
 
-    return result;
+    return count;
 
 }
 
@@ -1768,7 +1920,8 @@ function animateCase(
 ) {
 
     const base =
-        baseText.toLowerCase();
+        baseText
+            .toLowerCase();
 
 
     const total =
@@ -1777,7 +1930,7 @@ function animateCase(
         ).length;
 
 
-    const startState =
+    const initial =
         currentUpperPrefixCount(
             element,
             base
@@ -1791,7 +1944,7 @@ function animateCase(
 
 
     if (
-        startState ===
+        initial ===
         target
     ) {
 
@@ -1807,7 +1960,7 @@ function animateCase(
     }
 
 
-    const started =
+    const start =
         performance.now();
 
 
@@ -1823,7 +1976,7 @@ function animateCase(
                         1,
                         (
                             now -
-                            started
+                            start
                         ) /
                         duration
                     );
@@ -1831,10 +1984,10 @@ function animateCase(
 
                 const state =
                     Math.round(
-                        startState +
+                        initial +
                         (
                             target -
-                            startState
+                            initial
                         ) *
                         progress
                     );
@@ -1885,7 +2038,7 @@ function animateCase(
 
 
 /* =====================================================
-   SEQUENTIAL TEXT MORPH
+   SEQUENTIAL MORPH
    ===================================================== */
 
 function morphSequential(
@@ -1969,7 +2122,7 @@ function morphSequential(
     }
 
 
-    const started =
+    const start =
         performance.now();
 
 
@@ -1985,7 +2138,7 @@ function morphSequential(
                         1,
                         (
                             now -
-                            started
+                            start
                         ) /
                         duration
                     );
@@ -2092,16 +2245,19 @@ function installHoverCase(
         () => {
 
             if (
-                hasHover()
+                !hasHover()
             ) {
 
-                animateCase(
-                    element,
-                    getBaseText(),
-                    true
-                );
+                return;
 
             }
+
+
+            animateCase(
+                element,
+                getBaseText(),
+                true
+            );
 
         }
     );
@@ -2112,22 +2268,29 @@ function installHoverCase(
         () => {
 
             if (
-                hasHover()
+                !hasHover()
             ) {
 
-                animateCase(
-                    element,
-                    getBaseText(),
-                    false
-                );
+                return;
 
             }
+
+
+            animateCase(
+                element,
+                getBaseText(),
+                false
+            );
 
         }
     );
 
 }
 
+
+/* =====================================================
+   GENERIC CONTROLS
+   ===================================================== */
 
 installHoverCase(
     previousButton,
@@ -2160,7 +2323,8 @@ function setLogoState(
 
 
     logoName.textContent =
-        state === 0
+        state ===
+        0
             ? "Denizalp"
             : "denizalp";
 
@@ -2326,9 +2490,9 @@ logo.addEventListener(
 
         if (
             event.code ===
-            "Enter" ||
+                "Enter" ||
             event.code ===
-            "Space"
+                "Space"
         ) {
 
             event.preventDefault();
@@ -2348,7 +2512,7 @@ setLogoState(
 
 
 /* =====================================================
-   MOBILE PHOTOGRAPHY TAP
+   MOBILE PHOTOGRAPHY
    ===================================================== */
 
 sectionSwitch.addEventListener(
@@ -2451,15 +2615,24 @@ async function updateMetadata(
    ===================================================== */
 
 /*
-    The sound control is treated as ONE phrase:
+    Sound now follows exactly the same UI duration
+    as every other control.
 
-        sound on
-        SOUND ON
-        SOUND OFF
-        sound off
+    sound on
+    ->
+    SOUND ON
 
-    This fixes the previous version where only ON/OFF
-    participated in the animation.
+    click while hovered:
+
+    SOUND ON
+    ->
+    SOUND OFF
+
+    mouse leaves:
+
+    SOUND OFF
+    ->
+    sound off
 */
 
 function getSoundBaseText() {
@@ -2471,18 +2644,25 @@ function getSoundBaseText() {
 }
 
 
-function getSoundDisplayText() {
+function getSoundTargetText() {
 
     const base =
         getSoundBaseText();
 
 
-    return (
+    if (
         hasHover() &&
         soundButtonHovered
-    )
-        ? base.toUpperCase()
-        : base.toLowerCase();
+    ) {
+
+        return base
+            .toUpperCase();
+
+    }
+
+
+    return base
+        .toLowerCase();
 
 }
 
@@ -2500,7 +2680,7 @@ function updateSoundAria() {
 function setSoundLabelImmediately() {
 
     const text =
-        getSoundDisplayText();
+        getSoundTargetText();
 
 
     soundLabel.textContent =
@@ -2512,50 +2692,6 @@ function setSoundLabelImmediately() {
 
 
     updateSoundAria();
-
-}
-
-
-async function animateSoundCase(
-    toUpper
-) {
-
-    await animateCase(
-        soundLabel,
-        getSoundBaseText(),
-        toUpper,
-        SOUND_CASE_DURATION
-    );
-
-
-    soundLabel.dataset.rawText =
-        soundLabel.textContent;
-
-}
-
-
-async function toggleSound() {
-
-    soundEnabled =
-        !soundEnabled;
-
-
-    video.muted =
-        !soundEnabled;
-
-
-    updateSoundAria();
-
-
-    const target =
-        getSoundDisplayText();
-
-
-    await morphSequential(
-        soundLabel,
-        target,
-        SOUND_STATE_DURATION
-    );
 
 }
 
@@ -2577,7 +2713,9 @@ soundButton.addEventListener(
             true;
 
 
-        animateSoundCase(
+        animateCase(
+            soundLabel,
+            getSoundBaseText(),
             true
         );
 
@@ -2602,7 +2740,9 @@ soundButton.addEventListener(
             false;
 
 
-        animateSoundCase(
+        animateCase(
+            soundLabel,
+            getSoundBaseText(),
             false
         );
 
@@ -2612,12 +2752,27 @@ soundButton.addEventListener(
 
 soundButton.addEventListener(
     "click",
-    event => {
+    async event => {
 
         event.stopPropagation();
 
 
-        toggleSound();
+        soundEnabled =
+            !soundEnabled;
+
+
+        video.muted =
+            !soundEnabled;
+
+
+        updateSoundAria();
+
+
+        await morphSequential(
+            soundLabel,
+            getSoundTargetText(),
+            UI_DURATION
+        );
 
     }
 );
@@ -2651,7 +2806,104 @@ function togglePlayback() {
 
 
 /* =====================================================
-   MAIN VIDEO FIT
+   MOBILE SAFE MAIN VIDEO PLACEMENT
+   ===================================================== */
+
+/*
+    This is the major mobile portrait change.
+
+    Instead of saying:
+        "vertical video can only be 54vh"
+
+    we measure:
+
+        bottom of contact info
+        available viewport height
+        metadata/control height
+
+    and use as much of the remaining area as possible.
+
+    Result:
+        larger portrait films
+        no collision with contact information
+*/
+
+function positionPhonePortraitBlock() {
+
+    if (
+        !isPhonePortrait()
+    ) {
+
+        return;
+
+    }
+
+
+    const infoRect =
+        info.getBoundingClientRect();
+
+
+    const topSafe =
+        infoRect.bottom +
+        26;
+
+
+    const bottomSafe =
+        window.innerHeight -
+        66;
+
+
+    requestAnimationFrame(
+        () => {
+
+            const blockHeight =
+                videoBlock
+                    .getBoundingClientRect()
+                    .height;
+
+
+            const available =
+                bottomSafe -
+                topSafe;
+
+
+            const free =
+                Math.max(
+                    0,
+                    available -
+                    blockHeight
+                );
+
+
+            /*
+                Slightly above perfect centre gives the
+                portfolio a more editorial balance while
+                still leaving plenty of breathing room.
+            */
+
+            const top =
+                topSafe +
+                free *
+                0.44;
+
+
+            videoBlock.style.top =
+                `${Math.round(
+                    top
+                )}px`;
+
+
+            videoBlock.style.transform =
+                "translateX(-50%)";
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   FIT MAIN VIDEO
    ===================================================== */
 
 function fitMainVideo() {
@@ -2693,6 +2945,10 @@ function fitMainVideo() {
     let maxHeight;
 
 
+    /* -------------------------------------------------
+       PHONE PORTRAIT
+       ------------------------------------------------- */
+
     if (
         isPhonePortrait()
     ) {
@@ -2702,20 +2958,82 @@ function fitMainVideo() {
             side * 2;
 
 
-        /*
-            Slightly smaller maximum height than before.
+        const infoBottom =
+            info
+                .getBoundingClientRect()
+                .bottom;
 
-            Combined with the lower block position this
-            prevents tall portrait media from touching
-            the contact copy.
+
+        const topSafe =
+            infoBottom +
+            26;
+
+
+        const bottomSafe =
+            viewportHeight -
+            66;
+
+
+        /*
+            Reserve space for:
+            project meta
+            controls
+            gaps
+
+            The rest belongs to the video.
         */
 
+        const interfaceHeight =
+            Math.max(
+                54,
+                projectMeta.offsetHeight +
+                10 +
+                document
+                    .getElementById(
+                        "controls"
+                    )
+                    .offsetHeight +
+                12
+            );
+
+
         maxHeight =
-            viewportHeight *
-            0.54;
+            Math.max(
+                160,
+                bottomSafe -
+                topSafe -
+                interfaceHeight
+            );
+
+
+        /*
+            Give vertical film nearly all available
+            vertical space.
+
+            This is considerably larger than the
+            previous 54vh limit.
+        */
+
+        if (
+            ratio <
+            1
+        ) {
+
+            maxHeight =
+                Math.min(
+                    maxHeight,
+                    viewportHeight *
+                    0.61
+                );
+
+        }
 
     }
 
+
+    /* -------------------------------------------------
+       PHONE LANDSCAPE
+       ------------------------------------------------- */
 
     else if (
         isPhoneLandscape()
@@ -2732,6 +3050,10 @@ function fitMainVideo() {
 
     }
 
+
+    /* -------------------------------------------------
+       DESKTOP
+       ------------------------------------------------- */
 
     else {
 
@@ -2777,49 +3099,6 @@ function fitMainVideo() {
     }
 
 
-    /*
-        Portrait mobile video can still be large,
-        but its top edge now remains safely below
-        the information block.
-    */
-
-    if (
-        isPhonePortrait() &&
-        ratio <
-        1
-    ) {
-
-        height =
-            Math.min(
-                viewportHeight *
-                0.54,
-                maxHeight
-            );
-
-
-        width =
-            height *
-            ratio;
-
-
-        if (
-            width >
-            maxWidth
-        ) {
-
-            width =
-                maxWidth;
-
-
-            height =
-                width /
-                ratio;
-
-        }
-
-    }
-
-
     videoBlock.style.width =
         `${Math.max(
             1,
@@ -2834,11 +3113,33 @@ function fitMainVideo() {
     video.style.height =
         "auto";
 
+
+    if (
+        isPhonePortrait()
+    ) {
+
+        positionPhonePortraitBlock();
+
+    }
+
+    else {
+
+        videoBlock.style.top =
+            isPhoneLandscape()
+                ? "53%"
+                : "50%";
+
+
+        videoBlock.style.transform =
+            "translate(-50%, -50%)";
+
+    }
+
 }
 
 
 /* =====================================================
-   LOAD MAIN VIDEO
+   LOAD VIDEO
    ===================================================== */
 
 async function loadCurrentVideo(
@@ -2886,12 +3187,6 @@ async function loadCurrentVideo(
 
             fitMainVideo();
 
-
-            video.removeEventListener(
-                "loadedmetadata",
-                onMetadata
-            );
-
         };
 
 
@@ -2900,7 +3195,7 @@ async function loadCurrentVideo(
         1
     ) {
 
-        fitMainVideo();
+        onMetadata();
 
     }
 
@@ -2908,7 +3203,10 @@ async function loadCurrentVideo(
 
         video.addEventListener(
             "loadedmetadata",
-            onMetadata
+            onMetadata,
+            {
+                once: true
+            }
         );
 
     }
@@ -3257,7 +3555,13 @@ function activatePreviewsIn(
             "video[data-src]"
         )
         .forEach(
-            activatePreview
+            preview => {
+
+                activatePreview(
+                    preview
+                );
+
+            }
         );
 
 }
@@ -3281,7 +3585,7 @@ function stopAllPreviews() {
 
 
 /* =====================================================
-   PREVIEW OBSERVER
+   OBSERVER
    ===================================================== */
 
 const previewObserver =
@@ -3365,11 +3669,13 @@ function syncProjectAllBounds() {
 
 
     const infoRect =
-        info.getBoundingClientRect();
+        info
+            .getBoundingClientRect();
 
 
     const metaRect =
-        projectMeta.getBoundingClientRect();
+        projectMeta
+            .getBoundingClientRect();
 
 
     const side =
@@ -3439,7 +3745,7 @@ function syncProjectAllBounds() {
 
 
 /* =====================================================
-   VIEW ALL GRID
+   VIEW ALL LAYOUT
    ===================================================== */
 
 function calculateProjectAllLayout(
@@ -3695,7 +4001,7 @@ function buildProjectAllGrid() {
 
 viewAllButton.addEventListener(
     "mouseenter",
-    async () => {
+    () => {
 
         if (
             !hasHover() ||
@@ -3711,7 +4017,7 @@ viewAllButton.addEventListener(
             true;
 
 
-        await animateCase(
+        animateCase(
             viewAllButton,
             projectAllMode
                 ? "close"
@@ -3725,7 +4031,7 @@ viewAllButton.addEventListener(
 
 viewAllButton.addEventListener(
     "mouseleave",
-    async () => {
+    () => {
 
         if (
             !hasHover() ||
@@ -3741,7 +4047,7 @@ viewAllButton.addEventListener(
             false;
 
 
-        await animateCase(
+        animateCase(
             viewAllButton,
             projectAllMode
                 ? "close"
@@ -3983,6 +4289,10 @@ async function leaveProjectAll(
 }
 
 
+/* =====================================================
+   VIEW ALL CLICK
+   ===================================================== */
+
 viewAllButton.addEventListener(
     "click",
     async event => {
@@ -4080,89 +4390,78 @@ function getChronologicalProjects() {
    ===================================================== */
 
 /*
-    Photography-style behaviour:
+    Mobile and desktop now use the SAME principle:
 
-    - EVERY thumbnail has exactly the same height.
-    - Aspect ratio controls width only.
-    - There is no portrait-specific height boost.
-    - Therefore every title/date starts on one baseline.
+    1. fixed shared media-area height
+    2. natural aspect ratio determines width
+    3. extremely wide films receive a max-width
+    4. copy always starts after the same media area
 
-    On mobile the maximum width is constrained so very
-    wide films do not swallow the entire viewport.
+    This creates the same rhythm at both breakpoints.
 */
 
 function getIndexMetrics(
     ratio
 ) {
 
-    const root =
+    const styles =
         getComputedStyle(
             document.documentElement
         );
 
 
-    let height =
+    const height =
         parseFloat(
-            root.getPropertyValue(
+            styles.getPropertyValue(
                 "--index-video-height"
             )
-        ) || 365;
+        ) || 260;
 
 
-    let width =
+    const maxWidthRaw =
+        styles.getPropertyValue(
+            "--index-max-width"
+        ).trim();
+
+
+    let maxWidth;
+
+
+    if (
+        maxWidthRaw.endsWith(
+            "vw"
+        )
+    ) {
+
+        maxWidth =
+            window.innerWidth *
+            parseFloat(
+                maxWidthRaw
+            ) /
+            100;
+
+    }
+
+    else {
+
+        maxWidth =
+            parseFloat(
+                maxWidthRaw
+            ) || Infinity;
+
+    }
+
+
+    const naturalWidth =
         height *
         ratio;
 
 
-    if (
-        isPhonePortrait()
-    ) {
-
-        const maxWidth =
-            window.innerWidth *
-            0.47;
-
-
-        if (
-            width >
+    const width =
+        Math.min(
+            naturalWidth,
             maxWidth
-        ) {
-
-            /*
-                Wide clips are width-constrained, but their
-                wrapper remains at the shared index height.
-
-                The video itself is vertically centered.
-            */
-
-            width =
-                maxWidth;
-
-        }
-
-    }
-
-
-    else if (
-        isPhoneLandscape()
-    ) {
-
-        const maxWidth =
-            window.innerWidth *
-            0.36;
-
-
-        if (
-            width >
-            maxWidth
-        ) {
-
-            width =
-                maxWidth;
-
-        }
-
-    }
+        );
 
 
     return {
@@ -4224,31 +4523,26 @@ function syncIndexCardSize(
         `${metrics.height}px`;
 
 
-    /*
-        Desktop:
-        always same height.
-
-        Mobile:
-        same maximum visual height, but landscape media
-        can be width-constrained. contain keeps the ratio.
-    */
-
     preview.style.width =
-        `${metrics.width}px`;
+        "100%";
 
 
     preview.style.height =
-        `${metrics.height}px`;
+        "100%";
 
 
     preview.style.objectFit =
         "contain";
 
+
+    preview.style.objectPosition =
+        "left bottom";
+
 }
 
 
 /* =====================================================
-   INDEX CASE CONTROLLER
+   INDEX CASE
    ===================================================== */
 
 function createCaseController(
@@ -4256,17 +4550,13 @@ function createCaseController(
     baseText
 ) {
 
-    const base =
-        baseText.toLowerCase();
-
-
     return {
 
         upper() {
 
             animateCase(
                 element,
-                base,
+                baseText,
                 true
             );
 
@@ -4277,7 +4567,7 @@ function createCaseController(
 
             animateCase(
                 element,
-                base,
+                baseText,
                 false
             );
 
@@ -4320,10 +4610,9 @@ function buildIndex() {
 
 
                 /*
-                    A realistic placeholder is reserved
-                    immediately, preventing the mobile
-                    rail from collapsing while metadata
-                    is still arriving.
+                    Reserve realistic space immediately
+                    so mobile Safari never stacks several
+                    zero-width cards on top of each other.
                 */
 
                 const fallbackWidth =
@@ -4338,7 +4627,10 @@ function buildIndex() {
                                     window.innerWidth *
                                     0.30
                                 )
-                                : 300
+                                : Math.round(
+                                    window.innerWidth *
+                                    0.18
+                                )
                         );
 
 
@@ -4485,14 +4777,18 @@ function buildIndex() {
                     () => {
 
                         if (
-                            hasHover()
+                            !hasHover()
                         ) {
 
-                            titleCase.upper();
-
-                            dateCase.upper();
+                            return;
 
                         }
+
+
+                        titleCase.upper();
+
+
+                        dateCase.upper();
 
                     }
                 );
@@ -4503,14 +4799,18 @@ function buildIndex() {
                     () => {
 
                         if (
-                            hasHover()
+                            !hasHover()
                         ) {
 
-                            titleCase.lower();
-
-                            dateCase.lower();
+                            return;
 
                         }
+
+
+                        titleCase.lower();
+
+
+                        dateCase.lower();
 
                     }
                 );
@@ -4526,6 +4826,7 @@ function buildIndex() {
 
                             event.preventDefault();
 
+
                             event.stopPropagation();
 
 
@@ -4535,6 +4836,7 @@ function buildIndex() {
 
 
                         event.preventDefault();
+
 
                         event.stopPropagation();
 
@@ -4583,6 +4885,10 @@ function renderIndexWord(
 }
 
 
+/* =====================================================
+   INDEX MORPH
+   ===================================================== */
+
 function morphIndexTo(
     target
 ) {
@@ -4599,12 +4905,12 @@ function morphIndexTo(
     }
 
 
-    const startState =
+    const initial =
         indexWordState;
 
 
     if (
-        startState ===
+        initial ===
         target
     ) {
 
@@ -4618,7 +4924,7 @@ function morphIndexTo(
     }
 
 
-    const started =
+    const start =
         performance.now();
 
 
@@ -4634,21 +4940,25 @@ function morphIndexTo(
                         1,
                         (
                             now -
-                            started
+                            start
                         ) /
                         INDEX_TRANSITION_DURATION
                     );
 
 
-                renderIndexWord(
+                const state =
                     Math.round(
-                        startState +
+                        initial +
                         (
                             target -
-                            startState
+                            initial
                         ) *
                         progress
-                    )
+                    );
+
+
+                renderIndexWord(
+                    state
                 );
 
 
@@ -4702,16 +5012,19 @@ indexButton.addEventListener(
     () => {
 
         if (
-            !isPhoneLayout()
+            isPhoneLayout()
         ) {
 
-            morphIndexTo(
-                indexMode
-                    ? 0
-                    : indexWord.length
-            );
+            return;
 
         }
+
+
+        morphIndexTo(
+            indexMode
+                ? 0
+                : indexWord.length
+        );
 
     }
 );
@@ -4722,16 +5035,19 @@ indexButton.addEventListener(
     () => {
 
         if (
-            !isPhoneLayout()
+            isPhoneLayout()
         ) {
 
-            morphIndexTo(
-                indexMode
-                    ? indexWord.length
-                    : 0
-            );
+            return;
 
         }
+
+
+        morphIndexTo(
+            indexMode
+                ? indexWord.length
+                : 0
+        );
 
     }
 );
@@ -4978,7 +5294,7 @@ async function exitIndexToProject(
 
 
 /* =====================================================
-   INDEX BUTTON
+   INDEX CLICK
    ===================================================== */
 
 indexButton.addEventListener(
@@ -5086,11 +5402,14 @@ indexScroller.addEventListener(
 let indexDragging =
     false;
 
+
 let indexDragStartX =
     0;
 
+
 let indexDragStartScroll =
     0;
+
 
 let indexDragDistance =
     0;
@@ -5602,74 +5921,83 @@ video.addEventListener(
    INDEX PREWARM
    ===================================================== */
 
+/*
+    Initial visible works get preload="auto".
+
+    Remaining works only fetch metadata.
+
+    This gives mobile Safari useful video bytes for the
+    first visible Index items without downloading every
+    full movie at once.
+*/
+
 async function warmIndexPreviews() {
 
     const previews =
         [
-            ...indexGrid.querySelectorAll(
-                "video[data-src]"
-            )
+            ...indexGrid
+                .querySelectorAll(
+                    "video[data-src]"
+                )
         ];
-
-
-    /*
-        Mobile gets smaller batches so Safari is not
-        asked to initialise every movie simultaneously.
-    */
-
-    const batchSize =
-        isPhoneLayout()
-            ? 2
-            : 3;
-
-
-    const pause =
-        isPhoneLayout()
-            ? 80
-            : 120;
 
 
     for (
         let i = 0;
         i < previews.length;
-        i += batchSize
+        i++
     ) {
 
-        const batch =
-            previews.slice(
-                i,
-                i + batchSize
+        const preview =
+            previews[i];
+
+
+        if (
+            !preview.getAttribute(
+                "src"
+            )
+        ) {
+
+            preview.src =
+                preview.dataset.src;
+
+
+            /*
+                First four projects are likely to be
+                encountered first.
+
+                Give them enough data to start moving
+                quickly on mobile.
+            */
+
+            preview.preload =
+                i <
+                4
+                    ? "auto"
+                    : "metadata";
+
+
+            preview.load();
+
+        }
+
+
+        /*
+            Avoid hammering mobile Safari with all video
+            initialisation calls in one event-loop frame.
+        */
+
+        if (
+            i %
+            2 ===
+            1
+        ) {
+
+            await wait(
+                90
             );
 
-
-        batch.forEach(
-            preview => {
-
-                if (
-                    !preview.getAttribute(
-                        "src"
-                    )
-                ) {
-
-                    preview.src =
-                        preview.dataset.src;
-
-
-                    preview.preload =
-                        "metadata";
-
-
-                    preview.load();
-
-                }
-
-            }
-        );
-
-
-        await wait(
-            pause
-        );
+        }
 
     }
 
