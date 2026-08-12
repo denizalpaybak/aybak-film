@@ -68,37 +68,44 @@ button {
 
     --index-content-top: 130px;
 
-    /*
-        INDEX PRINCIPLE
 
-        This is the common MEDIA AREA height.
+    /* =================================================
+       INDEX
 
-        Portrait videos can fill it vertically.
+       This is NOT necessarily the visible height
+       of every video.
 
-        Landscape videos can become shorter inside it
-        and are vertically centered.
+       It is the shared MEDIA AREA.
 
-        Copy always starts AFTER this common media area,
-        so title/date baselines remain identical.
-    */
+       portrait:
+       may use almost all of it
+
+       landscape:
+       can be shorter and sits vertically centered
+
+       copy:
+       always starts after this same media area
+       ================================================= */
 
     --index-media-height:
         clamp(
-            250px,
+            260px,
             32vh,
-            340px
+            345px
         );
 
+
     /*
-        Wide landscape films should not dominate
-        desktop merely because of their aspect ratio.
+        Prevent extremely wide films becoming enormous
+        compared with portrait films.
     */
 
-    --index-landscape-max-width:
-        27vw;
+    --index-max-landscape-width:
+        28vw;
+
 
     --index-gap:
-        58px;
+        56px;
 
 }
 
@@ -477,13 +484,18 @@ body.project-all-mode #project-all-view {
     width: 100%;
     height: 100%;
 
-    place-content: center;
-
     align-items: center;
     justify-items: center;
 
+    place-content: center;
+
     gap: 7px;
 }
+
+
+/* =====================================================
+   VIEW ALL THUMB
+   ===================================================== */
 
 .project-all-thumb {
     appearance: none;
@@ -517,11 +529,11 @@ body.project-all-mode #project-all-view {
 .project-all-thumb video {
     display: block;
 
-    max-width: 100%;
-    max-height: 100%;
-
     width: auto;
     height: auto;
+
+    max-width: 100%;
+    max-height: 100%;
 
     object-fit: contain;
 
@@ -659,11 +671,6 @@ body.index-mode #video-stage {
     flex-direction: row;
     flex-wrap: nowrap;
 
-    /*
-        Cards themselves have equal media-area height,
-        so top alignment is correct here.
-    */
-
     align-items: flex-start;
 
     gap:
@@ -694,8 +701,6 @@ body.index-mode #video-stage {
 
     align-items: flex-start;
 
-    width: auto;
-
     margin: 0;
     padding: 0;
 
@@ -708,61 +713,54 @@ body.index-mode #video-stage {
 
     cursor: pointer;
 
-    position: relative;
-
-    z-index: 1;
-
     -webkit-tap-highlight-color: transparent;
 }
 
 
 /* =====================================================
    INDEX MEDIA AREA
+
+   CRITICAL FIX:
+
+   Video is absolutely positioned inside a fixed-height
+   media stage.
+
+   Landscape = vertically centered.
+   Portrait = vertically centered.
+   Copy starts after the exact same wrapper height.
    ===================================================== */
 
-/*
-    This is the important part.
-
-    Every project has the SAME media-area height.
-
-    Portrait video:
-        can fill this vertically.
-
-    Landscape video:
-        often shorter and sits in the vertical middle.
-
-    The copy begins below the media area, not directly
-    below the video.
-
-    Therefore all title/date copy remains aligned.
-*/
-
 .card-video-wrap {
-    display: flex;
+    position: relative;
 
-    align-items: center;
-    justify-content: flex-start;
+    display: block;
 
-    width: auto;
+    flex: 0 0
+        var(--index-media-height);
 
     height:
         var(--index-media-height);
 
-    flex:
-        0 0
-        var(--index-media-height);
+    overflow: visible;
 
     pointer-events: none;
 }
 
-.project-card video {
+.card-video-wrap video {
+    position: absolute;
+
+    top: 50%;
+    left: 0;
+
     display: block;
 
-    width: auto;
-    height: auto;
+    transform:
+        translateY(-50%);
 
-    max-width: 100%;
-    max-height: 100%;
+    margin: 0;
+
+    max-width: none;
+    max-height: none;
 
     object-fit: contain;
 
@@ -805,9 +803,9 @@ body.index-mode #video-stage {
 
     max-width: 100%;
 
-    white-space: nowrap;
-
     text-align: left;
+
+    white-space: nowrap;
 
     overflow: hidden;
 }
@@ -825,12 +823,12 @@ body.index-mode #video-stage {
 
         --index-media-height:
             clamp(
-                225px,
+                230px,
                 31vh,
-                310px
+                315px
             );
 
-        --index-landscape-max-width:
+        --index-max-landscape-width:
             29vw;
 
         --index-gap:
@@ -859,17 +857,16 @@ body.index-mode #video-stage {
 
         --meta-gap: 5px;
 
-        /*
-            This is intentionally kept close to the
-            mobile version you liked.
 
-            Two substantial works can coexist.
+        /*
+            Keep the mobile Index proportions that
+            were working well.
         */
 
         --index-media-height:
             218px;
 
-        --index-landscape-max-width:
+        --index-max-landscape-width:
             47vw;
 
         --index-gap:
@@ -898,13 +895,6 @@ body.index-mode #video-stage {
 @media
     (max-width: 600px)
     and (orientation: portrait) {
-
-    /*
-        JS controls the actual Y position of slide mode.
-
-        We only remove vertical translate here because JS
-        writes an exact safe top coordinate.
-    */
 
     #video-block {
         transform:
@@ -967,7 +957,7 @@ body.index-mode #video-stage {
         --index-media-height:
             48vh;
 
-        --index-landscape-max-width:
+        --index-max-landscape-width:
             36vw;
 
         --index-gap:
@@ -1244,20 +1234,6 @@ const PHOTOGRAPHY_URL =
    SHARED UI RHYTHM
    ===================================================== */
 
-/*
-    All text interactions now share one tempo.
-
-    logo
-    photography
-    previous
-    next
-    sound
-    view all
-    index
-
-    approximately 360ms.
-*/
-
 const UI_DURATION =
     360;
 
@@ -1276,17 +1252,8 @@ const CASE_DURATION =
 const INDEX_TRANSITION_DURATION =
     UI_DURATION;
 
-
-/*
-    Separate navigation hold.
-
-    User sees final uppercase state briefly before mobile
-    navigation occurs.
-*/
-
 const MOBILE_NAV_HOLD =
     520;
-
 
 const PREVIEW_DURATION =
     5;
@@ -1471,62 +1438,47 @@ const indexGrid =
 let projects =
     [];
 
-
 let currentProjectIndex =
     0;
-
 
 let currentVideoIndex =
     0;
 
-
 let renderedProjectIndex =
     null;
-
 
 let soundEnabled =
     false;
 
-
 let soundButtonHovered =
     false;
-
 
 let indexMode =
     false;
 
-
 let projectAllMode =
     false;
-
 
 let interfaceAnimating =
     false;
 
-
 let projectViewAnimating =
     false;
-
 
 let savedIndexScrollLeft =
     0;
 
-
 let viewButtonHovered =
     false;
-
 
 let indexDragMoved =
     false;
 
-
 let autoplayBeforeIndex =
     true;
 
-
 let autoplayBeforeProjectAll =
     true;
-
 
 let resumeAfterVisibility =
     false;
@@ -1539,30 +1491,25 @@ let resumeAfterVisibility =
 let touchStartX =
     0;
 
-
 let touchStartY =
     0;
 
-
 let touchStartTime =
     0;
-
 
 let touchMoved =
     false;
 
 
 /* =====================================================
-   LOGO STATE
+   LOGO
    ===================================================== */
 
 let logoState =
     0;
 
-
 let logoTarget =
     0;
-
 
 let logoTimer =
     null;
@@ -1589,16 +1536,14 @@ const logoUpper =
 
 
 /* =====================================================
-   INDEX WORD STATE
+   INDEX WORD
    ===================================================== */
 
 const indexWord =
     "index";
 
-
 let indexWordState =
     0;
-
 
 let indexWordFrame =
     null;
@@ -2243,7 +2188,7 @@ function morphSequential(
 
 
 /* =====================================================
-   GENERIC HOVER CASE
+   GENERIC HOVER
    ===================================================== */
 
 function installHoverCase(
@@ -2298,10 +2243,6 @@ function installHoverCase(
 
 }
 
-
-/* =====================================================
-   STANDARD CONTROL HOVERS
-   ===================================================== */
 
 installHoverCase(
     previousButton,
@@ -2640,19 +2581,12 @@ function getSoundTargetText() {
         getSoundBaseText();
 
 
-    if (
+    return (
         hasHover() &&
         soundButtonHovered
-    ) {
-
-        return base
-            .toUpperCase();
-
-    }
-
-
-    return base
-        .toLowerCase();
+    )
+        ? base.toUpperCase()
+        : base.toLowerCase();
 
 }
 
@@ -2796,25 +2730,8 @@ function togglePlayback() {
 
 
 /* =====================================================
-   MOBILE SLIDE SAFE AREA
+   MOBILE SLIDE BOUNDS
    ===================================================== */
-
-/*
-    For portrait phones we use ACTUAL UI geometry.
-
-    TOP LIMIT:
-        contact block bottom
-
-    BOTTOM LIMIT:
-        INDEX button top
-
-    Between those two boundaries, the video +
-    metadata + controls can use almost everything.
-
-    This means portrait video becomes much larger,
-    but previous / sound / next can never collide
-    with INDEX.
-*/
 
 function getPhonePortraitSlideBounds() {
 
@@ -2833,11 +2750,13 @@ function getPhonePortraitSlideBounds() {
 
     const bottom =
         indexRect.top -
-        18;
+        16;
 
 
     return {
+
         top,
+
         bottom,
 
         height:
@@ -2846,13 +2765,14 @@ function getPhonePortraitSlideBounds() {
                 bottom -
                 top
             )
+
     };
 
 }
 
 
 /* =====================================================
-   POSITION PHONE SLIDE
+   PHONE POSITION
    ===================================================== */
 
 function positionPhonePortraitBlock() {
@@ -2879,7 +2799,7 @@ function positionPhonePortraitBlock() {
                     .height;
 
 
-            const freeSpace =
+            const free =
                 Math.max(
                     0,
                     bounds.height -
@@ -2887,15 +2807,9 @@ function positionPhonePortraitBlock() {
                 );
 
 
-            /*
-                Essentially centered in the safe area,
-                very slightly higher than mathematical
-                centre for a cleaner editorial balance.
-            */
-
             const top =
                 bounds.top +
-                freeSpace *
+                free *
                 0.46;
 
 
@@ -2915,7 +2829,7 @@ function positionPhonePortraitBlock() {
 
 
 /* =====================================================
-   FIT MAIN VIDEO
+   MAIN VIDEO FIT
    ===================================================== */
 
 function fitMainVideo() {
@@ -2957,9 +2871,9 @@ function fitMainVideo() {
     let maxHeight;
 
 
-    /* =================================================
+    /* -------------------------------------------------
        PHONE PORTRAIT
-       ================================================= */
+       ------------------------------------------------- */
 
     if (
         isPhonePortrait()
@@ -2974,21 +2888,10 @@ function fitMainVideo() {
             side * 2;
 
 
-        /*
-            Interface below video:
-
-            metadata
-            meta gap
-            controls
-            controls gap
-
-            This is measured rather than guessed.
-        */
-
         const interfaceHeight =
             projectMeta.offsetHeight +
             controls.offsetHeight +
-            28;
+            27;
 
 
         maxHeight =
@@ -3000,11 +2903,10 @@ function fitMainVideo() {
 
 
         /*
-            Allow portrait clips to use almost the entire
-            available vertical safe area.
+            Slightly more generous than previous version.
 
-            This is deliberately more generous than the
-            previous 54–61vh rules.
+            It will use the available safe height rather
+            than an unnecessarily strict vh value.
         */
 
         if (
@@ -3016,7 +2918,7 @@ function fitMainVideo() {
                 Math.min(
                     maxHeight,
                     viewportHeight *
-                    0.66
+                    0.68
                 );
 
         }
@@ -3024,9 +2926,9 @@ function fitMainVideo() {
     }
 
 
-    /* =================================================
+    /* -------------------------------------------------
        PHONE LANDSCAPE
-       ================================================= */
+       ------------------------------------------------- */
 
     else if (
         isPhoneLandscape()
@@ -3044,9 +2946,9 @@ function fitMainVideo() {
     }
 
 
-    /* =================================================
+    /* -------------------------------------------------
        DESKTOP
-       ================================================= */
+       ------------------------------------------------- */
 
     else {
 
@@ -3132,7 +3034,7 @@ function fitMainVideo() {
 
 
 /* =====================================================
-   LOAD CURRENT VIDEO
+   LOAD MAIN VIDEO
    ===================================================== */
 
 async function loadCurrentVideo(
@@ -3248,7 +3150,7 @@ async function loadCurrentVideo(
 
 
 /* =====================================================
-   NEXT
+   NEXT / PREVIOUS
    ===================================================== */
 
 function nextFilm() {
@@ -3299,10 +3201,6 @@ function nextFilm() {
 
 }
 
-
-/* =====================================================
-   PREVIOUS
-   ===================================================== */
 
 function previousFilm() {
 
@@ -3380,19 +3278,13 @@ video.addEventListener(
 );
 
 
-/* =====================================================
-   CONTROL EVENTS
-   ===================================================== */
-
 previousButton.addEventListener(
     "click",
     event => {
 
         event.stopPropagation();
 
-
         previousFilm();
-
 
         previousButton.blur();
 
@@ -3406,9 +3298,7 @@ nextButton.addEventListener(
 
         event.stopPropagation();
 
-
         nextFilm();
-
 
         nextButton.blur();
 
@@ -3556,13 +3446,7 @@ function activatePreviewsIn(
             "video[data-src]"
         )
         .forEach(
-            preview => {
-
-                activatePreview(
-                    preview
-                );
-
-            }
+            activatePreview
         );
 
 }
@@ -3746,16 +3630,138 @@ function syncProjectAllBounds() {
 
 
 /* =====================================================
-   VIEW ALL LAYOUT
+   VIEW ALL ASPECT DATA
    ===================================================== */
 
-function calculateProjectAllLayout(
-    count
+function getProjectAllRatios() {
+
+    return [
+        ...projectAllGrid
+            .querySelectorAll(
+                "video"
+            )
+    ].map(
+        preview => {
+
+            if (
+                preview.videoWidth &&
+                preview.videoHeight
+            ) {
+
+                return (
+                    preview.videoWidth /
+                    preview.videoHeight
+                );
+
+            }
+
+
+            /*
+                Fallback only until metadata arrives.
+            */
+
+            return 16 / 9;
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   FIT AREA
+   ===================================================== */
+
+function calculateContainedArea(
+    ratio,
+    boxWidth,
+    boxHeight
 ) {
+
+    let width =
+        boxWidth;
+
+
+    let height =
+        width /
+        ratio;
+
+
+    if (
+        height >
+        boxHeight
+    ) {
+
+        height =
+            boxHeight;
+
+
+        width =
+            height *
+            ratio;
+
+    }
+
+
+    return {
+
+        width,
+
+        height,
+
+        area:
+            width *
+            height
+
+    };
+
+}
+
+
+/* =====================================================
+   SMART VIEW ALL LAYOUT
+   ===================================================== */
+
+/*
+    This replaces the old hard-coded 16:9 scoring.
+
+    For EVERY possible number of columns:
+
+        calculate rows
+        calculate actual cell dimensions
+        fit every video's real aspect ratio into its cell
+        calculate total occupied visual area
+
+    Then choose the arrangement that uses the available
+    area most efficiently.
+
+    Consequence:
+
+        four horizontal videos
+        -> generally 2 × 2
+
+        three wide videos
+        -> could be 3 × 1 or 2 × 2
+
+        four extreme portrait videos
+        -> may choose a different arrangement
+
+    Nothing is hard-coded by video count.
+*/
+
+function calculateProjectAllLayout() {
 
     const rect =
         projectAllView
             .getBoundingClientRect();
+
+
+    const ratios =
+        getProjectAllRatios();
+
+
+    const count =
+        ratios.length;
 
 
     const gap =
@@ -3769,11 +3775,7 @@ function calculateProjectAllLayout(
 
 
     let best =
-        {
-            columns: 1,
-            rows: count,
-            score: 0
-        };
+        null;
 
 
     for (
@@ -3827,37 +3829,112 @@ function calculateProjectAllLayout(
             rows;
 
 
-        const visibleWidth =
-            Math.min(
-                cellWidth,
-                cellHeight *
-                16 / 9
-            );
+        let occupiedArea =
+            0;
 
 
-        const visibleHeight =
-            Math.min(
-                cellHeight,
-                cellWidth *
-                9 / 16
-            );
+        let smallestFill =
+            1;
+
+
+        ratios.forEach(
+            ratio => {
+
+                const fitted =
+                    calculateContainedArea(
+                        ratio,
+                        cellWidth,
+                        cellHeight
+                    );
+
+
+                occupiedArea +=
+                    fitted.area;
+
+
+                const cellArea =
+                    cellWidth *
+                    cellHeight;
+
+
+                const fill =
+                    fitted.area /
+                    cellArea;
+
+
+                smallestFill =
+                    Math.min(
+                        smallestFill,
+                        fill
+                    );
+
+            }
+        );
+
+
+        /*
+            Empty cells get a mild penalty.
+
+            Example:
+            5 items inside a 3×2 grid is still fine,
+            but a ridiculous 4×2 arrangement should lose.
+        */
+
+        const totalCells =
+            columns *
+            rows;
+
+
+        const emptyCells =
+            totalCells -
+            count;
+
+
+        const emptyPenalty =
+            1 -
+            (
+                emptyCells /
+                totalCells
+            ) *
+            0.12;
+
+
+        /*
+            Very skinny / visually inefficient layouts
+            receive a minor balance penalty.
+        */
+
+        const balancePenalty =
+            0.90 +
+            smallestFill *
+            0.10;
 
 
         const score =
-            visibleWidth *
-            visibleHeight;
+            occupiedArea *
+            emptyPenalty *
+            balancePenalty;
 
 
         if (
+            !best ||
             score >
             best.score
         ) {
 
             best =
                 {
+
                     columns,
+
                     rows,
-                    score
+
+                    score,
+
+                    cellWidth,
+
+                    cellHeight
+
                 };
 
         }
@@ -3870,28 +3947,26 @@ function calculateProjectAllLayout(
 }
 
 
+/* =====================================================
+   APPLY VIEW ALL LAYOUT
+   ===================================================== */
+
 function layoutProjectAllGrid() {
 
     syncProjectAllBounds();
 
 
-    const project =
-        currentProject();
+    const layout =
+        calculateProjectAllLayout();
 
 
     if (
-        !project
+        !layout
     ) {
 
         return;
 
     }
-
-
-    const layout =
-        calculateProjectAllLayout(
-            project.videos.length
-        );
 
 
     projectAllGrid.style
@@ -3918,6 +3993,14 @@ function buildProjectAllGrid() {
 
     projectAllGrid.innerHTML =
         "";
+
+
+    let metadataLoaded =
+        0;
+
+
+    const total =
+        project.videos.length;
 
 
     project.videos.forEach(
@@ -3948,6 +4031,33 @@ function buildProjectAllGrid() {
                             true
                     }
                 );
+
+
+            preview.addEventListener(
+                "loadedmetadata",
+                () => {
+
+                    metadataLoaded++;
+
+
+                    /*
+                        Recalculate immediately as ratios
+                        become known.
+
+                        The final metadata event therefore
+                        gives us a fully informed layout.
+                    */
+
+                    if (
+                        projectAllMode
+                    ) {
+
+                        layoutProjectAllGrid();
+
+                    }
+
+                }
+            );
 
 
             button.appendChild(
@@ -4387,7 +4497,7 @@ function getChronologicalProjects() {
 
 
 /* =====================================================
-   CSS SIZE VALUE HELPER
+   CSS LENGTH
    ===================================================== */
 
 function cssLengthToPixels(
@@ -4447,24 +4557,21 @@ function cssLengthToPixels(
    ===================================================== */
 
 /*
-    THIS RESTORES THE MOBILE LOGIC YOU LIKED.
+    Mobile behaviour that worked well is now used
+    identically on desktop:
 
-    Common media area:
-        mediaHeight
+        one common media area
 
-    Portrait:
-        tends to use full height.
+        portrait:
+        can approach full media height
 
-    Landscape:
-        limited by maximum width.
-        Therefore its visible HEIGHT becomes shorter.
+        landscape:
+        can be width-constrained,
+        therefore becomes shorter
 
-    It then sits vertically centered in the common
-    media area.
+        that shorter landscape is vertically centered
 
-    COPY STILL STARTS AFTER mediaHeight.
-
-    Exactly the same system now applies on desktop.
+        card copy still starts below common media area
 */
 
 function getIndexMetrics(
@@ -4485,45 +4592,37 @@ function getIndexMetrics(
         );
 
 
-    const landscapeMaxWidth =
+    const maxLandscapeWidth =
         cssLengthToPixels(
             styles.getPropertyValue(
-                "--index-landscape-max-width"
+                "--index-max-landscape-width"
             )
         );
 
-
-    /*
-        Default:
-        video uses common media height.
-    */
 
     let displayHeight =
         mediaHeight;
 
 
     let displayWidth =
-        mediaHeight *
+        displayHeight *
         ratio;
 
 
     /*
-        Landscape / very wide media:
+        Wide videos become narrower / shorter.
 
-        constrain width.
-
-        This naturally reduces visible height, which
-        produces the centred landscape look seen in the
-        mobile reference.
+        Portrait media usually doesn't hit this limit,
+        so it uses full available height.
     */
 
     if (
         displayWidth >
-        landscapeMaxWidth
+        maxLandscapeWidth
     ) {
 
         displayWidth =
-            landscapeMaxWidth;
+            maxLandscapeWidth;
 
 
         displayHeight =
@@ -4532,11 +4631,6 @@ function getIndexMetrics(
 
     }
 
-
-    /*
-        Card width should correspond to the visible film,
-        not the larger invisible media area.
-    */
 
     return {
 
@@ -4553,6 +4647,12 @@ function getIndexMetrics(
 
 /* =====================================================
    SYNC INDEX CARD
+
+   This version uses explicit px dimensions.
+
+   No percentage / auto sizing can override the intended
+   dimensions, which fixes the giant portrait-card bug
+   seen in the desktop screenshot.
    ===================================================== */
 
 function syncIndexCardSize(
@@ -4582,20 +4682,46 @@ function syncIndexCardSize(
         );
 
 
+    const width =
+        Math.max(
+            1,
+            metrics.displayWidth
+        );
+
+
+    const height =
+        Math.max(
+            1,
+            metrics.displayHeight
+        );
+
+
     button.style.width =
-        `${metrics.displayWidth}px`;
+        `${width}px`;
 
 
-    button.style.flexBasis =
-        `${metrics.displayWidth}px`;
+    button.style.flex =
+        `0 0 ${width}px`;
 
 
     button.style.minWidth =
-        `${metrics.displayWidth}px`;
+        `${width}px`;
+
+
+    button.style.maxWidth =
+        `${width}px`;
 
 
     wrap.style.width =
-        `${metrics.displayWidth}px`;
+        `${width}px`;
+
+
+    wrap.style.minWidth =
+        `${width}px`;
+
+
+    wrap.style.maxWidth =
+        `${width}px`;
 
 
     wrap.style.height =
@@ -4603,19 +4729,39 @@ function syncIndexCardSize(
 
 
     preview.style.width =
-        `${metrics.displayWidth}px`;
+        `${width}px`;
 
 
     preview.style.height =
-        `${metrics.displayHeight}px`;
+        `${height}px`;
+
+
+    preview.style.minWidth =
+        `${width}px`;
 
 
     preview.style.maxWidth =
-        "none";
+        `${width}px`;
+
+
+    preview.style.minHeight =
+        `${height}px`;
 
 
     preview.style.maxHeight =
-        "none";
+        `${height}px`;
+
+
+    preview.style.top =
+        "50%";
+
+
+    preview.style.left =
+        "0";
+
+
+    preview.style.transform =
+        "translateY(-50%)";
 
 
     preview.style.objectFit =
@@ -4625,7 +4771,7 @@ function syncIndexCardSize(
 
 
 /* =====================================================
-   INDEX CASE CONTROLLER
+   INDEX CASE
    ===================================================== */
 
 function createCaseController(
@@ -4692,12 +4838,6 @@ function buildIndex() {
                     "project-card";
 
 
-                /*
-                    Space reservation prevents mobile
-                    Safari from stacking zero-width cards
-                    while metadata arrives.
-                */
-
                 const fallbackWidth =
                     isPhonePortrait()
                         ? Math.round(
@@ -4721,8 +4861,8 @@ function buildIndex() {
                     `${fallbackWidth}px`;
 
 
-                button.style.flexBasis =
-                    `${fallbackWidth}px`;
+                button.style.flex =
+                    `0 0 ${fallbackWidth}px`;
 
 
                 button.style.minWidth =
@@ -4870,7 +5010,6 @@ function buildIndex() {
 
                         titleCase.upper();
 
-
                         dateCase.upper();
 
                     }
@@ -4892,7 +5031,6 @@ function buildIndex() {
 
                         titleCase.lower();
 
-
                         dateCase.lower();
 
                     }
@@ -4909,9 +5047,7 @@ function buildIndex() {
 
                             event.preventDefault();
 
-
                             event.stopPropagation();
-
 
                             return;
 
@@ -4919,7 +5055,6 @@ function buildIndex() {
 
 
                         event.preventDefault();
-
 
                         event.stopPropagation();
 
@@ -5243,7 +5378,7 @@ async function enterIndex() {
 
 
 /* =====================================================
-   RETURN FROM INDEX
+   RETURN INDEX
    ===================================================== */
 
 async function returnFromIndex() {
@@ -5485,14 +5620,11 @@ indexScroller.addEventListener(
 let indexDragging =
     false;
 
-
 let indexDragStartX =
     0;
 
-
 let indexDragStartScroll =
     0;
-
 
 let indexDragDistance =
     0;
@@ -5768,7 +5900,6 @@ document.addEventListener(
 
             event.preventDefault();
 
-
             togglePlayback();
 
         }
@@ -5781,7 +5912,6 @@ document.addEventListener(
 
             event.preventDefault();
 
-
             nextFilm();
 
         }
@@ -5793,7 +5923,6 @@ document.addEventListener(
         ) {
 
             event.preventDefault();
-
 
             previousFilm();
 
@@ -5915,12 +6044,12 @@ video.addEventListener(
             ];
 
 
-        const deltaX =
+        const dx =
             touch.clientX -
             touchStartX;
 
 
-        const deltaY =
+        const dy =
             touch.clientY -
             touchStartY;
 
@@ -5932,14 +6061,14 @@ video.addEventListener(
 
         const swipe =
             Math.abs(
-                deltaX
+                dx
             ) >=
             50 &&
             Math.abs(
-                deltaX
+                dx
             ) >
             Math.abs(
-                deltaY
+                dy
             ) *
             1.25 &&
             elapsed <
@@ -5951,7 +6080,7 @@ video.addEventListener(
         ) {
 
             if (
-                deltaX <
+                dx <
                 0
             ) {
 
@@ -6022,7 +6151,9 @@ async function warmIndexPreviews() {
     ) {
 
         const preview =
-            previews[i];
+            previews[
+                i
+            ];
 
 
         if (
