@@ -1594,6 +1594,134 @@ let resumeAfterVisibility =
     false;
 
 
+/*
+    One tiny navigation warmup for slide mode.
+
+    We only retain one next-video preload element at a time;
+    there is no global video cache that could explode mobile
+    memory usage.
+*/
+
+let nextVideoWarmup =
+    null;
+
+
+function clearNextVideoWarmup() {
+
+    if (
+        !nextVideoWarmup
+    ) {
+
+        return;
+
+    }
+
+
+    nextVideoWarmup.removeAttribute(
+        "src"
+    );
+
+
+    nextVideoWarmup.load();
+
+
+    nextVideoWarmup =
+        null;
+
+}
+
+
+function getNextFilename() {
+
+    if (
+        !projects.length
+    ) {
+
+        return null;
+
+    }
+
+
+    const project =
+        currentProject();
+
+
+    if (
+        currentVideoIndex <
+        project.videos.length - 1
+    ) {
+
+        return project.videos[
+            currentVideoIndex + 1
+        ];
+
+    }
+
+
+    const nextProjectIndex =
+        normalizeProjectIndex(
+            currentProjectIndex + 1
+        );
+
+
+    return projects[
+        nextProjectIndex
+    ].videos[0];
+
+}
+
+
+function warmNextSlideVideo() {
+
+    clearNextVideoWarmup();
+
+
+    const filename =
+        getNextFilename();
+
+
+    if (
+        !filename
+    ) {
+
+        return;
+
+    }
+
+
+    const warmup =
+        document.createElement(
+            "video"
+        );
+
+
+    warmup.muted =
+        true;
+
+
+    warmup.preload =
+        isPhoneLayout()
+            ? "metadata"
+            : "auto";
+
+
+    warmup.src =
+        videoUrl(
+            filename
+        );
+
+
+    warmup.load();
+
+
+    nextVideoWarmup =
+        warmup;
+
+}
+
+
+
+
 /* =====================================================
    TOUCH
    ===================================================== */
@@ -1806,6 +1934,138 @@ function normalizeProjectIndex(
         projects.length
     ) %
     projects.length;
+
+}
+
+
+/* =====================================================
+   RANDOM PROJECT START / COVER
+   ===================================================== */
+
+/*
+    Film follows the same logic as Photography:
+
+    We do NOT fully shuffle a project's videos.
+
+    We choose one starting video and ROTATE the existing
+    sequence around it.
+
+    Example:
+        1, 2, 3, 4
+
+    random start = 3
+
+        3, 4, 1, 2
+
+    This preserves the relationship between neighbouring
+    edits while removing the need to manually choose a
+    cover / opening video.
+
+    Optional JSON override:
+
+        "coverOverride": "filename.mp4"
+
+    When present, that video always becomes the first video
+    of that project and therefore the moving INDEX cover.
+*/
+
+function rotateVideosFromIndex(
+    videos,
+    startIndex
+) {
+
+    if (
+        videos.length <= 1 ||
+        startIndex <= 0
+    ) {
+
+        return videos.slice();
+
+    }
+
+
+    return [
+        ...videos.slice(
+            startIndex
+        ),
+        ...videos.slice(
+            0,
+            startIndex
+        )
+    ];
+
+}
+
+
+function prepareProject(
+    project
+) {
+
+    const originalVideos =
+        project.videos.slice();
+
+
+    let startIndex =
+        0;
+
+
+    if (
+        project.coverOverride
+    ) {
+
+        const overrideIndex =
+            originalVideos.indexOf(
+                project.coverOverride
+            );
+
+
+        if (
+            overrideIndex >= 0
+        ) {
+
+            startIndex =
+                overrideIndex;
+
+        }
+
+        else {
+
+            console.warn(
+                `coverOverride "${project.coverOverride}" was not found in`,
+                project.title
+            );
+
+
+            startIndex =
+                Math.floor(
+                    Math.random() *
+                    originalVideos.length
+                );
+
+        }
+
+    }
+
+    else {
+
+        startIndex =
+            Math.floor(
+                Math.random() *
+                originalVideos.length
+            );
+
+    }
+
+
+    return {
+        ...project,
+
+        videos:
+            rotateVideosFromIndex(
+                originalVideos,
+                startIndex
+            )
+    };
 
 }
 
@@ -3575,6 +3835,36 @@ async function loadCurrentVideo(
                         () => {}
                     );
 
+
+                /*
+                    Wait until the important current movie is
+                    already playable before spending bandwidth
+                    on the next slide.
+                */
+
+                if (
+                    "requestIdleCallback" in window
+                ) {
+
+                    requestIdleCallback(
+                        warmNextSlideVideo,
+                        {
+                            timeout:
+                                1200
+                        }
+                    );
+
+                }
+
+                else {
+
+                    setTimeout(
+                        warmNextSlideVideo,
+                        450
+                    );
+
+                }
+
             };
 
 
@@ -3793,6 +4083,10 @@ function createPreviewVideo(
         true;
 
 
+    preview.loop =
+        false;
+
+
     preview.preload =
         eagerMetadata
             ? "metadata"
@@ -3809,6 +4103,15 @@ function createPreviewVideo(
     );
 
 
+    /*
+        Keep previews deliberately short.
+
+        We use only the first PREVIEW_DURATION seconds,
+        then jump back to zero. This reduces decode work
+        compared with allowing every INDEX / VIEW ALL movie
+        to continue indefinitely.
+    */
+
     preview.addEventListener(
         "timeupdate",
         () => {
@@ -3821,6 +4124,24 @@ function createPreviewVideo(
                 preview.currentTime =
                     0;
 
+            }
+
+        }
+    );
+
+
+    preview.addEventListener(
+        "ended",
+        () => {
+
+            preview.currentTime =
+                0;
+
+
+            if (
+                preview.dataset.previewWanted ===
+                "1"
+            ) {
 
                 preview
                     .play()
@@ -3853,39 +4174,275 @@ function createPreviewVideo(
 
 
 /* =====================================================
-   PREVIEW ACTIVATION
+   PREVIEW ACTIVATION MANAGER
    ===================================================== */
+
+/*
+    The old site could ask many full-resolution MP4 files
+    to initialise at the same moment.
+
+    That is particularly expensive on mobile Safari:
+    network range requests, metadata parsing and video
+    decoder startup all compete with each other.
+
+    We now limit only the EXPENSIVE INITIALISATION step.
+
+    Once a preview is ready it can keep playing, but new
+    previews enter through a small queue.
+*/
+
+const PREVIEW_INIT_CONCURRENCY =
+    isPhoneLayout()
+        ? 2
+        : 4;
+
+
+let previewInitActive =
+    0;
+
+
+const previewInitQueue =
+    [];
+
+
+function releasePreviewInitSlot() {
+
+    previewInitActive =
+        Math.max(
+            0,
+            previewInitActive - 1
+        );
+
+
+    processPreviewInitQueue();
+
+}
+
+
+function processPreviewInitQueue() {
+
+    while (
+        previewInitActive <
+            PREVIEW_INIT_CONCURRENCY &&
+        previewInitQueue.length
+    ) {
+
+        const preview =
+            previewInitQueue.shift();
+
+
+        if (
+            !preview ||
+            preview.dataset.previewWanted !==
+                "1"
+        ) {
+
+            continue;
+
+        }
+
+
+        if (
+            preview.dataset.previewReady ===
+            "1"
+        ) {
+
+            preview
+                .play()
+                .catch(
+                    () => {}
+                );
+
+
+            continue;
+
+        }
+
+
+        previewInitActive++;
+
+
+        let released =
+            false;
+
+
+        const release =
+            () => {
+
+                if (
+                    released
+                ) {
+
+                    return;
+
+                }
+
+
+                released =
+                    true;
+
+
+                preview.dataset.previewReady =
+                    "1";
+
+
+                releasePreviewInitSlot();
+
+            };
+
+
+        const onReady =
+            () => {
+
+                release();
+
+
+                if (
+                    preview.dataset.previewWanted ===
+                    "1"
+                ) {
+
+                    preview
+                        .play()
+                        .catch(
+                            () => {}
+                        );
+
+                }
+
+            };
+
+
+        const onError =
+            () => {
+
+                release();
+
+            };
+
+
+        preview.addEventListener(
+            "canplay",
+            onReady,
+            {
+                once: true
+            }
+        );
+
+
+        preview.addEventListener(
+            "error",
+            onError,
+            {
+                once: true
+            }
+        );
+
+
+        if (
+            !preview.getAttribute(
+                "src"
+            )
+        ) {
+
+            preview.src =
+                preview.dataset.src;
+
+        }
+
+
+        /*
+            "auto" matters here.
+
+            On the previous mobile implementation we often
+            switched an intersecting preview only to
+            preload="metadata" and immediately called play().
+            Some browsers then took a long time before enough
+            media bytes were fetched to actually display motion.
+        */
+
+        preview.preload =
+            "auto";
+
+
+        preview.load();
+
+
+        /*
+            Avoid a blocked queue forever on an unusually slow
+            / failed media request.
+        */
+
+        setTimeout(
+            release,
+            isPhoneLayout()
+                ? 2200
+                : 1600
+        );
+
+    }
+
+}
+
 
 function activatePreview(
     preview
 ) {
 
+    preview.dataset.previewWanted =
+        "1";
+
+
     if (
-        !preview.getAttribute(
-            "src"
-        )
+        preview.dataset.previewReady ===
+        "1"
     ) {
 
-        preview.src =
-            preview.dataset.src;
+        preview
+            .play()
+            .catch(
+                () => {}
+            );
 
 
-        preview.preload =
-            isPhoneLayout()
-                ? "metadata"
-                : "auto";
-
-
-        preview.load();
+        return;
 
     }
 
 
+    if (
+        preview.dataset.previewQueued ===
+        "1"
+    ) {
+
+        return;
+
+    }
+
+
+    preview.dataset.previewQueued =
+        "1";
+
+
+    previewInitQueue.push(
+        preview
+    );
+
+
+    processPreviewInitQueue();
+
+}
+
+
+function deactivatePreview(
     preview
-        .play()
-        .catch(
-            () => {}
-        );
+) {
+
+    preview.dataset.previewWanted =
+        "0";
+
+
+    preview.pause();
 
 }
 
@@ -3912,11 +4469,7 @@ function stopAllPreviews() {
             "#index-view video, #project-all-view video"
         )
         .forEach(
-            preview => {
-
-                preview.pause();
-
-            }
+            deactivatePreview
         );
 
 }
@@ -3965,7 +4518,9 @@ const previewObserver =
 
                     else {
 
-                        preview.pause();
+                        deactivatePreview(
+                            preview
+                        );
 
                     }
 
@@ -3975,13 +4530,15 @@ const previewObserver =
         },
         {
             /*
-                Mobile should not wake distant MP4 previews early.
-                Desktop keeps the generous prefetch margin.
+                Wake only near-visible videos.
+
+                Desktop gets a little more look-ahead;
+                phones keep this tight to save bandwidth.
             */
             rootMargin:
                 isPhoneLayout()
-                    ? "36px"
-                    : "220px"
+                    ? "24px"
+                    : "140px"
         }
     );
 
@@ -4697,48 +5254,21 @@ async function enterProjectAll() {
             layoutProjectAllGrid();
 
 
+            /*
+                Desktop may initialise the visible View All set
+                immediately.
+
+                On phones we deliberately do NOT wake every MP4.
+                IntersectionObserver starts only previews actually
+                inside / immediately next to the visible composition.
+            */
+
             if (
                 !isPhoneLayout()
             ) {
 
                 activatePreviewsIn(
                     projectAllGrid
-                );
-
-            }
-
-            else {
-
-                /*
-                    Stagger mobile decoders instead of starting every
-                    MP4 in the same frame. The full grid still becomes
-                    animated, but initial interaction is much quicker.
-                */
-                [
-                    ...projectAllGrid.querySelectorAll(
-                        "video[data-src]"
-                    )
-                ].forEach(
-                    (preview, index) => {
-
-                        setTimeout(
-                            () => {
-
-                                if (
-                                    projectAllMode
-                                ) {
-
-                                    activatePreview(
-                                        preview
-                                    );
-
-                                }
-
-                            },
-                            index * 90
-                        );
-
-                    }
                 );
 
             }
@@ -6284,6 +6814,15 @@ async function enterIndex() {
     requestAnimationFrame(
         () => {
 
+            /*
+                On desktop the current visible rail can initialise
+                immediately.
+
+                Mobile is observer-only: no arbitrary first 2 / 3
+                videos are forced to download if they are not the
+                actual visible cards after a saved scroll position.
+            */
+
             if (
                 !isPhoneLayout()
             ) {
@@ -6291,32 +6830,6 @@ async function enterIndex() {
                 activatePreviewsIn(
                     indexGrid
                 );
-
-            }
-
-            else {
-
-                /*
-                    Loading every index movie at once is the main
-                    reason mobile felt dramatically slower than
-                    desktop. Only prime the first visible cluster;
-                    IntersectionObserver activates the rest lazily.
-                */
-
-                [
-                    ...indexGrid.querySelectorAll(
-                        "video[data-src]"
-                    )
-                ]
-                    .slice(
-                        0,
-                        isPhoneLandscape()
-                            ? 3
-                            : 2
-                    )
-                    .forEach(
-                        activatePreview
-                    );
 
             }
 
@@ -7094,19 +7607,15 @@ video.addEventListener(
 async function warmIndexPreviews() {
 
     /*
-        Do not prewarm the entire film index on phones.
-        Mobile Safari otherwise starts many MP4 metadata /
-        decode jobs in parallel before the user even opens INDEX.
+        Never prewarm the whole index.
+
+        The old desktop path could create requests for every
+        project's MP4 before the user had even opened INDEX.
+        On slower mobile connections this strategy is much worse.
+
+        We only prepare metadata for the first one or two cards
+        during idle time. Everything else is visibility-driven.
     */
-
-    if (
-        isPhoneLayout()
-    ) {
-
-        return;
-
-    }
-
 
     const previews =
         [
@@ -7117,16 +7626,23 @@ async function warmIndexPreviews() {
         ];
 
 
+    const count =
+        isPhoneLayout()
+            ? 1
+            : 2;
+
+
     for (
         let i = 0;
-        i < previews.length;
+        i < Math.min(
+            count,
+            previews.length
+        );
         i++
     ) {
 
         const preview =
-            previews[
-                i
-            ];
+            previews[i];
 
 
         if (
@@ -7140,10 +7656,7 @@ async function warmIndexPreviews() {
 
 
             preview.preload =
-                i <
-                4
-                    ? "auto"
-                    : "metadata";
+                "metadata";
 
 
             preview.load();
@@ -7151,17 +7664,9 @@ async function warmIndexPreviews() {
         }
 
 
-        if (
-            i %
-            2 ===
-            1
-        ) {
-
-            await wait(
-                90
-            );
-
-        }
+        await wait(
+            80
+        );
 
     }
 
@@ -7202,16 +7707,20 @@ async function loadProjects() {
 
 
         projects =
-            data.filter(
-                project =>
-                    project &&
-                    typeof project.title ===
-                        "string" &&
-                    Array.isArray(
-                        project.videos
-                    ) &&
-                    project.videos.length
-            );
+            data
+                .filter(
+                    project =>
+                        project &&
+                        typeof project.title ===
+                            "string" &&
+                        Array.isArray(
+                            project.videos
+                        ) &&
+                        project.videos.length
+                )
+                .map(
+                    prepareProject
+                );
 
 
         if (
@@ -7242,13 +7751,36 @@ async function loadProjects() {
         );
 
 
-        requestAnimationFrame(
+        const warmIndexWhenIdle =
             () => {
 
                 warmIndexPreviews();
 
-            }
-        );
+            };
+
+
+        if (
+            "requestIdleCallback" in window
+        ) {
+
+            requestIdleCallback(
+                warmIndexWhenIdle,
+                {
+                    timeout:
+                        1800
+                }
+            );
+
+        }
+
+        else {
+
+            setTimeout(
+                warmIndexWhenIdle,
+                700
+            );
+
+        }
 
     }
 
