@@ -96,6 +96,7 @@
             "sober_210323_video_1.mp4",
             "sober_210323_video_2.mp4",
             "sober_210323_video_3.mp4"
-        ]
+        ],
+        "coverOverride": "sober_210323_video_1.mp4"
     }
 ]
