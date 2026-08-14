@@ -1324,6 +1324,9 @@ body.index-mode #video-stage {
 const R2_BASE =
     "https://pub-14d397941aeb40e5bd3f66ac028fef80.r2.dev/films/";
 
+const PREVIEW_BASE =
+    "https://pub-14d397941aeb40e5bd3f66ac028fef80.r2.dev/film-previews/";
+
 const FILMS_JSON =
     "./films.json";
 
@@ -1360,7 +1363,7 @@ const MOBILE_NAV_HOLD =
     520;
 
 const PREVIEW_DURATION =
-    5;
+    6;
 
 
 /* =====================================================
@@ -1881,6 +1884,46 @@ function videoUrl(
     return (
         R2_BASE +
         filename
+            .split("/")
+            .map(
+                encodeURIComponent
+            )
+            .join("/")
+    );
+
+}
+
+
+/* =====================================================
+   PREVIEW URL
+   ===================================================== */
+
+/*
+    Master:
+        films/vogue_260213_video_1.mp4
+
+    Preview:
+        film-previews/vogue_260213_video_1_preview.mp4
+
+    films.json remains clean: it only stores the master
+    filename. Index / View All derive the small preview
+    filename automatically.
+*/
+
+function previewVideoUrl(
+    filename
+) {
+
+    const previewFilename =
+        filename.replace(
+            /\.mp4$/i,
+            "_preview.mp4"
+        );
+
+
+    return (
+        PREVIEW_BASE +
+        previewFilename
             .split("/")
             .map(
                 encodeURIComponent
@@ -4065,10 +4108,20 @@ function createPreviewVideo(
         );
 
 
-    preview.dataset.src =
+    preview.dataset.masterSrc =
         videoUrl(
             filename
         );
+
+
+    preview.dataset.src =
+        previewVideoUrl(
+            filename
+        );
+
+
+    preview.dataset.usingFallback =
+        "0";
 
 
     preview.muted =
@@ -4083,8 +4136,15 @@ function createPreviewVideo(
         true;
 
 
+    /*
+        The files in /film-previews/ are already six-second
+        web previews, so native loop is both simpler and
+        smoother than seeking currentTime back to zero from
+        a timeupdate handler.
+    */
+
     preview.loop =
-        false;
+        true;
 
 
     preview.preload =
@@ -4104,38 +4164,51 @@ function createPreviewVideo(
 
 
     /*
-        Keep previews deliberately short.
+        Safety fallback:
 
-        We use only the first PREVIEW_DURATION seconds,
-        then jump back to zero. This reduces decode work
-        compared with allowing every INDEX / VIEW ALL movie
-        to continue indefinitely.
+        If one preview was accidentally not uploaded or was
+        named differently, that one tile can still fall back
+        to the original master instead of remaining blank.
+
+        This should normally never run.
     */
 
     preview.addEventListener(
-        "timeupdate",
+        "error",
         () => {
 
             if (
-                preview.currentTime >=
-                PREVIEW_DURATION
+                preview.dataset.usingFallback ===
+                "1"
             ) {
 
-                preview.currentTime =
-                    0;
+                return;
 
             }
 
-        }
-    );
+
+            preview.dataset.usingFallback =
+                "1";
 
 
-    preview.addEventListener(
-        "ended",
-        () => {
+            preview.dataset.src =
+                preview.dataset.masterSrc;
 
-            preview.currentTime =
-                0;
+
+            preview.dataset.previewReady =
+                "0";
+
+
+            preview.dataset.previewQueued =
+                "0";
+
+
+            preview.removeAttribute(
+                "src"
+            );
+
+
+            preview.load();
 
 
             if (
@@ -4143,11 +4216,9 @@ function createPreviewVideo(
                 "1"
             ) {
 
-                preview
-                    .play()
-                    .catch(
-                        () => {}
-                    );
+                activatePreview(
+                    preview
+                );
 
             }
 
@@ -4193,8 +4264,8 @@ function createPreviewVideo(
 
 const PREVIEW_INIT_CONCURRENCY =
     isPhoneLayout()
-        ? 2
-        : 4;
+        ? 4
+        : 8;
 
 
 let previewInitActive =
@@ -4229,6 +4300,16 @@ function processPreviewInitQueue() {
 
         const preview =
             previewInitQueue.shift();
+
+
+        if (
+            preview
+        ) {
+
+            preview.dataset.previewQueued =
+                "0";
+
+        }
 
 
         if (
@@ -4537,8 +4618,8 @@ const previewObserver =
             */
             rootMargin:
                 isPhoneLayout()
-                    ? "24px"
-                    : "140px"
+                    ? "120px"
+                    : "320px"
         }
     );
 
@@ -5069,11 +5150,13 @@ function buildProjectAllGrid() {
                     filename,
                     {
                         /*
-                            Mobile defers MP4 work; desktop keeps eager
-                            metadata for immediate layout.
+                            These are now lightweight /film-previews/
+                            files. Resolve metadata immediately so View
+                            All knows the real aspect ratios before it
+                            chooses its grid.
                         */
                         eagerMetadata:
-                            !isPhoneLayout()
+                            true
                     }
                 );
 
@@ -6280,12 +6363,13 @@ function buildIndex() {
                         project.videos[0],
                         {
                             /*
-                                Desktop can pre-resolve dimensions.
-                                Mobile defers network/decode until the
-                                card is actually near the viewport.
+                                Index uses the tiny derived preview.
+                                Eager metadata gives stable dimensions
+                                immediately; actual playback is still
+                                controlled by IntersectionObserver.
                             */
                             eagerMetadata:
-                                !isPhoneLayout()
+                                true
                         }
                     );
 
@@ -7610,7 +7694,7 @@ async function warmIndexPreviews() {
         Never prewarm the whole index.
 
         The old desktop path could create requests for every
-        project's MP4 before the user had even opened INDEX.
+        project's preview before the user had even opened INDEX.
         On slower mobile connections this strategy is much worse.
 
         We only prepare metadata for the first one or two cards
@@ -7628,8 +7712,8 @@ async function warmIndexPreviews() {
 
     const count =
         isPhoneLayout()
-            ? 1
-            : 2;
+            ? 3
+            : 5;
 
 
     for (
