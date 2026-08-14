@@ -523,6 +523,18 @@ body.project-all-mode #project-all-view {
 }
 
 
+/*
+    Preview videos use their JPG poster as the immediate visual.
+    No fade is added: poster simply gives way to the first decoded
+    video frame, preserving the site's crisp motion language.
+*/
+
+.project-all-thumb video,
+.card-video-wrap video {
+    background: transparent;
+}
+
+
 /* =====================================================
    INDEX BUTTON
    ===================================================== */
@@ -1327,6 +1339,9 @@ const R2_BASE =
 const PREVIEW_BASE =
     "https://pub-14d397941aeb40e5bd3f66ac028fef80.r2.dev/film-previews/";
 
+const POSTER_BASE =
+    "https://pub-14d397941aeb40e5bd3f66ac028fef80.r2.dev/film-posters/";
+
 const FILMS_JSON =
     "./films.json";
 
@@ -1924,6 +1939,30 @@ function previewVideoUrl(
     return (
         PREVIEW_BASE +
         previewFilename
+            .split("/")
+            .map(
+                encodeURIComponent
+            )
+            .join("/")
+    );
+
+}
+
+
+function posterVideoUrl(
+    filename
+) {
+
+    const posterFilename =
+        filename.replace(
+            /\.mp4$/i,
+            "_poster.jpg"
+        );
+
+
+    return (
+        POSTER_BASE +
+        posterFilename
             .split("/")
             .map(
                 encodeURIComponent
@@ -4120,6 +4159,20 @@ function createPreviewVideo(
         );
 
 
+    /*
+        Poster-first loading:
+
+        The JPG appears immediately, before MP4 metadata or
+        decoded video frames are ready. The browser keeps the
+        poster visible until the preview has a drawable frame.
+    */
+
+    preview.poster =
+        posterVideoUrl(
+            filename
+        );
+
+
     preview.dataset.usingFallback =
         "0";
 
@@ -4245,6 +4298,89 @@ function createPreviewVideo(
 
 
 /* =====================================================
+   POSTER PRELOAD
+   ===================================================== */
+
+const posterWarmCache =
+    new Set();
+
+
+function warmPoster(
+    filename
+) {
+
+    const url =
+        posterVideoUrl(
+            filename
+        );
+
+
+    if (
+        posterWarmCache.has(
+            url
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    posterWarmCache.add(
+        url
+    );
+
+
+    const image =
+        new Image();
+
+
+    image.decoding =
+        "async";
+
+
+    image.src =
+        url;
+
+}
+
+
+function warmVisibleIndexPosters() {
+
+    if (
+        !projects.length
+    ) {
+
+        return;
+
+    }
+
+
+    const visibleCount =
+        isPhoneLayout()
+            ? 4
+            : 7;
+
+
+    getChronologicalProjects()
+        .slice(
+            0,
+            visibleCount
+        )
+        .forEach(
+            ({ project }) => {
+
+                warmPoster(
+                    project.videos[0]
+                );
+
+            }
+        );
+
+}
+
+
+/* =====================================================
    PREVIEW ACTIVATION MANAGER
    ===================================================== */
 
@@ -4264,8 +4400,8 @@ function createPreviewVideo(
 
 const PREVIEW_INIT_CONCURRENCY =
     isPhoneLayout()
-        ? 4
-        : 8;
+        ? 3
+        : 6;
 
 
 let previewInitActive =
@@ -4618,8 +4754,8 @@ const previewObserver =
             */
             rootMargin:
                 isPhoneLayout()
-                    ? "120px"
-                    : "320px"
+                    ? "80px"
+                    : "260px"
         }
     );
 
@@ -6892,6 +7028,9 @@ async function enterIndex() {
     );
 
 
+    warmVisibleIndexPosters();
+
+
     restoreIndexPosition();
 
 
@@ -7833,6 +7972,15 @@ async function loadProjects() {
         await loadCurrentVideo(
             true
         );
+
+
+        /*
+            Posters are cheap and should feel instant, so warm the
+            first visible cluster immediately. Preview MP4 metadata
+            remains an idle task.
+        */
+
+        warmVisibleIndexPosters();
 
 
         const warmIndexWhenIdle =
