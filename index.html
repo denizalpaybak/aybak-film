@@ -1982,6 +1982,317 @@ function currentProject() {
 }
 
 
+/* =====================================================
+   PROJECT + VIDEO DEEP LINKS
+   ===================================================== */
+
+/*
+    Stable URL structure:
+
+        ?project=vogue-260113&video=2
+
+    IMPORTANT:
+    "video=2" refers to the video's ORIGINAL position in
+    films.json, not its runtime position after random cover
+    rotation.
+
+    Example JSON order:
+        1, 2, 3, 4
+
+    Random runtime order:
+        3, 4, 1, 2
+
+    Deep link:
+        video=2
+
+    still opens the ORIGINAL second video.
+
+    This keeps PDF / external links permanent even though
+    the site's opening video changes randomly.
+*/
+
+function getDeepLinkRequest() {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    const projectId =
+        params.get(
+            "project"
+        );
+
+
+    const rawVideo =
+        params.get(
+            "video"
+        );
+
+
+    let videoNumber =
+        null;
+
+
+    if (
+        rawVideo !==
+        null
+    ) {
+
+        const parsed =
+            Number.parseInt(
+                rawVideo,
+                10
+            );
+
+
+        if (
+            Number.isFinite(
+                parsed
+            ) &&
+            parsed >= 1
+        ) {
+
+            videoNumber =
+                parsed;
+
+        }
+
+    }
+
+
+    return {
+        projectId,
+        videoNumber
+    };
+
+}
+
+
+function getProjectIdFromUrl() {
+
+    return getDeepLinkRequest()
+        .projectId;
+
+}
+
+
+function findProjectIndexById(
+    projectId
+) {
+
+    if (
+        !projectId
+    ) {
+
+        return -1;
+
+    }
+
+
+    return projects.findIndex(
+        project =>
+            project.id ===
+            projectId
+    );
+
+}
+
+
+function getOriginalVideos(
+    project
+) {
+
+    if (
+        !project
+    ) {
+
+        return [];
+
+    }
+
+
+    return Array.isArray(
+        project.originalVideos
+    )
+        ? project.originalVideos
+        : project.videos;
+
+}
+
+
+function getOriginalVideoNumber(
+    project,
+    runtimeVideoIndex =
+        currentVideoIndex
+) {
+
+    if (
+        !project ||
+        !project.videos.length
+    ) {
+
+        return 1;
+
+    }
+
+
+    const filename =
+        project.videos[
+            runtimeVideoIndex
+        ];
+
+
+    const originalVideos =
+        getOriginalVideos(
+            project
+        );
+
+
+    const originalIndex =
+        originalVideos.indexOf(
+            filename
+        );
+
+
+    return originalIndex >= 0
+        ? originalIndex + 1
+        : 1;
+
+}
+
+
+function getRuntimeVideoIndexFromOriginalNumber(
+    project,
+    videoNumber
+) {
+
+    if (
+        !project ||
+        !Number.isFinite(
+            videoNumber
+        )
+    ) {
+
+        return -1;
+
+    }
+
+
+    const originalVideos =
+        getOriginalVideos(
+            project
+        );
+
+
+    const originalIndex =
+        videoNumber - 1;
+
+
+    if (
+        originalIndex < 0 ||
+        originalIndex >=
+            originalVideos.length
+    ) {
+
+        return -1;
+
+    }
+
+
+    const filename =
+        originalVideos[
+            originalIndex
+        ];
+
+
+    return project.videos.indexOf(
+        filename
+    );
+
+}
+
+
+function syncProjectUrl(
+    mode = "replace"
+) {
+
+    const project =
+        currentProject();
+
+
+    if (
+        !project ||
+        !project.id
+    ) {
+
+        return;
+
+    }
+
+
+    const url =
+        new URL(
+            window.location.href
+        );
+
+
+    const videoNumber =
+        getOriginalVideoNumber(
+            project,
+            currentVideoIndex
+        );
+
+
+    url.searchParams.set(
+        "project",
+        project.id
+    );
+
+
+    url.searchParams.set(
+        "video",
+        String(
+            videoNumber
+        )
+    );
+
+
+    const state = {
+        projectId:
+            project.id,
+
+        videoNumber
+    };
+
+
+    if (
+        mode ===
+        "push"
+    ) {
+
+        window.history.pushState(
+            state,
+            "",
+            url
+        );
+
+    }
+
+    else {
+
+        window.history.replaceState(
+            state,
+            "",
+            url
+        );
+
+    }
+
+}
+
+
 function currentFilename() {
 
     const project =
@@ -2141,6 +2452,13 @@ function prepareProject(
 
     return {
         ...project,
+
+        /*
+            Keep an immutable copy of films.json order for
+            permanent deep-link numbering.
+        */
+        originalVideos:
+            originalVideos.slice(),
 
         videos:
             rotateVideosFromIndex(
@@ -4020,6 +4338,11 @@ function nextFilm() {
     }
 
 
+    syncProjectUrl(
+        "push"
+    );
+
+
     loadCurrentVideo(
         true
     );
@@ -4063,6 +4386,11 @@ function previousFilm() {
             ].videos.length - 1;
 
     }
+
+
+    syncProjectUrl(
+        "push"
+    );
 
 
     loadCurrentVideo(
@@ -5586,6 +5914,11 @@ async function leaveProjectAll(
 
         currentVideoIndex =
             selectedIndex;
+
+
+        syncProjectUrl(
+            "push"
+        );
 
     }
 
@@ -7190,6 +7523,11 @@ async function exitIndexToProject(
         0;
 
 
+    syncProjectUrl(
+        "push"
+    );
+
+
     renderedProjectIndex =
         null;
 
@@ -7958,12 +8296,110 @@ async function loadProjects() {
         buildIndex();
 
 
-        currentProjectIndex =
-            0;
+        const deepLink =
+            getDeepLinkRequest();
 
+
+        const requestedProjectIndex =
+            findProjectIndexById(
+                deepLink.projectId
+            );
+
+
+        currentProjectIndex =
+            requestedProjectIndex >= 0
+                ? requestedProjectIndex
+                : 0;
+
+
+        const requestedProject =
+            currentProject();
+
+
+        let requestedRuntimeVideoIndex =
+            -1;
+
+
+        if (
+            requestedProjectIndex >= 0 &&
+            deepLink.videoNumber !==
+                null
+        ) {
+
+            requestedRuntimeVideoIndex =
+                getRuntimeVideoIndexFromOriginalNumber(
+                    requestedProject,
+                    deepLink.videoNumber
+                );
+
+        }
+
+
+        /*
+            A valid project + valid video opens the exact
+            original JSON video.
+
+            A project-only URL keeps the site's random
+            opening-video behaviour.
+
+            Invalid video numbers safely fall back to the
+            project's runtime first video.
+        */
 
         currentVideoIndex =
-            0;
+            requestedRuntimeVideoIndex >= 0
+                ? requestedRuntimeVideoIndex
+                : 0;
+
+
+        if (
+            deepLink.projectId &&
+            requestedProjectIndex < 0
+        ) {
+
+            const cleanUrl =
+                new URL(
+                    window.location.href
+                );
+
+
+            cleanUrl.searchParams.delete(
+                "project"
+            );
+
+
+            cleanUrl.searchParams.delete(
+                "video"
+            );
+
+
+            window.history.replaceState(
+                {},
+                "",
+                cleanUrl
+            );
+
+        }
+
+
+        else if (
+            requestedProjectIndex >= 0
+        ) {
+
+            /*
+                Normalize the URL.
+
+                - project-only links gain the exact video
+                  number chosen for this visit.
+                - invalid video numbers are replaced with
+                  the valid fallback video's number.
+            */
+
+            syncProjectUrl(
+                "replace"
+            );
+
+        }
 
 
         setSoundLabelImmediately();
@@ -8027,6 +8463,130 @@ async function loadProjects() {
     }
 
 }
+
+
+/* =====================================================
+   BROWSER HISTORY / DEEP LINK NAVIGATION
+   ===================================================== */
+
+window.addEventListener(
+    "popstate",
+    async () => {
+
+        if (
+            !projects.length
+        ) {
+
+            return;
+
+        }
+
+
+        const deepLink =
+            getDeepLinkRequest();
+
+
+        const requestedProjectIndex =
+            findProjectIndexById(
+                deepLink.projectId
+            );
+
+
+        const targetProjectIndex =
+            requestedProjectIndex >= 0
+                ? requestedProjectIndex
+                : 0;
+
+
+        const targetProject =
+            projects[
+                targetProjectIndex
+            ];
+
+
+        let targetVideoIndex =
+            0;
+
+
+        if (
+            requestedProjectIndex >= 0 &&
+            deepLink.videoNumber !==
+                null
+        ) {
+
+            const resolved =
+                getRuntimeVideoIndexFromOriginalNumber(
+                    targetProject,
+                    deepLink.videoNumber
+                );
+
+
+            if (
+                resolved >= 0
+            ) {
+
+                targetVideoIndex =
+                    resolved;
+
+            }
+
+        }
+
+
+        if (
+            targetProjectIndex ===
+                currentProjectIndex &&
+            targetVideoIndex ===
+                currentVideoIndex &&
+            !indexMode &&
+            !projectAllMode
+        ) {
+
+            return;
+
+        }
+
+
+        stopAllPreviews();
+
+
+        indexMode =
+            false;
+
+
+        projectAllMode =
+            false;
+
+
+        body.classList.remove(
+            "index-mode",
+            "project-all-mode"
+        );
+
+
+        indexView.classList.remove(
+            "visible"
+        );
+
+
+        currentProjectIndex =
+            targetProjectIndex;
+
+
+        currentVideoIndex =
+            targetVideoIndex;
+
+
+        renderedProjectIndex =
+            null;
+
+
+        await loadCurrentVideo(
+            true
+        );
+
+    }
+);
 
 
 /* =====================================================
