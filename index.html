@@ -11,6 +11,9 @@
 
 <title>Denizalp Aybak — Film</title>
 
+<link rel="preconnect" href="https://pub-14d397941aeb40e5bd3f66ac028fef80.r2.dev" crossorigin>
+<link rel="dns-prefetch" href="//pub-14d397941aeb40e5bd3f66ac028fef80.r2.dev">
+
 
 <style>
 
@@ -862,6 +865,20 @@ body.index-mode #video-stage {
     }
 
 
+    /*
+        On phone portrait the project metadata is a viewport UI bar,
+        not a caption tied to the current video's width.
+
+        This keeps the title/date fixed to the left safe edge and
+        counter/view-all fixed to the right safe edge even when the
+        current film is a narrow portrait clip.
+    */
+    #project-meta {
+        width: calc(100vw - (var(--side) * 2));
+        align-self: center;
+    }
+
+
     #controls {
         margin-top: 9px;
     }
@@ -1610,6 +1627,21 @@ let autoplayBeforeProjectAll =
 
 let resumeAfterVisibility =
     false;
+
+
+/*
+    The main slide is poster-first as well.
+
+    Mobile Safari / Chrome can take a noticeable moment before MP4
+    metadata exposes videoWidth/videoHeight. The JPG poster already
+    contains that information, so we use its ratio to size the slide
+    immediately instead of leaving a white hole while the movie starts.
+*/
+let currentPosterRatio =
+    null;
+
+let currentPosterRequestToken =
+    0;
 
 
 /*
@@ -3657,19 +3689,26 @@ function getPhoneLandscapeArea() {
 
 function fitMainVideo() {
 
+    const ratio =
+        (
+            video.videoWidth &&
+            video.videoHeight
+        )
+            ? video.videoWidth /
+                video.videoHeight
+            : currentPosterRatio;
+
+
     if (
-        !video.videoWidth ||
-        !video.videoHeight
+        !ratio ||
+        !Number.isFinite(
+            ratio
+        )
     ) {
 
         return;
 
     }
-
-
-    const ratio =
-        video.videoWidth /
-        video.videoHeight;
 
 
     const vw =
@@ -4171,6 +4210,76 @@ async function loadCurrentVideo(
 
 
     video.pause();
+
+
+    /*
+        Put the poster on screen BEFORE asking the browser to decode
+        the master MP4. This guarantees a real visual fallback on
+        slow mobile connections instead of a blank white stage.
+    */
+    const posterUrl =
+        posterVideoUrl(
+            filename
+        );
+
+
+    const posterToken =
+        ++currentPosterRequestToken;
+
+
+    currentPosterRatio =
+        null;
+
+
+    video.poster =
+        posterUrl;
+
+
+    const posterImage =
+        new Image();
+
+
+    posterImage.decoding =
+        "async";
+
+
+    posterImage.addEventListener(
+        "load",
+        () => {
+
+            if (
+                posterToken !==
+                currentPosterRequestToken
+            ) {
+
+                return;
+
+            }
+
+
+            if (
+                posterImage.naturalWidth &&
+                posterImage.naturalHeight
+            ) {
+
+                currentPosterRatio =
+                    posterImage.naturalWidth /
+                    posterImage.naturalHeight;
+
+
+                fitMainVideo();
+
+            }
+
+        },
+        {
+            once: true
+        }
+    );
+
+
+    posterImage.src =
+        posterUrl;
 
 
     video.src =
@@ -8246,8 +8355,14 @@ async function loadProjects() {
             await fetch(
                 FILMS_JSON,
                 {
+                    /*
+                        Do not force a fresh network transfer on every
+                        mobile visit. Normal HTTP cache semantics make
+                        repeat opens substantially faster while still
+                        respecting the server's cache headers.
+                    */
                     cache:
-                        "no-store"
+                        "default"
                 }
             );
 
