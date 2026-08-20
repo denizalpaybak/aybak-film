@@ -4105,14 +4105,63 @@ function fitMainVideo() {
 
 
     /* =================================================
-       DESKTOP
+       DESKTOP / LAPTOP
        ================================================= */
+
+    /*
+        Keep the film inside the real horizontal safe field between
+        the left identity/contact block and the photography switch.
+
+        Wide desktops remain visually centred. On narrower laptop
+        screens a wide film shrinks and recentres inside the available
+        field instead of running underneath the contact information.
+    */
+
+    const infoRect =
+        info.getBoundingClientRect();
+
+
+    const switchRect =
+        sectionSwitch.getBoundingClientRect();
+
+
+    const safeGap =
+        Math.max(
+            24,
+            side * 0.5
+        );
+
+
+    const safeLeft =
+        Math.max(
+            side,
+            infoRect.right + safeGap
+        );
+
+
+    const safeRight =
+        Math.min(
+            vw - side,
+            switchRect.left - safeGap
+        );
+
+
+    const safeWidth =
+        Math.max(
+            120,
+            safeRight - safeLeft
+        );
+
+
+    const safeCenterX =
+        safeLeft +
+        safeWidth / 2;
+
 
     const maxMediaWidth =
         Math.min(
             vw * 0.76,
-            vw -
-            side * 2
+            safeWidth
         );
 
 
@@ -4165,6 +4214,26 @@ function fitMainVideo() {
         `${mediaHeight}px`;
 
 
+    /*
+        Remove any inline geometry left by phone-landscape mode when
+        crossing responsive breakpoints or rotating the device.
+    */
+    mediaHolder.style.left =
+        "";
+
+
+    mediaHolder.style.right =
+        "";
+
+
+    mediaHolder.style.top =
+        "";
+
+
+    mediaHolder.style.bottom =
+        "";
+
+
     video.style.width =
         `${mediaWidth}px`;
 
@@ -4174,7 +4243,7 @@ function fitMainVideo() {
 
 
     videoBlock.style.left =
-        "50%";
+        `${safeCenterX}px`;
 
 
     videoBlock.style.top =
