@@ -1630,6 +1630,41 @@ let resumeAfterVisibility =
 
 
 /*
+    NORMAL FILM ROTATION
+
+    In the ordinary slide flow, each project contributes at most
+    two videos per pass. The chosen videos are random, unseen videos
+    are prioritised, and playback follows the project's own runtime
+    order.
+
+    Opening a project from INDEX or selecting a video from VIEW ALL
+    temporarily switches to a full-project run. After that project
+    finishes, normal max-2 rotation resumes.
+*/
+
+const NORMAL_PROJECT_VIDEO_LIMIT =
+    2;
+
+let seenNormalVideos =
+    [];
+
+let normalSequenceProjectIndex =
+    null;
+
+let normalSequenceVideos =
+    [];
+
+let normalSequencePosition =
+    -1;
+
+let fullProjectMode =
+    false;
+
+let fullProjectEndIndex =
+    null;
+
+
+/*
     The main slide is poster-first as well.
 
     Mobile Safari / Chrome can take a noticeable moment before MP4
@@ -4473,6 +4508,303 @@ async function loadCurrentVideo(
 
 
 /* =====================================================
+   NORMAL MAX-2 PROJECT ROTATION
+   ===================================================== */
+
+function ensureSeenNormalVideos() {
+
+    if (
+        seenNormalVideos.length !==
+        projects.length
+    ) {
+
+        seenNormalVideos =
+            projects.map(
+                project =>
+                    new Set()
+            );
+
+    }
+
+}
+
+
+function buildNormalProjectSequence(
+    projectIndex,
+    {
+        includeVideo =
+            null
+    } = {}
+) {
+
+    ensureSeenNormalVideos();
+
+
+    const normalized =
+        normalizeProjectIndex(
+            projectIndex
+        );
+
+
+    const project =
+        projects[
+            normalized
+        ];
+
+
+    const total =
+        project.videos.length;
+
+
+    const limit =
+        Math.min(
+            NORMAL_PROJECT_VIDEO_LIMIT,
+            total
+        );
+
+
+    const seen =
+        seenNormalVideos[
+            normalized
+        ];
+
+
+    const unseen =
+        [];
+
+
+    const alreadySeen =
+        [];
+
+
+    for (
+        let i = 0;
+        i < total;
+        i++
+    ) {
+
+        if (
+            seen.has(
+                i
+            )
+        ) {
+
+            alreadySeen.push(
+                i
+            );
+
+        }
+
+        else {
+
+            unseen.push(
+                i
+            );
+
+        }
+
+    }
+
+
+    function shuffled(
+        values
+    ) {
+
+        const copy =
+            values.slice();
+
+
+        for (
+            let i =
+                copy.length - 1;
+            i > 0;
+            i--
+        ) {
+
+            const j =
+                Math.floor(
+                    Math.random() *
+                    (
+                        i + 1
+                    )
+                );
+
+
+            [
+                copy[i],
+                copy[j]
+            ] =
+                [
+                    copy[j],
+                    copy[i]
+                ];
+
+        }
+
+
+        return copy;
+
+    }
+
+
+    let selected =
+        [];
+
+
+    if (
+        includeVideo !==
+            null &&
+        includeVideo >= 0 &&
+        includeVideo < total
+    ) {
+
+        selected.push(
+            includeVideo
+        );
+
+    }
+
+
+    const unseenPool =
+        shuffled(
+            unseen.filter(
+                index =>
+                    !selected.includes(
+                        index
+                    )
+            )
+        );
+
+
+    while (
+        selected.length <
+            limit &&
+        unseenPool.length
+    ) {
+
+        selected.push(
+            unseenPool.shift()
+        );
+
+    }
+
+
+    const seenPool =
+        shuffled(
+            alreadySeen.filter(
+                index =>
+                    !selected.includes(
+                        index
+                    )
+            )
+        );
+
+
+    while (
+        selected.length <
+            limit &&
+        seenPool.length
+    ) {
+
+        selected.push(
+            seenPool.shift()
+        );
+
+    }
+
+
+    if (
+        selected.length <
+        limit
+    ) {
+
+        const anyPool =
+            shuffled(
+                Array.from(
+                    {
+                        length:
+                            total
+                    },
+                    (
+                        _,
+                        index
+                    ) =>
+                        index
+                ).filter(
+                    index =>
+                        !selected.includes(
+                            index
+                        )
+                )
+            );
+
+
+        while (
+            selected.length <
+                limit &&
+            anyPool.length
+        ) {
+
+            selected.push(
+                anyPool.shift()
+            );
+
+        }
+
+    }
+
+
+    /*
+        Selection is random; playback order is not.
+        Example: chosen 05 + 02 -> shown 02 + 05.
+    */
+    selected.sort(
+        (
+            a,
+            b
+        ) =>
+            a - b
+    );
+
+
+    normalSequenceProjectIndex =
+        normalized;
+
+
+    normalSequenceVideos =
+        selected;
+
+
+    normalSequencePosition =
+        includeVideo !== null
+            ? normalSequenceVideos.indexOf(
+                includeVideo
+            )
+            : -1;
+
+}
+
+
+function markNormalVideoSeen(
+    projectIndex,
+    videoIndex
+) {
+
+    ensureSeenNormalVideos();
+
+
+    seenNormalVideos[
+        normalizeProjectIndex(
+            projectIndex
+        )
+    ].add(
+        videoIndex
+    );
+
+}
+
+
+/* =====================================================
    NEXT / PREVIOUS
    ===================================================== */
 
@@ -4489,29 +4821,133 @@ function nextFilm() {
     }
 
 
-    const project =
-        currentProject();
-
-
+    /*
+        INDEX / VIEW ALL opens a full-project run.
+        Keep walking that project's remaining videos in order.
+    */
     if (
-        currentVideoIndex <
-        project.videos.length - 1
+        fullProjectMode
     ) {
 
-        currentVideoIndex++;
+        const project =
+            currentProject();
+
+
+        if (
+            currentVideoIndex <
+            fullProjectEndIndex
+        ) {
+
+            currentVideoIndex++;
+
+        }
+
+        else {
+
+            fullProjectMode =
+                false;
+
+
+            fullProjectEndIndex =
+                null;
+
+
+            currentProjectIndex =
+                normalizeProjectIndex(
+                    currentProjectIndex + 1
+                );
+
+
+            buildNormalProjectSequence(
+                currentProjectIndex
+            );
+
+
+            normalSequencePosition =
+                0;
+
+
+            currentVideoIndex =
+                normalSequenceVideos[0];
+
+
+            markNormalVideoSeen(
+                currentProjectIndex,
+                currentVideoIndex
+            );
+
+        }
 
     }
 
     else {
 
-        currentProjectIndex =
-            normalizeProjectIndex(
-                currentProjectIndex + 1
+        if (
+            normalSequenceProjectIndex !==
+                currentProjectIndex ||
+            !normalSequenceVideos.length ||
+            normalSequencePosition < 0
+        ) {
+
+            buildNormalProjectSequence(
+                currentProjectIndex,
+                {
+                    includeVideo:
+                        currentVideoIndex
+                }
+            );
+
+        }
+
+
+        if (
+            normalSequencePosition <
+            normalSequenceVideos.length - 1
+        ) {
+
+            normalSequencePosition++;
+
+
+            currentVideoIndex =
+                normalSequenceVideos[
+                    normalSequencePosition
+                ];
+
+
+            markNormalVideoSeen(
+                currentProjectIndex,
+                currentVideoIndex
+            );
+
+        }
+
+        else {
+
+            currentProjectIndex =
+                normalizeProjectIndex(
+                    currentProjectIndex + 1
+                );
+
+
+            buildNormalProjectSequence(
+                currentProjectIndex
             );
 
 
-        currentVideoIndex =
-            0;
+            normalSequencePosition =
+                0;
+
+
+            currentVideoIndex =
+                normalSequenceVideos[0];
+
+
+            markNormalVideoSeen(
+                currentProjectIndex,
+                currentVideoIndex
+            );
+
+        }
 
     }
 
@@ -6094,6 +6530,30 @@ async function leaveProjectAll(
             selectedIndex;
 
 
+        /*
+            A deliberate VIEW ALL selection means: show every remaining
+            video in this project before returning to max-2 rotation.
+        */
+        fullProjectMode =
+            true;
+
+
+        fullProjectEndIndex =
+            project.videos.length - 1;
+
+
+        normalSequenceProjectIndex =
+            null;
+
+
+        normalSequenceVideos =
+            [];
+
+
+        normalSequencePosition =
+            -1;
+
+
         syncProjectUrl(
             "push"
         );
@@ -7571,7 +8031,11 @@ async function enterIndex() {
     );
 
 
-    await morphIndexTo(
+    /*
+        INDEX word morph is cosmetic. The visible project rail should
+        already accept clicks while the word finishes morphing.
+    */
+    morphIndexTo(
         indexWord.length
     );
 
@@ -7699,6 +8163,30 @@ async function exitIndexToProject(
 
     currentVideoIndex =
         0;
+
+
+    /*
+        INDEX opens the complete project from its first runtime video.
+        Only after the project ends do we return to max-2 rotation.
+    */
+    fullProjectMode =
+        true;
+
+
+    fullProjectEndIndex =
+        currentProject().videos.length - 1;
+
+
+    normalSequenceProjectIndex =
+        null;
+
+
+    normalSequenceVideos =
+        [];
+
+
+    normalSequencePosition =
+        -1;
 
 
     syncProjectUrl(
@@ -7911,7 +8399,7 @@ window.addEventListener(
 
         if (
             indexDragDistance >
-            6
+            10
         ) {
 
             indexDragMoved =
@@ -8534,6 +9022,49 @@ async function loadProjects() {
             requestedRuntimeVideoIndex >= 0
                 ? requestedRuntimeVideoIndex
                 : 0;
+
+
+        ensureSeenNormalVideos();
+
+
+        if (
+            requestedProjectIndex >= 0
+        ) {
+
+            /*
+                External/deep project links are deliberate project opens:
+                continue through the remaining videos, then return to max-2.
+            */
+            fullProjectMode =
+                true;
+
+
+            fullProjectEndIndex =
+                currentProject().videos.length - 1;
+
+        }
+
+        else {
+
+            buildNormalProjectSequence(
+                currentProjectIndex
+            );
+
+
+            normalSequencePosition =
+                0;
+
+
+            currentVideoIndex =
+                normalSequenceVideos[0];
+
+
+            markNormalVideoSeen(
+                currentProjectIndex,
+                currentVideoIndex
+            );
+
+        }
 
 
         if (
