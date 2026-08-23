@@ -41,12 +41,13 @@ body {
     color: #000;
 
     font-family:
-        "aktiv-grotesk",
+        "freight-sans-pro",
         Arial,
         Helvetica,
         sans-serif;
 
     font-weight: 400;
+    font-style: normal;
 
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
@@ -54,6 +55,12 @@ body {
 
 button {
     font: inherit;
+}
+
+button,
+a {
+    font-family: inherit;
+    font-weight: inherit;
 }
 
 
@@ -69,30 +76,42 @@ button {
     /*
         TYPOGRAPHIC STATES
 
-        Default/static letters + digits:
-        Aktiv Grotesk Regular
+        Passive / default:
+        Freight Sans Regular
 
-        Morph/active letters + digits:
-        Aktiv Grotesk Extended Regular
+        Active / morph state:
+        Freight Macro Regular
+
+        Identity only:
+        Freight Text Italic
     */
-    --sans-font:
-        "aktiv-grotesk",
+    --base-font:
+        "freight-sans-pro",
         Arial,
         Helvetica,
         sans-serif;
 
-    --sans-weight:
+    --base-weight:
         400;
 
-    --morph-font:
-        "aktiv-grotesk-extended",
-        "aktiv-grotesk",
-        Arial,
-        Helvetica,
-        sans-serif;
+    --active-font:
+        "freight-macro-pro",
+        Georgia,
+        serif;
 
-    --morph-weight:
+    --active-weight:
         400;
+
+    --identity-font:
+        "freight-text-pro",
+        Georgia,
+        serif;
+
+    --identity-weight:
+        400;
+
+    --index-center-x:
+        50%;
 
     --side: 48px;
     --top: 32px;
@@ -156,6 +175,10 @@ body {
 .logo-name {
     position: absolute;
 
+    font-family: var(--identity-font);
+    font-weight: var(--identity-weight);
+    font-style: italic;
+
     top: 0;
     left: 0;
 
@@ -164,6 +187,10 @@ body {
 
 .logo-aybak {
     position: absolute;
+
+    font-family: var(--identity-font);
+    font-weight: var(--identity-weight);
+    font-style: italic;
 
     top: 17px;
     left: 0;
@@ -243,7 +270,7 @@ body {
     position: absolute;
 
     top: 50%;
-    left: 50%;
+    left: var(--index-center-x);
 
     transform:
         translate(-50%, -50%);
@@ -2495,7 +2522,7 @@ function prepareProject(
 ) {
 
     /*
-        Normalize NU–LOOK typography everywhere in the film site.
+        Normalize NU–LOOK typography everywhere.
     */
     project = {
         ...project,
@@ -2635,70 +2662,6 @@ function getAllCounterText(
    INTERACTIVE TYPOGRAPHY
    ===================================================== */
 
-function renderInteractiveTypography(
-    element,
-    text,
-    activePositions =
-        new Set()
-) {
-
-    const fragment =
-        document.createDocumentFragment();
-
-
-    Array.from(
-        String(
-            text
-        )
-    ).forEach(
-        (
-            character,
-            index
-        ) => {
-
-            const span =
-                document.createElement(
-                    "span"
-                );
-
-
-            span.textContent =
-                character;
-
-
-            const isActive =
-                activePositions.has(
-                    index
-                );
-
-
-            span.style.fontFamily =
-                isActive
-                    ? 'var(--morph-font)'
-                    : 'var(--sans-font)';
-
-
-            span.style.fontWeight =
-                isActive
-                    ? 'var(--morph-weight)'
-                    : 'var(--sans-weight)';
-
-
-            fragment.appendChild(
-                span
-            );
-
-        }
-    );
-
-
-    element.replaceChildren(
-        fragment
-    );
-
-}
-
-
 function getMorphPositions(
     text
 ) {
@@ -2778,6 +2741,74 @@ function renderCaseFromActivePositions(
         .join(
             ""
         );
+
+}
+
+
+function renderInteractiveTypography(
+    element,
+    text,
+    activePositions =
+        new Set()
+) {
+
+    const fragment =
+        document.createDocumentFragment();
+
+
+    Array.from(
+        String(
+            text
+        )
+    ).forEach(
+        (
+            character,
+            index
+        ) => {
+
+            const span =
+                document.createElement(
+                    "span"
+                );
+
+
+            span.textContent =
+                character;
+
+
+            const isActive =
+                activePositions.has(
+                    index
+                );
+
+
+            span.style.fontFamily =
+                isActive
+                    ? 'var(--active-font)'
+                    : 'var(--base-font)';
+
+
+            span.style.fontWeight =
+                isActive
+                    ? 'var(--active-weight)'
+                    : 'var(--base-weight)';
+
+
+            span.style.fontStyle =
+                "normal";
+
+
+            fragment.appendChild(
+                span
+            );
+
+        }
+    );
+
+
+    element.replaceChildren(
+        fragment
+    );
 
 }
 
@@ -2961,6 +2992,10 @@ function animateCase(
         );
 
 
+    /*
+        If this element was rendered by our typography renderer,
+        recover the current Macro prefix directly from the spans.
+    */
     if (
         children.length ===
         base.length
@@ -2985,7 +3020,7 @@ function animateCase(
             if (
                 span &&
                 span.style.fontFamily.includes(
-                    "--morph-font"
+                    "--active-font"
                 )
             ) {
 
@@ -3436,13 +3471,9 @@ function setLogoState(
             index
         ) => {
 
-            const isMorphUpper =
-                index <
-                state;
-
-
             element.textContent =
-                isMorphUpper
+                index <
+                state
                     ? logoUpper[
                         index
                     ]
@@ -3452,15 +3483,15 @@ function setLogoState(
 
 
             element.style.fontFamily =
-                isMorphUpper
-                    ? 'var(--morph-font)'
-                    : 'var(--sans-font)';
+                'var(--identity-font)';
 
 
             element.style.fontWeight =
-                isMorphUpper
-                    ? 'var(--morph-weight)'
-                    : 'var(--sans-weight)';
+                'var(--identity-weight)';
+
+
+            element.style.fontStyle =
+                "italic";
 
         }
     );
@@ -4026,6 +4057,45 @@ function getPhoneLandscapeArea() {
 
 
 /* =====================================================
+   INDEX / SOUND ALIGNMENT
+
+   SOUND sits in the exact horizontal center of #video-block.
+   INDEX follows that same center, including laptop layouts where
+   the film block shifts to avoid the left identity/contact area.
+   ===================================================== */
+
+function syncIndexToSoundCenter() {
+
+    const rect =
+        videoBlock.getBoundingClientRect();
+
+
+    if (
+        !rect.width
+    ) {
+
+        return;
+
+    }
+
+
+    const center =
+        rect.left +
+        rect.width / 2;
+
+
+    document
+        .documentElement
+        .style
+        .setProperty(
+            "--index-center-x",
+            `${center}px`
+        );
+
+}
+
+
+/* =====================================================
    FIT MAIN VIDEO
    ===================================================== */
 
@@ -4235,6 +4305,9 @@ function fitMainVideo() {
                 videoBlock.style.transform =
                     "translateX(-50%)";
 
+
+                syncIndexToSoundCenter();
+
             }
         );
 
@@ -4441,6 +4514,9 @@ function fitMainVideo() {
             "none";
 
 
+        syncIndexToSoundCenter();
+
+
         return;
 
     }
@@ -4594,6 +4670,9 @@ function fitMainVideo() {
 
     videoBlock.style.transform =
         "translate(-50%, -50%)";
+
+
+    syncIndexToSoundCenter();
 
 }
 
