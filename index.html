@@ -61,6 +61,13 @@ button {
     --font-size: 15px;
     --line-height: 1.15;
 
+    /*
+        NUMERAL ACTIVE STATE
+        Digits cannot uppercase, so during the same morph state
+        they gain a subtle amount of tracking instead.
+    */
+    --active-number-tracking: 0.055em;
+
     --side: 48px;
     --top: 32px;
 
@@ -2605,6 +2612,180 @@ function getAllCounterText(
 
 
 /* =====================================================
+   TYPOGRAPHY
+   ===================================================== */
+
+function renderInteractiveTypography(
+    element,
+    text,
+    activePositions =
+        new Set()
+) {
+
+    const fragment =
+        document.createDocumentFragment();
+
+
+    Array.from(
+        String(
+            text
+        )
+    ).forEach(
+        (
+            character,
+            index
+        ) => {
+
+            const span =
+                document.createElement(
+                    "span"
+                );
+
+
+            span.textContent =
+                character;
+
+
+            const isDigit =
+                /[0-9]/.test(
+                    character
+                );
+
+
+            const isActiveDigit =
+                isDigit &&
+                activePositions.has(
+                    index
+                );
+
+
+            /*
+                Keep Helvetica/Arial throughout.
+                Active digits only gain spacing; no font swap.
+            */
+            if (
+                isActiveDigit
+            ) {
+
+                span.style.letterSpacing =
+                    "var(--active-number-tracking)";
+
+            }
+
+
+            fragment.appendChild(
+                span
+            );
+
+        }
+    );
+
+
+    element.replaceChildren(
+        fragment
+    );
+
+}
+
+
+function renderBaseTypography(
+    element,
+    text
+) {
+
+    renderInteractiveTypography(
+        element,
+        text,
+        new Set()
+    );
+
+}
+
+
+function getMorphPositions(
+    text
+) {
+
+    return Array.from(
+        String(
+            text
+        )
+    )
+        .map(
+            (
+                character,
+                index
+            ) => {
+
+                const isLetter =
+                    character.toLowerCase() !==
+                    character.toUpperCase();
+
+
+                const isDigit =
+                    /[0-9]/.test(
+                        character
+                    );
+
+
+                return (
+                    isLetter ||
+                    isDigit
+                )
+                    ? index
+                    : -1;
+
+            }
+        )
+        .filter(
+            index =>
+                index >= 0
+        );
+
+}
+
+
+function renderCaseFromActivePositions(
+    baseText,
+    activePositions
+) {
+
+    return String(
+        baseText
+    )
+        .split(
+            ""
+        )
+        .map(
+            (
+                character,
+                index
+            ) => {
+
+                const isLetter =
+                    character.toLowerCase() !==
+                    character.toUpperCase();
+
+
+                return (
+                    isLetter &&
+                    activePositions.has(
+                        index
+                    )
+                )
+                    ? character.toUpperCase()
+                    : character.toLowerCase();
+
+            }
+        )
+        .join(
+            ""
+        );
+
+}
+
+
+/* =====================================================
    LETTER HELPERS
    ===================================================== */
 
@@ -2758,21 +2939,149 @@ function animateCase(
 ) {
 
     const base =
-        baseText
-            .toLowerCase();
+        String(
+            baseText
+        ).toLowerCase();
+
+
+    const positions =
+        getMorphPositions(
+            base
+        );
 
 
     const total =
-        getLetterPositions(
-            base
-        ).length;
+        positions.length;
 
 
-    const initial =
-        currentUpperPrefixCount(
-            element,
-            base
+    let initial =
+        0;
+
+
+    const children =
+        Array.from(
+            element.children
         );
+
+
+    if (
+        children.length ===
+        base.length
+    ) {
+
+        for (
+            let i = 0;
+            i < positions.length;
+            i++
+        ) {
+
+            const position =
+                positions[i];
+
+
+            const character =
+                base[
+                    position
+                ];
+
+
+            const span =
+                children[
+                    position
+                ];
+
+
+            const isDigit =
+                /[0-9]/.test(
+                    character
+                );
+
+
+            const isLetter =
+                character.toLowerCase() !==
+                character.toUpperCase();
+
+
+            const active =
+                isDigit
+                    ? (
+                        span &&
+                        !!span.style.letterSpacing
+                    )
+                    : (
+                        isLetter &&
+                        span &&
+                        span.textContent ===
+                            character.toUpperCase()
+                    );
+
+
+            if (
+                active
+            ) {
+
+                initial++;
+
+            }
+
+            else {
+
+                break;
+
+            }
+
+        }
+
+    }
+
+    else {
+
+        const currentText =
+            element.textContent;
+
+
+        for (
+            let i = 0;
+            i < positions.length;
+            i++
+        ) {
+
+            const position =
+                positions[i];
+
+
+            const character =
+                base[
+                    position
+                ];
+
+
+            const isLetter =
+                character.toLowerCase() !==
+                character.toUpperCase();
+
+
+            if (
+                isLetter &&
+                currentText[
+                    position
+                ] ===
+                    character.toUpperCase()
+            ) {
+
+                initial++;
+
+            }
+
+            else {
+
+                break;
+
+            }
+
+        }
+
+    }
 
 
     const target =
@@ -2781,16 +3090,39 @@ function animateCase(
             : 0;
 
 
+    function renderState(
+        state
+    ) {
+
+        const activePositions =
+            new Set(
+                positions.slice(
+                    0,
+                    state
+                )
+            );
+
+
+        renderInteractiveTypography(
+            element,
+            renderCaseFromActivePositions(
+                base,
+                activePositions
+            ),
+            activePositions
+        );
+
+    }
+
+
     if (
         initial ===
         target
     ) {
 
-        element.textContent =
-            renderPrefixCase(
-                base,
-                target
-            );
+        renderState(
+            target
+        );
 
 
         return Promise.resolve();
@@ -2831,11 +3163,9 @@ function animateCase(
                     );
 
 
-                element.textContent =
-                    renderPrefixCase(
-                        base,
-                        state
-                    );
+                renderState(
+                    state
+                );
 
 
                 if (
@@ -2851,11 +3181,9 @@ function animateCase(
 
                 else {
 
-                    element.textContent =
-                        renderPrefixCase(
-                            base,
-                            target
-                        );
+                    renderState(
+                        target
+                    );
 
 
                     resolve();
@@ -2898,8 +3226,10 @@ function morphSequential(
         nextText
     ) {
 
-        element.textContent =
-            nextText;
+        renderBaseTypography(
+            element,
+            nextText
+        );
 
 
         element.dataset.rawText =
@@ -3025,10 +3355,12 @@ function morphSequential(
                 }
 
 
-                element.textContent =
+                renderBaseTypography(
+                    element,
                     current
                         .join("")
-                        .trimEnd();
+                        .trimEnd()
+                );
 
 
                 if (
@@ -3044,8 +3376,10 @@ function morphSequential(
 
                 else {
 
-                    element.textContent =
-                        nextText;
+                    renderBaseTypography(
+                        element,
+                        nextText
+                    );
 
 
                     element.dataset.rawText =
@@ -3396,11 +3730,13 @@ async function updateMetadata(
         ];
 
 
-    projectCounter.textContent =
+    renderBaseTypography(
+        projectCounter,
         getCounterText(
             videoIndex,
             project.videos.length
-        );
+        )
+    );
 
 
     projectCounter.dataset.rawText =
@@ -7430,25 +7766,170 @@ function createCaseController(
     baseText
 ) {
 
+    const base =
+        String(
+            baseText
+        ).toLowerCase();
+
+
+    const positions =
+        getMorphPositions(
+            base
+        );
+
+
+    const total =
+        positions.length;
+
+
+    let state =
+        0;
+
+
+    let frameId =
+        null;
+
+
+    function render() {
+
+        const activePositions =
+            new Set(
+                positions.slice(
+                    0,
+                    state
+                )
+            );
+
+
+        renderInteractiveTypography(
+            element,
+            renderCaseFromActivePositions(
+                base,
+                activePositions
+            ),
+            activePositions
+        );
+
+    }
+
+
+    function animateTo(
+        target
+    ) {
+
+        if (
+            frameId !== null
+        ) {
+
+            cancelAnimationFrame(
+                frameId
+            );
+
+        }
+
+
+        const startState =
+            state;
+
+
+        if (
+            startState === target
+        ) {
+
+            render();
+
+
+            return;
+
+        }
+
+
+        const start =
+            performance.now();
+
+
+        function frame(
+            now
+        ) {
+
+            const progress =
+                Math.min(
+                    1,
+                    (
+                        now -
+                        start
+                    ) /
+                    CASE_DURATION
+                );
+
+
+            state =
+                Math.round(
+                    startState +
+                    (
+                        target -
+                        startState
+                    ) *
+                    progress
+                );
+
+
+            render();
+
+
+            if (
+                progress < 1
+            ) {
+
+                frameId =
+                    requestAnimationFrame(
+                        frame
+                    );
+
+            }
+
+            else {
+
+                state =
+                    target;
+
+
+                render();
+
+
+                frameId =
+                    null;
+
+            }
+
+        }
+
+
+        frameId =
+            requestAnimationFrame(
+                frame
+            );
+
+    }
+
+
+    render();
+
+
     return {
 
         upper() {
 
-            animateCase(
-                element,
-                baseText,
-                true
+            animateTo(
+                total
             );
 
         },
 
-
         lower() {
 
-            animateCase(
-                element,
-                baseText,
-                false
+            animateTo(
+                0
             );
 
         }
@@ -7806,11 +8287,29 @@ function renderIndexWord(
         state;
 
 
-    indexButton.textContent =
-        renderPrefixCase(
-            indexWord,
-            state
+    const positions =
+        getMorphPositions(
+            indexWord
         );
+
+
+    const activePositions =
+        new Set(
+            positions.slice(
+                0,
+                state
+            )
+        );
+
+
+    renderInteractiveTypography(
+        indexButton,
+        renderCaseFromActivePositions(
+            indexWord,
+            activePositions
+        ),
+        activePositions
+    );
 
 }
 
