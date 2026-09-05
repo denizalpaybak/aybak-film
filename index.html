@@ -1746,101 +1746,30 @@ body.aybak-end-card-active {
 
 
 /* =====================================================
-   V26 — SLIDE ALIGNMENT + MOBILE SPACE USE
+   V28 — FIXED CORNER META / VIDEO-WIDTH CONTROLS
    ===================================================== */
 
 /*
-    On slide/view-all, the project copy is a viewport-level bottom bar.
-    Its left/right axes are exactly the same as Denizalp / INDEX above,
-    and its bottom gap equals --top.
-*/
-body:not(.phone-landscape) #project-meta {
-    position: fixed !important;
-    left: var(--side) !important;
-    right: var(--side) !important;
-    bottom: var(--top) !important;
-    width: auto !important;
-    margin: 0 !important;
-    align-self: auto !important;
-}
-
-/* Exact right edge for both lines. */
-body:not(.phone-landscape) #view-all-button,
-body:not(.phone-landscape) #project-counter {
-    justify-self: end !important;
-    text-align: right !important;
-    padding-left: 0 !important;
-}
-
-/*
-    The controls remain video-width and directly beneath the film.
-    The metadata is one line lower, but independent from video width.
-*/
-body:not(.phone-landscape) #controls {
-    margin-top:
-        calc(
-            var(--font-size) *
-            var(--line-height)
-        ) !important;
-}
-
-/*
-    Phone portrait: use the actual logo as the upper obstacle,
-    not the now-hidden contact block. This gives the film and
-    View All grid back the unused vertical space.
-*/
-body.phone-portrait #project-all-view {
-    left: var(--side) !important;
-    right: var(--side) !important;
-}
-
-/*
-    Phone landscape: preserve the existing absolute player system,
-    while keeping metadata aligned to the viewport edges.
-*/
-body.phone-landscape #project-meta {
-    left: var(--side) !important;
-    right: var(--side) !important;
-    width: auto !important;
-}
-
-/* Extra safe-area hardening for the black AYBAK card. */
-html.aybak-end-card-active,
-body.aybak-end-card-active {
-    background: #000 !important;
-}
-
-body.aybak-end-card-active {
-    box-shadow:
-        0 0 0 256px #000 !important;
-}
-
-
-
-
-/* =====================================================
-   V27 — CORNER META + MAXIMUM PORTRAIT PLAYER
-   ===================================================== */
-
-/*
-    The lower metadata is a permanent viewport bar:
-    - title/date share Denizalp's left axis
-    - view all/count share INDEX's right axis
-    - lower inset equals the upper inset (--top)
-    It stays in exactly the same place in Slide and View All.
+    IMPORTANT:
+    #project-meta now lives outside the transformed #video-block.
+    It can therefore actually use viewport-fixed coordinates.
 */
 #project-meta,
-body.phone-landscape #project-meta,
-body.phone-portrait #project-meta {
+body.phone-portrait #project-meta,
+body.phone-landscape #project-meta {
     position: fixed !important;
+    top: auto !important;
     left: var(--side) !important;
     right: var(--side) !important;
     bottom: var(--top) !important;
-    top: auto !important;
+
     width: auto !important;
     margin: 0 !important;
-    align-self: auto !important;
     transform: none !important;
+    align-self: auto !important;
+
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-rows: auto auto !important;
 }
 
 #project-title,
@@ -1856,27 +1785,41 @@ body.phone-portrait #project-meta {
     padding-left: 0 !important;
 }
 
-/* Slide: view all on first line, film count below. */
+/* Slide: VIEW ALL / x films */
 body:not(.project-all-mode) #view-all-button {
+    grid-column: 2 !important;
     grid-row: 1 !important;
 }
+
 body:not(.project-all-mode) #project-counter {
+    grid-column: 2 !important;
     grid-row: 2 !important;
 }
 
-/* View All: all (x films) on first line, close below. */
+/* View All: ALL (x films) / CLOSE — same exact position */
 body.project-all-mode #project-counter {
+    grid-column: 2 !important;
     grid-row: 1 !important;
 }
+
 body.project-all-mode #view-all-button {
+    grid-column: 2 !important;
     grid-row: 2 !important;
 }
 
 /*
-    Portrait control row remains tied to the video width.
-    Its only vertical gap from the film is one text line.
+    The only bar tied to video width is previous / sound / next.
+    It sits exactly one text-line below the video.
 */
-body.phone-portrait #controls {
+#controls,
+body.phone-portrait #controls,
+body.phone-landscape #controls {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+
     width: 100% !important;
     margin-top:
         calc(
@@ -1885,20 +1828,42 @@ body.phone-portrait #controls {
         ) !important;
 }
 
+/* Undo the old phone-landscape absolute media system. */
+body.phone-landscape #video-block {
+    height: auto !important;
+}
+
+body.phone-landscape #media-holder {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+}
+
 /*
-    View All occupies every safe pixel between the top logo area
-    and the fixed lower metadata.
+    View All uses the same left/right safe axes as the four-corner text.
 */
-body.phone-portrait #project-all-view {
+#project-all-view,
+body.phone-portrait #project-all-view,
+body.phone-landscape #project-all-view {
     left: var(--side) !important;
     right: var(--side) !important;
 }
 
-/* Black-card safe-area hardening. */
+/* Keep the black end-card black beyond iOS safe-area/layout viewport edges. */
 html.aybak-end-card-active,
-body.aybak-end-card-active,
-body.aybak-end-card-active::before {
+body.aybak-end-card-active {
     background: #000 !important;
+}
+
+#aybak-end-card::before {
+    content: "";
+    position: fixed;
+    inset: -256px;
+    background: #000;
+    z-index: -1;
+    pointer-events: none;
 }
 
 
@@ -2011,24 +1976,6 @@ body.aybak-end-card-active::before {
         </div>
 
 
-        <div id="project-meta">
-
-            <span id="project-title"></span>
-
-            <span id="project-counter"></span>
-
-            <span id="project-date"></span>
-
-            <button
-                id="view-all-button"
-                type="button"
-            >
-                view all
-            </button>
-
-        </div>
-
-
         <div id="controls">
 
             <button
@@ -2060,6 +2007,24 @@ body.aybak-end-card-active::before {
         </div>
 
     </div>
+
+<div id="project-meta">
+
+            <span id="project-title"></span>
+
+            <span id="project-counter"></span>
+
+            <span id="project-date"></span>
+
+            <button
+                id="view-all-button"
+                type="button"
+            >
+                view all
+            </button>
+
+        </div>
+
 
 </div>
 
@@ -5529,47 +5494,22 @@ function togglePlayback() {
 
 function getPhonePortraitSlideBounds() {
 
-    /*
-        White-page contact is hidden now, so the real upper visual
-        obstacle is the Denizalp Aybak logo itself.
-    */
-    const logoRect =
-        logo.getBoundingClientRect();
+    const infoRect =
+        info.getBoundingClientRect();
 
 
-    const metaRect =
-        projectMeta.getBoundingClientRect();
-
-
-    const lineGap =
-        (
-            parseFloat(
-                getComputedStyle(
-                    document.documentElement
-                ).getPropertyValue(
-                    "--font-size"
-                )
-            ) || 13
-        ) *
-        (
-            parseFloat(
-                getComputedStyle(
-                    document.documentElement
-                ).getPropertyValue(
-                    "--line-height"
-                )
-            ) || 1.15
-        );
+    const indexRect =
+        indexButton.getBoundingClientRect();
 
 
     const top =
-        logoRect.bottom +
-        lineGap;
+        infoRect.bottom +
+        20;
 
 
     const bottom =
-        metaRect.top -
-        lineGap;
+        indexRect.top -
+        14;
 
 
     return {
@@ -5755,6 +5695,12 @@ function fitMainVideo() {
     }
 
 
+    const rootStyle =
+        getComputedStyle(
+            document.documentElement
+        );
+
+
     const vw =
         window.innerWidth;
 
@@ -5765,105 +5711,95 @@ function fitMainVideo() {
 
     const side =
         parseFloat(
-            getComputedStyle(
-                document.documentElement
-            ).getPropertyValue(
+            rootStyle.getPropertyValue(
                 "--side"
             )
         ) || 48;
 
 
-    let mediaWidth;
-    let mediaHeight;
-    let blockWidth;
+    const fontSize =
+        parseFloat(
+            rootStyle.getPropertyValue(
+                "--font-size"
+            )
+        ) || 15;
 
 
-    /* =================================================
-       PHONE PORTRAIT
-       ================================================= */
+    const lineHeight =
+        parseFloat(
+            rootStyle.getPropertyValue(
+                "--line-height"
+            )
+        ) || 1.15;
+
+
+    const lineGap =
+        fontSize *
+        lineHeight;
+
+
+    const logoRect =
+        logo.getBoundingClientRect();
+
+
+    const metaRect =
+        projectMeta.getBoundingClientRect();
+
+
+    const controlsHeight =
+        Math.max(
+            controls.getBoundingClientRect().height,
+            lineGap
+        );
+
+
+    /*
+        Permanent vertical rhythm:
+
+        logo
+        1 line
+        VIDEO
+        1 line
+        previous / sound / next
+        1 line
+        fixed title/date + view-all/count
+
+        Metadata itself is no longer part of #video-block.
+    */
+    const topBoundary =
+        logoRect.bottom +
+        lineGap;
+
+
+    const videoBlockBottom =
+        metaRect.top -
+        lineGap;
+
+
+    const maxMediaHeightFromUi =
+        Math.max(
+            80,
+            videoBlockBottom -
+            topBoundary -
+            controlsHeight -
+            lineGap
+        );
+
+
+    let maxMediaWidth;
+    let maxMediaHeight;
+    let centerX;
+
 
     if (
-        isPhonePortrait()
+        isPhoneLayout()
     ) {
 
-        const computedRoot =
-            getComputedStyle(
-                document.documentElement
-            );
-
-
-        const fontSize =
-            parseFloat(
-                computedRoot.getPropertyValue(
-                    "--font-size"
-                )
-            ) || 13;
-
-
-        const lineHeight =
-            parseFloat(
-                computedRoot.getPropertyValue(
-                    "--line-height"
-                )
-            ) || 1.15;
-
-
-        const lineGap =
-            fontSize *
-            lineHeight;
-
-
-        const logoRect =
-            logo.getBoundingClientRect();
-
-
-        const metaRect =
-            projectMeta.getBoundingClientRect();
-
-
         /*
-            Exact available slide field:
-
-            logo
-            1 text-line breathing room
-            VIDEO
-            1 text-line
-            previous / sound / next
-            1 text-line
-            fixed metadata
-
-            Width is always the full safe width first. Only genuinely
-            portrait media is reduced when the vertical collision limit
-            requires it.
+            Mobile starts at the FULL safe viewport width.
+            Only vertical collision is allowed to make it narrower.
         */
-        const mediaTop =
-            logoRect.bottom +
-            lineGap;
-
-
-        const controlsHeight =
-            Math.max(
-                controls.offsetHeight,
-                fontSize * lineHeight
-            );
-
-
-        const controlsBottom =
-            metaRect.top -
-            lineGap;
-
-
-        const maxMediaHeight =
-            Math.max(
-                80,
-                controlsBottom -
-                controlsHeight -
-                lineGap -
-                mediaTop
-            );
-
-
-        const maxMediaWidth =
+        maxMediaWidth =
             Math.max(
                 80,
                 vw -
@@ -5871,400 +5807,84 @@ function fitMainVideo() {
             );
 
 
-        mediaWidth =
-            maxMediaWidth;
+        maxMediaHeight =
+            maxMediaHeightFromUi;
 
 
-        mediaHeight =
-            mediaWidth /
-            ratio;
-
-
-        /*
-            Start from maximum safe width. If that would collide
-            vertically, reduce proportionally until it fits.
-        */
-        if (
-            mediaHeight >
-            maxMediaHeight
-        ) {
-
-            mediaHeight =
-                maxMediaHeight;
-
-
-            mediaWidth =
-                mediaHeight *
-                ratio;
-
-        }
-
-
-        blockWidth =
-            mediaWidth;
-
-
-        videoBlock.style.height =
-            "";
-
-
-        videoBlock.style.width =
-            `${blockWidth}px`;
-
-
-        mediaHolder.style.width =
-            `${blockWidth}px`;
-
-
-        mediaHolder.style.height =
-            `${mediaHeight}px`;
-
-
-        mediaHolder.style.left =
-            "";
-
-
-        mediaHolder.style.right =
-            "";
-
-
-        mediaHolder.style.top =
-            "";
-
-
-        mediaHolder.style.bottom =
-            "";
-
-
-        video.style.width =
-            `${mediaWidth}px`;
-
-
-        video.style.height =
-            `${mediaHeight}px`;
-
-
-        /*
-            Bottom-align the video+controls block to the metadata.
-            This makes the second bar exactly one text line below
-            the controls, regardless of viewport height.
-        */
-        requestAnimationFrame(
-            () => {
-
-                const blockHeight =
-                    videoBlock
-                        .getBoundingClientRect()
-                        .height;
-
-
-                const desiredBottom =
-                    metaRect.top -
-                    lineGap;
-
-
-                const top =
-                    Math.max(
-                        mediaTop,
-                        desiredBottom -
-                        blockHeight
-                    );
-
-
-                videoBlock.style.left =
-                    "50%";
-
-
-                videoBlock.style.top =
-                    `${Math.round(
-                        top
-                    )}px`;
-
-
-                videoBlock.style.transform =
-                    "translateX(-50%)";
-
-            }
-        );
-
-
-        return;
+        centerX =
+            vw / 2;
 
     }
 
-
-    /* =================================================
-       PHONE LANDSCAPE
-       ================================================= */
-
-    if (
-        isPhoneLandscape()
-    ) {
-
-        const area =
-            getPhoneLandscapeArea();
-
+    else {
 
         /*
-            Match photography landscape:
-
-            - center media inside the interval between
-              contact and photography
-            - keep metadata / controls full safe-width
-            - allow the video to extend lower so its bottom
-              visually meets the view-all row
+            Keep the working desktop horizontal sizing logic.
+            The hidden white-page contact/photography anchors remain
+            only as geometry references, exactly as before.
         */
-
-        const metaRect =
-            projectMeta.getBoundingClientRect();
-
-
-        /*
-            Use the ENTIRE horizontal interval between the
-            contact block and the photography switch.
-
-            Vertically, the media may grow from the safe top
-            boundary all the way down to just above the
-            title / counter / view-all row. This is the same
-            space-efficiency visible in the photography
-            landscape reference.
-        */
-
-        const mediaTopBoundary =
-            18;
+        const infoRect =
+            info.getBoundingClientRect();
 
 
-        /*
-            Photography landscape lets the artwork continue
-            vertically alongside the outer metadata columns.
-            Therefore the media does NOT need to stop above
-            the metadata row. Its lower edge may reach the
-            bottom of the view-all row itself. This uses the
-            otherwise empty centre area without creating a
-            collision, because title/date and counter/view-all
-            live at the far left and far right.
-        */
+        const switchRect =
+            sectionSwitch.getBoundingClientRect();
 
-        const mediaBottomBoundary =
-            Math.min(
-                window.innerHeight - 54,
-                metaRect.bottom + 2
+
+        const safeGap =
+            Math.max(
+                24,
+                side * 0.5
             );
 
 
-        const maxMediaWidth =
-            area.width;
+        const safeLeft =
+            Math.max(
+                side,
+                infoRect.right + safeGap
+            );
 
 
-        const maxMediaHeight =
+        const safeRight =
+            Math.min(
+                vw - side,
+                switchRect.left - safeGap
+            );
+
+
+        const safeWidth =
             Math.max(
                 120,
-                mediaBottomBoundary -
-                mediaTopBoundary
+                safeRight - safeLeft
             );
 
 
-        mediaWidth =
-            maxMediaWidth;
+        centerX =
+            safeLeft +
+            safeWidth / 2;
 
 
-        mediaHeight =
-            mediaWidth /
-            ratio;
+        maxMediaWidth =
+            Math.min(
+                vw * 0.76,
+                safeWidth
+            );
 
 
-        if (
-            mediaHeight >
-            maxMediaHeight
-        ) {
-
-            mediaHeight =
-                maxMediaHeight;
-
-
-            mediaWidth =
-                mediaHeight *
-                ratio;
-
-        }
-
-
-        if (
-            ratio <
-            1
-        ) {
-
-            mediaHeight =
-                Math.min(
-                    maxMediaHeight,
-                    window.innerHeight * 0.73
-                );
-
-
-            mediaWidth =
-                mediaHeight *
-                ratio;
-
-
-            if (
-                mediaWidth >
-                maxMediaWidth
-            ) {
-
-                mediaWidth =
-                    maxMediaWidth;
-
-
-                mediaHeight =
-                    mediaWidth /
-                    ratio;
-
-            }
-
-        }
-
-
-        blockWidth =
-            window.innerWidth -
-            48;
-
-
-        videoBlock.style.width =
-            `${blockWidth}px`;
-
-
-        videoBlock.style.height =
-            "100%";
-
-
-        mediaHolder.style.width =
-            `${area.width}px`;
-
-
-        mediaHolder.style.height =
-            `${mediaHeight}px`;
-
-
-        mediaHolder.style.left =
-            `${area.left - 24}px`;
-
-
-        mediaHolder.style.right =
-            "auto";
-
-
-        /*
-            Anchor the holder so the video's lower boundary
-            sits directly above the metadata/view-all row.
-        */
-
-        mediaHolder.style.top =
-            `${Math.max(
-                mediaTopBoundary,
-                mediaBottomBoundary -
-                mediaHeight
-            )}px`;
-
-
-        mediaHolder.style.bottom =
-            "auto";
-
-
-        video.style.width =
-            `${mediaWidth}px`;
-
-
-        video.style.height =
-            `${mediaHeight}px`;
-
-
-        videoBlock.style.left =
-            "24px";
-
-
-        videoBlock.style.top =
-            "0px";
-
-
-        videoBlock.style.transform =
-            "none";
-
-
-        return;
+        maxMediaHeight =
+            Math.min(
+                vh * 0.72,
+                maxMediaHeightFromUi
+            );
 
     }
 
 
-    /* =================================================
-       DESKTOP / LAPTOP
-       ================================================= */
-
-    /*
-        Keep the film inside the real horizontal safe field between
-        the left identity/contact block and the photography switch.
-
-        Wide desktops remain visually centred. On narrower laptop
-        screens a wide film shrinks and recentres inside the available
-        field instead of running underneath the contact information.
-    */
-
-    const infoRect =
-        info.getBoundingClientRect();
-
-
-    const switchRect =
-        sectionSwitch.getBoundingClientRect();
-
-
-    const safeGap =
-        Math.max(
-            24,
-            side * 0.5
-        );
-
-
-    const safeLeft =
-        Math.max(
-            side,
-            infoRect.right + safeGap
-        );
-
-
-    const safeRight =
-        Math.min(
-            vw - side,
-            switchRect.left - safeGap
-        );
-
-
-    const safeWidth =
-        Math.max(
-            120,
-            safeRight - safeLeft
-        );
-
-
-    const safeCenterX =
-        safeLeft +
-        safeWidth / 2;
-
-
-    const maxMediaWidth =
-        Math.min(
-            vw * 0.76,
-            safeWidth
-        );
-
-
-    const maxMediaHeight =
-        vh * 0.72;
-
-
-    mediaWidth =
+    let mediaWidth =
         maxMediaWidth;
 
 
-    mediaHeight =
+    let mediaHeight =
         mediaWidth /
         ratio;
 
@@ -6285,8 +5905,23 @@ function fitMainVideo() {
     }
 
 
-    blockWidth =
-        mediaWidth;
+    /*
+        Never exceed the safe width after a height-driven calculation.
+    */
+    if (
+        mediaWidth >
+        maxMediaWidth
+    ) {
+
+        mediaWidth =
+            maxMediaWidth;
+
+
+        mediaHeight =
+            mediaWidth /
+            ratio;
+
+    }
 
 
     videoBlock.style.height =
@@ -6294,21 +5929,13 @@ function fitMainVideo() {
 
 
     videoBlock.style.width =
-        `${blockWidth}px`;
+        `${mediaWidth}px`;
 
 
-    mediaHolder.style.width =
-        `${blockWidth}px`;
+    mediaHolder.style.position =
+        "";
 
 
-    mediaHolder.style.height =
-        `${mediaHeight}px`;
-
-
-    /*
-        Remove any inline geometry left by phone-landscape mode when
-        crossing responsive breakpoints or rotating the device.
-    */
     mediaHolder.style.left =
         "";
 
@@ -6325,6 +5952,14 @@ function fitMainVideo() {
         "";
 
 
+    mediaHolder.style.width =
+        `${mediaWidth}px`;
+
+
+    mediaHolder.style.height =
+        `${mediaHeight}px`;
+
+
     video.style.width =
         `${mediaWidth}px`;
 
@@ -6333,23 +5968,62 @@ function fitMainVideo() {
         `${mediaHeight}px`;
 
 
-    videoBlock.style.left =
-        `${safeCenterX}px`;
+    controls.style.width =
+        `${mediaWidth}px`;
 
 
-    videoBlock.style.top =
-        "50%";
+    /*
+        Bottom-anchor the video+controls block so the controls and
+        fixed metadata are ALWAYS exactly one line apart.
+    */
+    requestAnimationFrame(
+        () => {
+
+            const blockHeight =
+                videoBlock
+                    .getBoundingClientRect()
+                    .height;
 
 
-    videoBlock.style.transform =
-        "translate(-50%, -50%)";
+            const metaTop =
+                projectMeta
+                    .getBoundingClientRect()
+                    .top;
 
 
+            const desiredBottom =
+                metaTop -
+                lineGap;
 
-    syncIndexToSoundCenter();
+
+            const top =
+                Math.max(
+                    topBoundary,
+                    desiredBottom -
+                    blockHeight
+                );
+
+
+            videoBlock.style.left =
+                `${centerX}px`;
+
+
+            videoBlock.style.top =
+                `${Math.round(
+                    top
+                )}px`;
+
+
+            videoBlock.style.transform =
+                "translateX(-50%)";
+
+
+            syncIndexToSoundCenter();
+
+        }
+    );
 
 }
-
 
 /* =====================================================
    LOAD MAIN VIDEO
@@ -7788,133 +7462,60 @@ function syncProjectAllBounds() {
     }
 
 
-    /*
-        LANDSCAPE:
-        match photography's broad central field.
-
-        Previews are allowed to spread almost edge-to-edge
-        horizontally. The info block remains above them,
-        while the title/date + all/close row remains below.
-    */
-
-    if (
-        isPhoneLandscape()
-    ) {
-
-        const infoRect =
-            info.getBoundingClientRect();
-
-
-        const metaRect =
-            projectMeta.getBoundingClientRect();
-
-
-        const top =
-            Math.ceil(
-                infoRect.bottom + 8
-            );
-
-
-        const bottom =
-            Math.floor(
-                metaRect.top - 8
-            );
-
-
-        projectAllView.style.left =
-            "24px";
-
-
-        projectAllView.style.right =
-            "24px";
-
-
-        projectAllView.style.top =
-            `${top}px`;
-
-
-        projectAllView.style.height =
-            `${Math.max(
-                82,
-                bottom - top
-            )}px`;
-
-
-        return;
-
-    }
-
-
-    const infoRect =
-        (
-            isPhonePortrait()
-                ? logo
-                : info
-        )
-            .getBoundingClientRect();
-
-
-    const metaRect =
-        projectMeta
-            .getBoundingClientRect();
-
-
-    const side =
-        parseFloat(
-            getComputedStyle(
-                document.documentElement
-            ).getPropertyValue(
-                "--side"
-            )
-        ) || 48;
-
-
     const rootStyle =
         getComputedStyle(
             document.documentElement
         );
 
 
-    const portraitLineGap =
-        (
-            parseFloat(
-                rootStyle.getPropertyValue(
-                    "--font-size"
-                )
-            ) || 13
-        ) *
-        (
-            parseFloat(
-                rootStyle.getPropertyValue(
-                    "--line-height"
-                )
-            ) || 1.15
-        );
+    const side =
+        parseFloat(
+            rootStyle.getPropertyValue(
+                "--side"
+            )
+        ) || 48;
 
 
-    const topGap =
-        isPhonePortrait()
-            ? portraitLineGap
-            : 14;
+    const fontSize =
+        parseFloat(
+            rootStyle.getPropertyValue(
+                "--font-size"
+            )
+        ) || 15;
 
 
-    const bottomGap =
-        isPhonePortrait()
-            ? portraitLineGap
-            : 14;
+    const lineHeight =
+        parseFloat(
+            rootStyle.getPropertyValue(
+                "--line-height"
+            )
+        ) || 1.15;
+
+
+    const lineGap =
+        fontSize *
+        lineHeight;
+
+
+    const logoRect =
+        logo.getBoundingClientRect();
+
+
+    const metaRect =
+        projectMeta.getBoundingClientRect();
 
 
     const top =
         Math.ceil(
-            infoRect.bottom +
-            topGap
+            logoRect.bottom +
+            lineGap
         );
 
 
     const bottom =
         Math.floor(
             metaRect.top -
-            bottomGap
+            lineGap
         );
 
 
@@ -7938,7 +7539,6 @@ function syncProjectAllBounds() {
         )}px`;
 
 }
-
 
 /* =====================================================
    VIEW ALL RATIOS
