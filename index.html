@@ -1743,6 +1743,79 @@ body.aybak-end-card-active {
 }
 
 
+
+
+/* =====================================================
+   V26 — SLIDE ALIGNMENT + MOBILE SPACE USE
+   ===================================================== */
+
+/*
+    On slide/view-all, the project copy is a viewport-level bottom bar.
+    Its left/right axes are exactly the same as Denizalp / INDEX above,
+    and its bottom gap equals --top.
+*/
+body:not(.phone-landscape) #project-meta {
+    position: fixed !important;
+    left: var(--side) !important;
+    right: var(--side) !important;
+    bottom: var(--top) !important;
+    width: auto !important;
+    margin: 0 !important;
+    align-self: auto !important;
+}
+
+/* Exact right edge for both lines. */
+body:not(.phone-landscape) #view-all-button,
+body:not(.phone-landscape) #project-counter {
+    justify-self: end !important;
+    text-align: right !important;
+    padding-left: 0 !important;
+}
+
+/*
+    The controls remain video-width and directly beneath the film.
+    The metadata is one line lower, but independent from video width.
+*/
+body:not(.phone-landscape) #controls {
+    margin-top:
+        calc(
+            var(--font-size) *
+            var(--line-height)
+        ) !important;
+}
+
+/*
+    Phone portrait: use the actual logo as the upper obstacle,
+    not the now-hidden contact block. This gives the film and
+    View All grid back the unused vertical space.
+*/
+body.phone-portrait #project-all-view {
+    left: var(--side) !important;
+    right: var(--side) !important;
+}
+
+/*
+    Phone landscape: preserve the existing absolute player system,
+    while keeping metadata aligned to the viewport edges.
+*/
+body.phone-landscape #project-meta {
+    left: var(--side) !important;
+    right: var(--side) !important;
+    width: auto !important;
+}
+
+/* Extra safe-area hardening for the black AYBAK card. */
+html.aybak-end-card-active,
+body.aybak-end-card-active {
+    background: #000 !important;
+}
+
+body.aybak-end-card-active {
+    box-shadow:
+        0 0 0 256px #000 !important;
+}
+
+
 </style>
 
 </head>
@@ -5370,22 +5443,47 @@ function togglePlayback() {
 
 function getPhonePortraitSlideBounds() {
 
-    const infoRect =
-        info.getBoundingClientRect();
+    /*
+        White-page contact is hidden now, so the real upper visual
+        obstacle is the Denizalp Aybak logo itself.
+    */
+    const logoRect =
+        logo.getBoundingClientRect();
 
 
-    const indexRect =
-        indexButton.getBoundingClientRect();
+    const metaRect =
+        projectMeta.getBoundingClientRect();
+
+
+    const lineGap =
+        (
+            parseFloat(
+                getComputedStyle(
+                    document.documentElement
+                ).getPropertyValue(
+                    "--font-size"
+                )
+            ) || 13
+        ) *
+        (
+            parseFloat(
+                getComputedStyle(
+                    document.documentElement
+                ).getPropertyValue(
+                    "--line-height"
+                )
+            ) || 1.15
+        );
 
 
     const top =
-        infoRect.bottom +
-        20;
+        logoRect.bottom +
+        lineGap;
 
 
     const bottom =
-        indexRect.top -
-        14;
+        metaRect.top -
+        lineGap;
 
 
     return {
@@ -5611,10 +5709,35 @@ function fitMainVideo() {
             side * 2;
 
 
+        /*
+            projectMeta is now fixed to the viewport bottom and therefore
+            does not consume height inside #video-block. Reserve only the
+            controls plus the two one-line gaps around that controls row.
+        */
+        const lineGap =
+            (
+                parseFloat(
+                    getComputedStyle(
+                        document.documentElement
+                    ).getPropertyValue(
+                        "--font-size"
+                    )
+                ) || 13
+            ) *
+            (
+                parseFloat(
+                    getComputedStyle(
+                        document.documentElement
+                    ).getPropertyValue(
+                        "--line-height"
+                    )
+                ) || 1.15
+            );
+
+
         const interfaceHeight =
-            projectMeta.offsetHeight +
             controls.offsetHeight +
-            25;
+            lineGap * 2;
 
 
         const maxMediaHeight =
@@ -5663,7 +5786,7 @@ function fitMainVideo() {
             mediaHeight =
                 Math.min(
                     maxMediaHeight,
-                    vh * 0.70
+                    vh * 0.82
                 );
 
 
@@ -5735,9 +5858,14 @@ function fitMainVideo() {
                     );
 
 
+                /*
+                    Keep only a tiny optical centering allowance. The goal
+                    is to use the available portrait field as fully as
+                    possible without colliding with the fixed metadata.
+                */
                 const top =
                     bounds.top +
-                    free * 0.46;
+                    free * 0.10;
 
 
                 videoBlock.style.left =
@@ -7615,7 +7743,11 @@ function syncProjectAllBounds() {
 
 
     const infoRect =
-        info
+        (
+            isPhonePortrait()
+                ? logo
+                : info
+        )
             .getBoundingClientRect();
 
 
@@ -7636,13 +7768,13 @@ function syncProjectAllBounds() {
 
     const topGap =
         isPhonePortrait()
-            ? 10
+            ? 6
             : 14;
 
 
     const bottomGap =
         isPhonePortrait()
-            ? 10
+            ? 6
             : 14;
 
 
