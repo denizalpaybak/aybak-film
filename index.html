@@ -1598,6 +1598,151 @@ body.aybak-end-card-active .aybak-end-card-copy {
     }
 }
 
+
+
+/* =====================================================
+   V25 — REQUESTED FILM UI ADJUSTMENTS ONLY
+   ===================================================== */
+
+/*
+    Keep the original white-page contact + photography nodes in the
+    layout tree for the film player's existing geometry calculations,
+    but make them completely invisible/non-interactive.
+*/
+.info > .contact,
+.info > .social,
+body > .section-switch {
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+/*
+    Slide order:
+    video
+    one-line gap
+    previous / sound / next (still exactly video-width)
+    one-line gap
+    project title/date at viewport left + view all/count at viewport right
+*/
+#media-holder {
+    order: 0;
+}
+
+#controls {
+    order: 1;
+    margin-top:
+        calc(
+            var(--font-size) *
+            var(--line-height)
+        ) !important;
+}
+
+#project-meta {
+    order: 2;
+    width:
+        calc(
+            100vw -
+            var(--side) * 2
+        ) !important;
+    align-self: center !important;
+    margin-top:
+        calc(
+            var(--font-size) *
+            var(--line-height)
+        ) !important;
+}
+
+/* Keep the action stack on the right: view all above the film count. */
+#view-all-button {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+}
+
+#project-counter {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    justify-self: end !important;
+    text-align: right !important;
+}
+
+/* In View All: all (x films) above close. */
+body.project-all-mode #project-counter {
+    grid-row: 1 !important;
+}
+
+body.project-all-mode #view-all-button {
+    grid-row: 2 !important;
+}
+
+/*
+    Phone landscape uses absolute bars in the original working film layout.
+    Swap only their vertical positions; do not alter the player geometry code.
+*/
+@media
+    (max-height: 650px)
+    and (orientation: landscape)
+    and (max-width: 1000px) {
+
+    #controls {
+        bottom: 112px !important;
+        margin-top: 0 !important;
+    }
+
+    #project-meta {
+        bottom: 72px !important;
+        margin-top: 0 !important;
+    }
+
+}
+
+/*
+    Desktop/tablet index: use at least three text columns when there are
+    enough projects. The JS still increases columns further if required.
+*/
+@media
+    (min-width: 1001px),
+    (min-width: 601px) and (min-height: 651px) {
+
+    #index-scroller {
+        right:
+            calc(
+                var(--side) +
+                min(36vw, 560px) +
+                clamp(24px, 3vw, 54px)
+            ) !important;
+    }
+
+}
+
+/* Black-card photography link is a plain white link, never underlined. */
+.aybak-end-card-link,
+.aybak-end-card-link:hover,
+.aybak-end-card-link:focus,
+.aybak-end-card-link:active {
+    color: #fff;
+    text-decoration: none !important;
+}
+
+/*
+    iOS/Safari landscape safe-area hardening.
+    The oversized fixed pseudo background covers beyond the layout viewport,
+    while html/body are also black during the end-card state.
+*/
+#aybak-end-card::before {
+    content: "";
+    position: fixed;
+    inset: -128px;
+    z-index: -1;
+    background: #000;
+    pointer-events: none;
+}
+
+html.aybak-end-card-active,
+body.aybak-end-card-active {
+    background: #000 !important;
+}
+
+
 </style>
 
 </head>
@@ -1635,9 +1780,55 @@ body.aybak-end-card-active .aybak-end-card-copy {
         </span>
 
     </div>
+
+    <div class="contact">
+        <a
+            href="mailto:d@denizalpaybak.com"
+            target="_blank"
+            rel="noopener"
+        >
+            d@denizalpaybak.com
+        </a>
+    </div>
+
+    <div class="social">
+        <a
+            href="https://www.instagram.com/denizalpaybak/"
+            target="_blank"
+            rel="noopener"
+        >
+            instagram @denizalpaybak
+        </a>
+
+        <a
+            href="https://models.com/people/denizalp-aybak"
+            target="_blank"
+            rel="noopener"
+        >
+            models.com
+        </a>
+    </div>
+
 </div>
 
 
+<!-- ===================================================
+     PHOTOGRAPHY — GEOMETRY ANCHOR
+     Kept invisible on the white page so the original film sizing
+     calculations continue to use the exact same right boundary.
+     =================================================== -->
+
+<a
+    class="section-switch"
+    id="section-switch"
+    href="https://photography.denizalpaybak.com/"
+    aria-hidden="true"
+    tabindex="-1"
+>
+    <span id="section-switch-text">
+        photography
+    </span>
+</a>
 
 
 <!-- ===================================================
@@ -1812,11 +2003,10 @@ body.aybak-end-card-active .aybak-end-card-copy {
 
     <div class="aybak-end-card-copy aybak-end-card-section">
         <a
-            class="section-switch"
-            id="section-switch"
+            class="aybak-end-card-link"
             href="https://photography.denizalpaybak.com/"
         >
-            <span id="section-switch-text">photography</span>
+            photography
         </a>
     </div>
 
@@ -9346,12 +9536,27 @@ function layoutTypographicIndex() {
             )
         );
 
-    const maxRowsForTwoColumns =
-        total > 1
-            ? Math.ceil(
-                total / 2
+    /*
+        Desktop/tablet: keep the text field visually connected to the
+        right-side preview. With the current project count, target at
+        least three columns instead of collapsing to two.
+    */
+    const minimumDesktopColumns =
+        total >= 3
+            ? 3
+            : Math.max(
+                1,
+                total
+            );
+
+    const maxRowsForMinimumColumns =
+        Math.max(
+            1,
+            Math.ceil(
+                total /
+                minimumDesktopColumns
             )
-            : 1;
+        );
 
     const rowCount =
         Math.max(
@@ -9359,7 +9564,7 @@ function layoutTypographicIndex() {
             Math.min(
                 total,
                 maxRowsByHeight,
-                maxRowsForTwoColumns
+                maxRowsForMinimumColumns
             )
         );
 
