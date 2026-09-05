@@ -477,17 +477,12 @@ body.project-all-mode #project-all-view {
    ===================================================== */
 
 #project-all-grid {
-    display: grid;
+    position: relative;
+
+    display: block;
 
     width: 100%;
     height: 100%;
-
-    align-items: center;
-    justify-items: center;
-
-    place-content: center;
-
-    gap: 7px;
 }
 
 
@@ -499,13 +494,15 @@ body.project-all-mode #project-all-view {
     appearance: none;
     -webkit-appearance: none;
 
+    position: absolute;
+
     display: flex;
 
     align-items: center;
     justify-content: center;
 
-    width: 100%;
-    height: 100%;
+    width: 0;
+    height: 0;
 
     min-width: 0;
     min-height: 0;
@@ -6276,6 +6273,25 @@ function getProjectAllRatios() {
     ].map(
         preview => {
 
+            const storedRatio =
+                Number.parseFloat(
+                    preview.dataset.ratio ||
+                    ""
+                );
+
+
+            if (
+                Number.isFinite(
+                    storedRatio
+                ) &&
+                storedRatio > 0
+            ) {
+
+                return storedRatio;
+
+            }
+
+
             if (
                 preview.videoWidth &&
                 preview.videoHeight
@@ -6298,70 +6314,124 @@ function getProjectAllRatios() {
 
 
 /* =====================================================
-   CONTAIN
-   ===================================================== */
-
-function calculateContainedSize(
-    ratio,
-    boxWidth,
-    boxHeight
-) {
-
-    let width =
-        boxWidth;
-
-
-    let height =
-        width /
-        ratio;
-
-
-    if (
-        height >
-        boxHeight
-    ) {
-
-        height =
-            boxHeight;
-
-
-        width =
-            height *
-            ratio;
-
-    }
-
-
-    return {
-
-        width,
-
-        height,
-
-        area:
-            width *
-            height
-
-    };
-
-}
-
-
-/* =====================================================
    SMART VIEW ALL LAYOUT
    ===================================================== */
 
 /*
-    Every possible row/column layout is evaluated using
-    the ACTUAL aspect ratios.
+    VIEW ALL no longer uses equal-size CSS grid cells.
 
-    There is no rule such as:
-        4 films = 2x2
+    Equal cells waste a lot of mobile space because a contained
+    landscape video sitting inside a tall cell can only use a small
+    fraction of that cell's width. Instead, we test every contiguous
+    row grouping while preserving the film order.
 
-    But four horizontal films on a portrait phone will
-    naturally choose 2x2 because it produces substantially
-    larger visible films than 1x4.
+    Inside a row all thumbnails share one visible height and keep
+    their real aspect ratio. A row therefore behaves like a strip of
+    contact-sheet frames rather than a set of empty boxes.
+
+    Example with three landscape clips on a portrait phone:
+
+        old: 3 equal-height grid rows -> narrow videos in the middle
+        new: 1 full-width clip + 2 half-width clips
+
+    The chosen arrangement is the one that gives the greatest total
+    visible video area inside the available View All field.
 */
+
+function getProjectAllGap() {
+
+    return isPhoneLayout()
+        ? 5
+        : 7;
+
+}
+
+
+function getContiguousRowPartitions(
+    count
+) {
+
+    if (
+        count <= 0
+    ) {
+
+        return [];
+
+    }
+
+
+    const partitions =
+        [];
+
+
+    const breakCount =
+        count - 1;
+
+
+    const combinations =
+        1 << breakCount;
+
+
+    for (
+        let mask = 0;
+        mask < combinations;
+        mask++
+    ) {
+
+        const rows =
+            [];
+
+
+        let start =
+            0;
+
+
+        for (
+            let i = 0;
+            i < breakCount;
+            i++
+        ) {
+
+            if (
+                mask &
+                (1 << i)
+            ) {
+
+                rows.push(
+                    [
+                        start,
+                        i + 1
+                    ]
+                );
+
+
+                start =
+                    i + 1;
+
+            }
+
+        }
+
+
+        rows.push(
+            [
+                start,
+                count
+            ]
+        );
+
+
+        partitions.push(
+            rows
+        );
+
+    }
+
+
+    return partitions;
+
+}
+
 
 function calculateProjectAllLayout() {
 
@@ -6390,176 +6460,322 @@ function calculateProjectAllLayout() {
 
 
     const gap =
-        isPhoneLandscape()
-            ? 5
-            : (
-                isPhonePortrait()
-                    ? 5
-                    : 7
-            );
+        getProjectAllGap();
+
+
+    /*
+        Exhaustive row grouping is tiny for portfolio-sized projects,
+        but keep a safe fallback if a future project contains many clips.
+    */
+    const partitions =
+        count <= 12
+            ? getContiguousRowPartitions(
+                count
+            )
+            : [
+                Array.from(
+                    {
+                        length:
+                            Math.ceil(
+                                count / 3
+                            )
+                    },
+                    (_, rowIndex) => [
+                        rowIndex * 3,
+                        Math.min(
+                            count,
+                            rowIndex * 3 + 3
+                        )
+                    ]
+                )
+            ];
 
 
     let best =
         null;
 
 
-    for (
-        let columns = 1;
-        columns <= count;
-        columns++
-    ) {
+    partitions.forEach(
+        rows => {
 
-        const rows =
-            Math.ceil(
-                count /
-                columns
-            );
+            const rowData =
+                rows.map(
+                    ([start, end]) => {
 
-
-        const usableWidth =
-            rect.width -
-            gap *
-            (
-                columns - 1
-            );
+                        const rowRatios =
+                            ratios.slice(
+                                start,
+                                end
+                            );
 
 
-        const usableHeight =
-            rect.height -
-            gap *
-            (
-                rows - 1
-            );
+                        const horizontalGaps =
+                            gap *
+                            Math.max(
+                                0,
+                                rowRatios.length - 1
+                            );
 
 
-        if (
-            usableWidth <= 0 ||
-            usableHeight <= 0
-        ) {
-
-            continue;
-
-        }
+                        const availableRowWidth =
+                            Math.max(
+                                1,
+                                rect.width -
+                                horizontalGaps
+                            );
 
 
-        const cellWidth =
-            usableWidth /
-            columns;
+                        const ratioSum =
+                            rowRatios.reduce(
+                                (
+                                    sum,
+                                    ratio
+                                ) =>
+                                    sum + ratio,
+                                0
+                            );
 
 
-        const cellHeight =
-            usableHeight /
-            rows;
+                        const fullWidthHeight =
+                            availableRowWidth /
+                            ratioSum;
 
 
-        let occupiedArea =
-            0;
+                        return {
+                            start,
+                            end,
+                            ratios:
+                                rowRatios,
+                            horizontalGaps,
+                            fullWidthHeight
+                        };
+
+                    }
+                );
 
 
-        let minimumFill =
-            1;
+            const verticalGaps =
+                gap *
+                Math.max(
+                    0,
+                    rowData.length - 1
+                );
 
 
-        ratios.forEach(
-            ratio => {
+            const availableHeight =
+                Math.max(
+                    1,
+                    rect.height -
+                    verticalGaps
+                );
 
-                const fitted =
-                    calculateContainedSize(
-                        ratio,
-                        cellWidth,
-                        cellHeight
+
+            const naturalHeight =
+                rowData.reduce(
+                    (
+                        sum,
+                        row
+                    ) =>
+                        sum +
+                        row.fullWidthHeight,
+                    0
+                );
+
+
+            const scale =
+                Math.min(
+                    1,
+                    availableHeight /
+                    naturalHeight
+                );
+
+
+            let occupiedArea =
+                0;
+
+
+            let smallestHeight =
+                Infinity;
+
+
+            rowData.forEach(
+                row => {
+
+                    const height =
+                        row.fullWidthHeight *
+                        scale;
+
+
+                    smallestHeight =
+                        Math.min(
+                            smallestHeight,
+                            height
+                        );
+
+
+                    row.ratios.forEach(
+                        ratio => {
+
+                            occupiedArea +=
+                                ratio *
+                                height *
+                                height;
+
+                        }
                     );
 
+                }
+            );
 
-                occupiedArea +=
-                    fitted.area;
+
+            /*
+                Area is the main goal. The tiny secondary term avoids
+                pathological solutions containing an almost microscopic row
+                when two layouts have practically identical visible area.
+            */
+            const score =
+                occupiedArea +
+                smallestHeight *
+                0.01;
 
 
-                minimumFill =
-                    Math.min(
-                        minimumFill,
-                        fitted.area /
-                        (
-                            cellWidth *
-                            cellHeight
-                        )
-                    );
+            if (
+                !best ||
+                score > best.score
+            ) {
+
+                best = {
+                    rows:
+                        rowData,
+                    scale,
+                    gap,
+                    score,
+                    verticalGaps
+                };
 
             }
-        );
-
-
-        const totalCells =
-            columns *
-            rows;
-
-
-        const emptyCells =
-            totalCells -
-            count;
-
-
-        const emptyPenalty =
-            1 -
-            (
-                emptyCells /
-                totalCells
-            ) *
-            0.14;
-
-
-        const balancePenalty =
-            0.88 +
-            minimumFill *
-            0.12;
-
-
-        /*
-            Mildly discourage a ridiculous ultra-thin
-            single-column result when more balanced
-            arrangements use almost the same total area.
-        */
-
-        const shape =
-            cellWidth /
-            cellHeight;
-
-
-        const cellShapePenalty =
-            shape < 0.28
-                ? 0.78
-                : 1;
-
-
-        const score =
-            occupiedArea *
-            emptyPenalty *
-            balancePenalty *
-            cellShapePenalty;
-
-
-        if (
-            !best ||
-            score >
-            best.score
-        ) {
-
-            best = {
-
-                columns,
-
-                rows,
-
-                score
-
-            };
 
         }
+    );
+
+
+    if (
+        !best
+    ) {
+
+        return null;
 
     }
 
 
-    return best;
+    const usedHeight =
+        best.rows.reduce(
+            (
+                sum,
+                row
+            ) =>
+                sum +
+                row.fullWidthHeight *
+                best.scale,
+            0
+        ) +
+        best.verticalGaps;
+
+
+    let y =
+        Math.max(
+            0,
+            (
+                rect.height -
+                usedHeight
+            ) / 2
+        );
+
+
+    const items =
+        new Array(
+            count
+        );
+
+
+    best.rows.forEach(
+        row => {
+
+            const height =
+                row.fullWidthHeight *
+                best.scale;
+
+
+            const visibleWidths =
+                row.ratios.map(
+                    ratio =>
+                        ratio *
+                        height
+                );
+
+
+            const rowWidth =
+                visibleWidths.reduce(
+                    (
+                        sum,
+                        width
+                    ) =>
+                        sum + width,
+                    0
+                ) +
+                row.horizontalGaps;
+
+
+            let x =
+                Math.max(
+                    0,
+                    (
+                        rect.width -
+                        rowWidth
+                    ) / 2
+                );
+
+
+            visibleWidths.forEach(
+                (
+                    width,
+                    localIndex
+                ) => {
+
+                    const index =
+                        row.start +
+                        localIndex;
+
+
+                    items[index] = {
+                        left:
+                            x,
+                        top:
+                            y,
+                        width,
+                        height
+                    };
+
+
+                    x +=
+                        width +
+                        best.gap;
+
+                }
+            );
+
+
+            y +=
+                height +
+                best.gap;
+
+        }
+    );
+
+
+    return {
+        items
+    };
 
 }
 
@@ -6586,14 +6802,53 @@ function layoutProjectAllGrid() {
     }
 
 
-    projectAllGrid.style
-        .gridTemplateColumns =
-            `repeat(${layout.columns}, minmax(0, 1fr))`;
+    const thumbs =
+        [
+            ...projectAllGrid
+                .querySelectorAll(
+                    ".project-all-thumb"
+                )
+        ];
 
 
-    projectAllGrid.style
-        .gridTemplateRows =
-            `repeat(${layout.rows}, minmax(0, 1fr))`;
+    thumbs.forEach(
+        (
+            thumb,
+            index
+        ) => {
+
+            const item =
+                layout.items[
+                    index
+                ];
+
+
+            if (
+                !item
+            ) {
+
+                return;
+
+            }
+
+
+            thumb.style.left =
+                `${item.left}px`;
+
+
+            thumb.style.top =
+                `${item.top}px`;
+
+
+            thumb.style.width =
+                `${item.width}px`;
+
+
+            thumb.style.height =
+                `${item.height}px`;
+
+        }
+    );
 
 }
 
@@ -6648,9 +6903,67 @@ function buildProjectAllGrid() {
                 );
 
 
+            const posterProbe =
+                new Image();
+
+
+            posterProbe.decoding =
+                "async";
+
+
+            posterProbe.addEventListener(
+                "load",
+                () => {
+
+                    if (
+                        posterProbe.naturalWidth &&
+                        posterProbe.naturalHeight
+                    ) {
+
+                        preview.dataset.ratio =
+                            String(
+                                posterProbe.naturalWidth /
+                                posterProbe.naturalHeight
+                            );
+
+
+                        if (
+                            projectAllMode
+                        ) {
+
+                            layoutProjectAllGrid();
+
+                        }
+
+                    }
+
+                },
+                {
+                    once: true
+                }
+            );
+
+
+            posterProbe.src =
+                preview.poster;
+
+
             preview.addEventListener(
                 "loadedmetadata",
                 () => {
+
+                    if (
+                        preview.videoWidth &&
+                        preview.videoHeight
+                    ) {
+
+                        preview.dataset.ratio =
+                            String(
+                                preview.videoWidth /
+                                preview.videoHeight
+                            );
+
+                    }
 
                     if (
                         projectAllMode
