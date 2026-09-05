@@ -1153,6 +1153,498 @@ body.index-mode #video-stage {
 
 }
 
+
+
+/* =====================================================
+   PHOTO V20 SYSTEM PORTED TO FILM
+   ===================================================== */
+
+/* White page contains only identity + INDEX; contact and section switch live on the end card. */
+.info .contact,
+.info .social {
+    display: none !important;
+}
+
+body {
+    cursor: default;
+}
+
+a,
+button,
+#film-video,
+.project-all-thumb,
+.index-project-row,
+#index-preview-video {
+    cursor: pointer;
+}
+
+/* INDEX occupies the old section-switch position. */
+#index-button {
+    top: var(--top) !important;
+    right: var(--side) !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+}
+
+/* The photography switch is invisible on white pages and is moved into the end card in JS. */
+.section-switch {
+    visibility: hidden;
+}
+
+/* Slide metadata uses the same outer grid as Denizalp Aybak / INDEX. */
+#project-meta,
+body.phone-portrait #project-meta,
+body.phone-landscape #project-meta {
+    position: fixed !important;
+    top: auto !important;
+    left: var(--side) !important;
+    right: var(--side) !important;
+    bottom: var(--top) !important;
+    width: auto !important;
+    margin: 0 !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-rows: auto auto !important;
+}
+
+#project-title,
+#project-date {
+    justify-self: start !important;
+    text-align: left !important;
+}
+
+#view-all-button {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    justify-self: end !important;
+    text-align: right !important;
+}
+
+#project-counter {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    justify-self: end !important;
+    text-align: right !important;
+    padding-left: 28px !important;
+}
+
+body.project-all-mode #project-counter,
+body.project-all-preparing #project-counter {
+    grid-row: 1 !important;
+}
+
+body.project-all-mode #view-all-button,
+body.project-all-preparing #view-all-button {
+    grid-row: 2 !important;
+}
+
+/* Film-only previous / sound / next row remains, but now uses the viewport grid too. */
+#controls,
+body.phone-portrait #controls,
+body.phone-landscape #controls {
+    position: fixed !important;
+    left: var(--side) !important;
+    right: var(--side) !important;
+    bottom: calc(var(--top) + (var(--font-size) * var(--line-height) * 2) + 16px) !important;
+    width: auto !important;
+    margin: 0 !important;
+}
+
+body.project-all-mode #controls {
+    visibility: hidden !important;
+}
+
+body.index-mode #project-meta,
+body.index-mode #controls {
+    visibility: hidden !important;
+}
+
+/* =====================================================
+   AYBAK END CARD
+   ===================================================== */
+
+#aybak-end-card {
+    position: fixed;
+    z-index: 10000;
+    display: block;
+    overflow: hidden;
+    box-sizing: border-box;
+    background: rgba(0,0,0,0);
+    color: #fff;
+    visibility: hidden;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+    transition:
+        background-color 460ms cubic-bezier(.22,.61,.36,1),
+        visibility 0s linear 460ms;
+
+    /* cover iOS landscape safe-area gutters */
+    left: calc(-1 * env(safe-area-inset-left));
+    right: calc(-1 * env(safe-area-inset-right));
+    top: calc(-1 * env(safe-area-inset-top));
+    bottom: calc(-1 * env(safe-area-inset-bottom));
+}
+
+html.aybak-end-card-active,
+body.aybak-end-card-active {
+    background: #000 !important;
+}
+
+body.aybak-end-card-active #aybak-end-card {
+    visibility: visible;
+    pointer-events: auto;
+    background: #000;
+    transition:
+        background-color 460ms cubic-bezier(.22,.61,.36,1),
+        visibility 0s linear 0s;
+}
+
+#aybak-end-card-word {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 170ms ease 0ms;
+}
+
+body.aybak-end-card-active #aybak-end-card-word {
+    opacity: 1;
+    transition-delay: 255ms;
+}
+
+.aybak-end-card-copy {
+    position: absolute;
+    z-index: 2;
+    top: var(--top);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: var(--font-size);
+    line-height: var(--line-height);
+    opacity: 0;
+    transition: opacity 170ms ease 0ms;
+}
+
+body.aybak-end-card-active .aybak-end-card-copy {
+    opacity: 1;
+    transition-delay: 255ms;
+}
+
+.aybak-end-card-contact {
+    left: var(--side);
+    display: flex;
+    flex-direction: column;
+}
+
+.aybak-end-card-section {
+    right: var(--side);
+}
+
+.aybak-end-card-copy a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.aybak-end-card-contact a:hover {
+    text-decoration: underline;
+}
+
+#aybak-end-card .section-switch,
+#aybak-end-card .section-switch:hover,
+#aybak-end-card .section-switch:focus,
+#aybak-end-card .section-switch:active {
+    position: static !important;
+    top: auto !important;
+    right: auto !important;
+    z-index: auto !important;
+    visibility: visible !important;
+    color: #fff !important;
+    text-decoration: none !important;
+    outline: 0 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #aybak-end-card,
+    #aybak-end-card-word,
+    .aybak-end-card-copy {
+        transition-duration: 0ms !important;
+        transition-delay: 0ms !important;
+    }
+}
+
+/* =====================================================
+   TYPOGRAPHIC INDEX — FILM
+   ===================================================== */
+
+#index-view {
+    overflow: hidden !important;
+}
+
+#index-scroller {
+    position: absolute !important;
+    top: calc(var(--top) + 72px) !important;
+    left: var(--side) !important;
+    right: calc(var(--side) + min(36vw, 560px) + 42px) !important;
+    bottom: calc(var(--top) + env(safe-area-inset-bottom)) !important;
+    display: block !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y !important;
+    cursor: default !important;
+    outline: none;
+}
+
+#index-scroller::-webkit-scrollbar { display: none; }
+
+#index-grid {
+    position: relative !important;
+    display: grid !important;
+    grid-auto-flow: row !important;
+    grid-template-columns:
+        repeat(var(--index-column-count, 2), minmax(0,1fr)) !important;
+    grid-template-rows:
+        repeat(var(--index-row-count, 1), auto) !important;
+    column-gap: var(--index-column-gap, clamp(32px,4vw,72px)) !important;
+    row-gap: var(--index-row-gap, calc(var(--font-size) * var(--line-height))) !important;
+    align-content: start !important;
+    width: 100% !important;
+    min-height: 100% !important;
+    height: auto !important;
+    padding-top: var(--index-list-edge-gap, calc(var(--font-size) * var(--line-height))) !important;
+    padding-bottom: var(--index-list-edge-gap, calc(var(--font-size) * var(--line-height))) !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    transform: none !important;
+}
+
+.index-project-row {
+    appearance: none;
+    -webkit-appearance: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #000;
+    font: inherit;
+    font-size: var(--font-size);
+    line-height: var(--line-height);
+    text-align: left;
+    overflow: visible;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.index-project-title,
+.index-project-date {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+    overflow: visible;
+}
+
+#index-preview {
+    position: fixed;
+    z-index: 101;
+    left: auto;
+    right: var(--side);
+    top: 50%;
+    width: min(36vw, 560px);
+    height: auto;
+    max-height: 68vh;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+        opacity 140ms ease,
+        visibility 0s linear 140ms;
+}
+
+#index-preview.visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition:
+        opacity 140ms ease,
+        visibility 0s linear 0s;
+}
+
+#index-preview-video-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+    max-height: 54vh;
+    pointer-events: auto;
+}
+
+#index-preview-video {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 54vh;
+    object-fit: contain;
+    background: transparent;
+    pointer-events: auto;
+}
+
+#index-project-action {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    width: 100%;
+    margin-top: calc(var(--font-size) * .75);
+    font-size: var(--font-size);
+    line-height: var(--line-height);
+    text-align: right;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+#index-project-view-all {
+    appearance: none;
+    -webkit-appearance: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #000;
+    font: inherit;
+    line-height: inherit;
+    text-align: right;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#index-project-view-all:hover,
+#index-project-view-all:focus,
+#index-project-view-all:active {
+    text-decoration: none;
+    outline: 0;
+}
+
+#index-project-count {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    text-align: right;
+    pointer-events: none;
+}
+
+body.index-needs-scroll #index-grid {
+    min-height: 0 !important;
+}
+
+/* Phones: always one text column, preview/action right aligned. */
+body.phone-portrait #index-scroller,
+body.phone-landscape #index-scroller {
+    top: calc(var(--top) + 58px) !important;
+    left: var(--side) !important;
+    right: calc(var(--side) + min(42vw,320px) + 18px) !important;
+    bottom: calc(var(--top) + env(safe-area-inset-bottom)) !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    touch-action: pan-y !important;
+}
+
+body.phone-landscape #index-scroller {
+    top: calc(var(--top) + 46px) !important;
+    right: calc(var(--side) + min(34vw,300px) + 20px) !important;
+}
+
+body.phone-portrait #index-grid,
+body.phone-landscape #index-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100% !important;
+    gap: var(--index-phone-gap, calc(var(--font-size) * var(--line-height))) !important;
+}
+
+body.phone-portrait .index-project-row,
+body.phone-landscape .index-project-row {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    width: 100% !important;
+    min-width: 0 !important;
+}
+
+body.phone-portrait .index-project-title,
+body.phone-portrait .index-project-date,
+body.phone-landscape .index-project-title,
+body.phone-landscape .index-project-date {
+    width: auto !important;
+    max-width: 100% !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    text-align: left !important;
+}
+
+body.phone-portrait #index-preview,
+body.phone-landscape #index-preview {
+    right: var(--side) !important;
+    top: 50% !important;
+    width: min(42vw,320px) !important;
+    max-height: 70vh !important;
+    transform: translateY(-50%) !important;
+}
+
+body.phone-landscape #index-preview {
+    width: min(34vw,300px) !important;
+    max-height: 72vh !important;
+}
+
+body.phone-portrait #index-preview-video,
+body.phone-portrait #index-preview-video-wrap {
+    max-height: 48vh !important;
+}
+
+body.phone-landscape #index-preview-video,
+body.phone-landscape #index-preview-video-wrap {
+    max-height: 52vh !important;
+}
+
+body.phone-landscape #index-project-action,
+body.phone-landscape #index-project-view-all,
+body.phone-landscape #index-project-count {
+    width: 100% !important;
+    text-align: right !important;
+}
+
+@media (max-width: 600px) {
+    #controls {
+        bottom: calc(var(--top) + (var(--font-size) * var(--line-height) * 2) + 14px) !important;
+    }
+}
+
 </style>
 
 </head>
@@ -1346,13 +1838,45 @@ body.index-mode #video-stage {
         id="index-scroller"
         tabindex="0"
     >
-
         <div id="index-grid"></div>
+    </div>
 
+    <div id="index-preview" aria-hidden="true">
+        <div id="index-preview-video-wrap">
+            <video
+                id="index-preview-video"
+                muted
+                autoplay
+                loop
+                playsinline
+                preload="metadata"
+            ></video>
+        </div>
+
+        <div id="index-project-action" aria-hidden="true">
+            <button id="index-project-view-all" type="button">view all</button>
+            <span id="index-project-count"></span>
+        </div>
     </div>
 
 </div>
 
+
+
+<!-- ===================================================
+     AYBAK END CARD
+     =================================================== -->
+<section id="aybak-end-card" aria-hidden="true">
+    <div class="aybak-end-card-copy aybak-end-card-contact">
+        <a href="mailto:d@denizalpaybak.com" target="_blank" rel="noopener">d@denizalpaybak.com</a>
+        <a href="https://www.instagram.com/denizalpaybak/" target="_blank" rel="noopener">instagram @denizalpaybak</a>
+        <a href="https://models.com/people/denizalp-aybak" target="_blank" rel="noopener">models.com</a>
+    </div>
+
+    <div class="aybak-end-card-copy aybak-end-card-section" id="aybak-end-card-section-slot"></div>
+
+    <canvas id="aybak-end-card-word" aria-label="AYBAK"></canvas>
+</section>
 
 <script>
 
@@ -1585,6 +2109,27 @@ const indexGrid =
         "index-grid"
     );
 
+const indexPreview = document.getElementById("index-preview");
+const indexPreviewVideo = document.getElementById("index-preview-video");
+const indexProjectAction = document.getElementById("index-project-action");
+const indexProjectViewAll = document.getElementById("index-project-view-all");
+const indexProjectCount = document.getElementById("index-project-count");
+const aybakEndCard = document.getElementById("aybak-end-card");
+const aybakEndCardSectionSlot = document.getElementById("aybak-end-card-section-slot");
+
+if (aybakEndCardSectionSlot && sectionSwitch) {
+    aybakEndCardSectionSlot.appendChild(sectionSwitch);
+}
+
+/* Fixed metadata/controls must escape #video-block's transform so viewport-edge alignment is exact. */
+if (projectMeta && projectMeta.parentElement !== document.body) {
+    document.body.appendChild(projectMeta);
+}
+if (controls && controls.parentElement !== document.body) {
+    document.body.appendChild(controls);
+}
+
+
 
 /* =====================================================
    STATE
@@ -1637,6 +2182,22 @@ let autoplayBeforeProjectAll =
 
 let resumeAfterVisibility =
     false;
+
+let selectedIndexProject = null;
+let indexProjectRows = [];
+let indexViewAllCase = null;
+let projectAllOpenedFromIndex = false;
+let indexSelectionBeforeProjectAll = null;
+let savedIndexScrollTop = 0;
+let aybakEndCardActive = false;
+let aybakWheelAccumulator = 0;
+let aybakWheelResetTimer = null;
+let aybakTouchStartX = null;
+let aybakTouchStartY = null;
+let aybakTouchStartedInIndexScroller = false;
+let aybakTouchIndexAtBottomStart = false;
+let indexLastWheelTime = 0;
+
 
 
 /*
@@ -2566,45 +3127,13 @@ function prepareProject(
    COUNTERS
    ===================================================== */
 
-function getCounterText(
-    index,
-    total
-) {
-
-    return (
-        String(
-            index + 1
-        ).padStart(
-            2,
-            "0"
-        ) +
-        " / " +
-        String(
-            total
-        ).padStart(
-            2,
-            "0"
-        )
-    );
-
+function getCounterText(index, total) {
+    return total === 1 ? "1 film" : `${total} films`;
 }
 
 
-function getAllCounterText(
-    total
-) {
-
-    return (
-        "all (" +
-        String(
-            total
-        ).padStart(
-            2,
-            "0"
-        ) +
-        ")"
-    );
-
+function getAllCounterText(total) {
+    return `all (${total === 1 ? "1 film" : `${total} films`})`;
 }
 
 
@@ -7366,2827 +7895,709 @@ async function leaveProjectAll(
 viewAllButton.addEventListener(
     "click",
     async event => {
-
         event.stopPropagation();
 
+        if (projectViewAnimating) return;
 
-        if (
-            projectViewAnimating
-        ) {
-
-            return;
-
-        }
-
-
-        if (
-            projectAllMode
-        ) {
-
-            await leaveProjectAll(
-                {
-                    resume:
-                        true
-                }
-            );
-
-        }
-
-        else {
-
+        if (projectAllMode) {
+            if (projectAllOpenedFromIndex) {
+                await returnProjectAllToIndex();
+            } else {
+                await leaveProjectAll({ resume: true });
+            }
+        } else {
             await enterProjectAll();
-
         }
-
     }
 );
 
 
 /* =====================================================
-   INDEX ORDER
+   TYPOGRAPHIC INDEX — PHOTO V20 BEHAVIOUR, FILM MEDIA
    ===================================================== */
 
 function getChronologicalProjects() {
-
     return projects
-        .map(
-            (
-                project,
-                originalIndex
-            ) => ({
-
-                project,
-
-                originalIndex
-
-            })
-        )
-        .sort(
-            (
-                a,
-                b
-            ) => {
-
-                const orderA =
-                    Number.isFinite(
-                        a.project.indexOrder
-                    )
-                        ? a.project.indexOrder
-                        : 999;
-
-
-                const orderB =
-                    Number.isFinite(
-                        b.project.indexOrder
-                    )
-                        ? b.project.indexOrder
-                        : 999;
-
-
-                return (
-                    orderA -
-                    orderB
-                ) ||
-                (
-                    a.originalIndex -
-                    b.originalIndex
-                );
-
-            }
-        );
-
+        .map((project, originalIndex) => ({ project, originalIndex }))
+        .sort((a, b) => {
+            const orderA = Number.isFinite(a.project.indexOrder) ? a.project.indexOrder : 999;
+            const orderB = Number.isFinite(b.project.indexOrder) ? b.project.indexOrder : 999;
+            return (orderA - orderB) || (a.originalIndex - b.originalIndex);
+        });
 }
 
-
-/* =====================================================
-   INDEX GEOMETRY
-   ===================================================== */
-
-/*
-    DO NOT read CSS clamp() strings here.
-
-    All dimensions are now returned as actual pixel
-    numbers, which fixes the desktop giant-portrait bug.
-*/
-
-function getIndexGeometry() {
-
-    /* -------------------------------------------------
-       MOBILE PORTRAIT
-       ------------------------------------------------- */
-
-    if (
-        isPhonePortrait()
-    ) {
-
-        return {
-
-            mediaHeight:
-                clamp(
-                    window.innerHeight * 0.255,
-                    205,
-                    235
-                ),
-
-            maxLandscapeWidth:
-                window.innerWidth * 0.47,
-
-            gap:
-                54,
-
-            leftPadding:
-                24,
-
-            rightPadding:
-                24
-
-        };
-
-    }
-
-
-    /* -------------------------------------------------
-       MOBILE LANDSCAPE
-
-       Photography reference:
-       thumbnails are intentionally much smaller than
-       portrait-mobile thumbnails and separated by
-       generous horizontal air. Several projects remain
-       visible at once.
-       ------------------------------------------------- */
-
-    if (
-        isPhoneLandscape()
-    ) {
-
-        return {
-
-            /*
-                Mirror the portrait-index relationship:
-                portrait videos can use the full common
-                media stage, while landscape videos are
-                width-limited and therefore visibly shorter.
-            */
-
-            mediaHeight:
-                clamp(
-                    window.innerHeight * 0.405,
-                    136,
-                    166
-                ),
-
-            /*
-                Landscape clips stay visibly shorter than portrait
-                clips and both are centered in the same media stage.
-                The slightly smaller scale also leaves enough room
-                for the complete two-line caption underneath.
-            */
-            maxLandscapeWidth:
-                Math.min(
-                    window.innerWidth * 0.19,
-                    174
-                ),
-
-            gap:
-                clamp(
-                    window.innerWidth * 0.06,
-                    46,
-                    62
-                ),
-
-            leftPadding:
-                24,
-
-            rightPadding:
-                24
-
-        };
-
-    }
-
-
-    /* -------------------------------------------------
-       DESKTOP
-
-       Same visual logic as portrait mobile, simply
-       scaled to desktop.
-
-       The old version allowed portrait work to become
-       disproportionately huge. That is removed.
-       ------------------------------------------------- */
-
-    return {
-
-        mediaHeight:
-            clamp(
-                window.innerHeight * 0.34,
-                280,
-                365
-            ),
-
-        maxLandscapeWidth:
-            Math.min(
-                window.innerWidth * 0.29,
-                480
-            ),
-
-        gap:
-            clamp(
-                window.innerWidth * 0.03,
-                44,
-                64
-            ),
-
-        leftPadding:
-            48,
-
-        rightPadding:
-            48
-
-    };
-
-}
-
-
-/* =====================================================
-   INDEX ITEM METRICS
-   ===================================================== */
-
-/*
-    Common invisible stage height:
-        geometry.mediaHeight
-
-    Portrait:
-        generally uses full stage height.
-
-    Landscape:
-        is constrained by maximum width and therefore
-        becomes shorter.
-
-    It remains vertically centered in the stage.
-
-    Copy ALWAYS starts after stage height.
-*/
-
-function getIndexItemMetrics(
-    ratio
-) {
-
-    const geometry =
-        getIndexGeometry();
-
-
-    let displayHeight =
-        geometry.mediaHeight;
-
-
-    let displayWidth =
-        displayHeight *
-        ratio;
-
-
-    if (
-        displayWidth >
-        geometry.maxLandscapeWidth
-    ) {
-
-        displayWidth =
-            geometry.maxLandscapeWidth;
-
-
-        displayHeight =
-            displayWidth /
-            ratio;
-
-    }
-
-
-    return {
-
-        mediaHeight:
-            geometry.mediaHeight,
-
-        displayWidth,
-
-        displayHeight
-
-    };
-
-}
-
-
-/* =====================================================
-   SYNC INDEX CARD
-   ===================================================== */
-
-function syncIndexCardSize(
-    preview,
-    button,
-    wrap
-) {
-
-    if (
-        !preview.videoWidth ||
-        !preview.videoHeight
-    ) {
-
-        return;
-
-    }
-
-
-    const ratio =
-        preview.videoWidth /
-        preview.videoHeight;
-
-
-    const metrics =
-        getIndexItemMetrics(
-            ratio
-        );
-
-
-    const width =
-        Math.max(
-            1,
-            Math.round(
-                metrics.displayWidth
-            )
-        );
-
-
-    const height =
-        Math.max(
-            1,
-            Math.round(
-                metrics.displayHeight
-            )
-        );
-
-
-    const mediaHeight =
-        Math.max(
-            height,
-            Math.round(
-                metrics.mediaHeight
-            )
-        );
-
-
-    /*
-        Explicit dimensions only.
-        No clamp string.
-        No percentage sizing.
-        No browser ambiguity.
-    */
-
-    /*
-        Landscape-mobile needs a card width that is not
-        dictated by an extremely narrow portrait video.
-        The visual stays centered inside that card, so the
-        caption remains readable without changing portrait
-        mobile or desktop behavior.
-    */
-
-    const cardWidth =
-        isPhoneLandscape()
-            ? Math.max(
-                width,
-                clamp(
-                    window.innerWidth * 0.175,
-                    178,
-                    204
-                )
-            )
-            : width;
-
-
-    button.style.width =
-        `${cardWidth}px`;
-
-
-    button.style.flex =
-        `0 0 ${cardWidth}px`;
-
-
-    button.style.minWidth =
-        `${cardWidth}px`;
-
-
-    button.style.maxWidth =
-        `${cardWidth}px`;
-
-
-    if (
-        isPhoneLandscape()
-    ) {
-
-        const previewOffset =
-            Math.max(
-                0,
-                (
-                    cardWidth -
-                    width
-                ) /
-                2
-            );
-
-
-        /*
-            Store the visible thumbnail's true left edge on
-            the card itself. This works even when video
-            metadata resolves before .card-copy has been
-            appended to the DOM.
-        */
-        button.style.setProperty(
-            "--landscape-preview-offset",
-            `${previewOffset}px`
-        );
-
-    }
-
-
-    wrap.style.width =
-        `${cardWidth}px`;
-
-
-    wrap.style.height =
-        `${mediaHeight}px`;
-
-
-    wrap.style.flexBasis =
-        `${mediaHeight}px`;
-
-
-    preview.style.width =
-        `${width}px`;
-
-
-    preview.style.height =
-        `${height}px`;
-
-
-    preview.style.minWidth =
-        `${width}px`;
-
-
-    preview.style.maxWidth =
-        `${width}px`;
-
-
-    preview.style.minHeight =
-        `${height}px`;
-
-
-    preview.style.maxHeight =
-        `${height}px`;
-
-
-    if (
-        isPhoneLandscape()
-    ) {
-
-        /*
-            Flex centering removes the small optical Y drift
-            that occurred with absolute-positioned previews.
-        */
-
-        preview.style.position =
-            "static";
-
-
-        preview.style.top =
-            "auto";
-
-
-        preview.style.left =
-            "auto";
-
-
-        preview.style.transform =
-            "none";
-
-    }
-
-    else {
-
-        preview.style.position =
-            "absolute";
-
-
-        preview.style.top =
-            "50%";
-
-
-        preview.style.left =
-            "0";
-
-
-        preview.style.transform =
-            "translateY(-50%)";
-
-    }
-
-
-    /*
-        Landscape-mobile cards deliberately keep a wider
-        invisible card than very narrow portrait previews so
-        the caption has room to breathe. The caption itself,
-        however, must visually belong to the thumbnail: its
-        LEFT EDGE now starts exactly where the visible preview
-        starts. It may extend to the right when the title/date
-        needs more room.
-    */
-
-    if (
-        isPhoneLandscape()
-    ) {
-
-        const copy =
-            button.querySelector(
-                ".card-copy"
-            );
-
-
-        if (
-            copy
-        ) {
-
-            copy.style.marginLeft =
-                `var(--landscape-preview-offset, 0px)`;
-
-
-            copy.style.width =
-                `${Math.max(
-                    width,
-                    190
-                )}px`;
-
-
-            copy.style.minWidth =
-                `${Math.max(
-                    width,
-                    190
-                )}px`;
-
-        }
-
-    }
-
-}
-
-
-/* =====================================================
-   INDEX SCROLLER GEOMETRY
-   ===================================================== */
-
-function layoutIndexViewport() {
-
-    const geometry =
-        getIndexGeometry();
-
-
-    indexGrid.style.gap =
-        `${geometry.gap}px`;
-
-
-    indexGrid.style.paddingLeft =
-        `${geometry.leftPadding}px`;
-
-
-    indexGrid.style.paddingRight =
-        `${geometry.rightPadding}px`;
-
-
-    /* -------------------------------------------------
-       PHONE LANDSCAPE
-       ------------------------------------------------- */
-
-    if (
-        isPhoneLandscape()
-    ) {
-
-        const infoRect =
-            info.getBoundingClientRect();
-
-
-        const indexRect =
-            indexButton.getBoundingClientRect();
-
-
-        /*
-            Same full-width rail logic as photography:
-            start below the identity/contact block,
-            finish safely above INDEX.
-        */
-
-        indexScroller.style.left =
-            "0px";
-
-
-        indexScroller.style.right =
-            "0px";
-
-
-        indexScroller.style.top =
-            `${Math.ceil(
-                infoRect.bottom + 6
-            )}px`;
-
-
-        indexScroller.style.bottom =
-            `${Math.max(
-                26,
-                Math.ceil(
-                    window.innerHeight -
-                    indexRect.top +
-                    14
-                )
-            )}px`;
-
-
-        return;
-
-    }
-
-
-    /* -------------------------------------------------
-       PORTRAIT
-       ------------------------------------------------- */
-
-    if (
-        isPhonePortrait()
-    ) {
-
-        indexScroller.style.left =
-            "0px";
-
-
-        indexScroller.style.right =
-            "0px";
-
-
-        indexScroller.style.top =
-            "190px";
-
-
-        indexScroller.style.bottom =
-            `${
-                54 +
-                parseFloat(
-                    getComputedStyle(
-                        document.documentElement
-                    ).getPropertyValue(
-                        "--index-bottom"
-                    )
-                )
-            }px`;
-
-
-        return;
-
-    }
-
-
-    /* -------------------------------------------------
-       DESKTOP
-       ------------------------------------------------- */
-
-    indexScroller.style.left =
-        "0px";
-
-
-    indexScroller.style.right =
-        "0px";
-
-
-    indexScroller.style.top =
-        "130px";
-
-
-    indexScroller.style.bottom =
-        "58px";
-
-}
-
-
-/* =====================================================
-   INDEX CASE
-   ===================================================== */
-
-function createCaseController(
-    element,
-    baseText
-) {
-
-    const base =
-        String(
-            baseText
-        ).toLowerCase();
-
-
-    const positions =
-        getMorphPositions(
-            base
-        );
-
-
-    const total =
-        positions.length;
-
-
-    let state =
-        0;
-
-
-    let frameId =
-        null;
-
+function createCaseController(element, baseText) {
+    const base = String(baseText || "").toLowerCase();
+    const positions = getMorphPositions(base);
+    const total = positions.length;
+    let state = 0;
+    let frameId = null;
 
     function render() {
-
-        const activePositions =
-            new Set(
-                positions.slice(
-                    0,
-                    state
-                )
-            );
-
-
+        const activePositions = new Set(positions.slice(0, state));
         renderInteractiveTypography(
             element,
-            renderCaseFromActivePositions(
-                base,
-                activePositions
-            ),
+            renderCaseFromActivePositions(base, activePositions),
             activePositions
         );
-
     }
 
-
-    function animateTo(
-        target
-    ) {
-
-        if (
-            frameId !== null
-        ) {
-
-            cancelAnimationFrame(
-                frameId
-            );
-
-        }
-
-
-        const startState =
-            state;
-
-
-        if (
-            startState === target
-        ) {
-
-            render();
-
-
-            return;
-
-        }
-
-
-        const start =
-            performance.now();
-
-
-        function frame(
-            now
-        ) {
-
-            const progress =
-                Math.min(
-                    1,
-                    (
-                        now -
-                        start
-                    ) /
-                    CASE_DURATION
-                );
-
-
-            state =
-                Math.round(
-                    startState +
-                    (
-                        target -
-                        startState
-                    ) *
-                    progress
-                );
-
-
-            render();
-
-
-            if (
-                progress < 1
-            ) {
-
-                frameId =
-                    requestAnimationFrame(
-                        frame
-                    );
-
-            }
-
-            else {
-
-                state =
-                    target;
-
-
+    function animateTo(target) {
+        if (frameId !== null) cancelAnimationFrame(frameId);
+        const startState = state;
+        if (startState === target) { render(); return Promise.resolve(); }
+        const start = performance.now();
+        return new Promise(resolve => {
+            function frame(now) {
+                const progress = Math.min(1, (now - start) / CASE_DURATION);
+                state = Math.round(startState + (target - startState) * progress);
                 render();
-
-
-                frameId =
-                    null;
-
+                if (progress < 1) frameId = requestAnimationFrame(frame);
+                else { state = target; render(); frameId = null; resolve(); }
             }
-
-        }
-
-
-        frameId =
-            requestAnimationFrame(
-                frame
-            );
-
+            frameId = requestAnimationFrame(frame);
+        });
     }
-
 
     render();
-
-
     return {
-
-        upper() {
-
-            animateTo(
-                total
-            );
-
-        },
-
-        lower() {
-
-            animateTo(
-                0
-            );
-
-        }
-
+        upper() { return animateTo(total); },
+        lower() { return animateTo(0); }
     };
-
 }
 
+function getFilmCountText(total) {
+    return total === 1 ? "1 film" : `${total} films`;
+}
 
-/* =====================================================
-   BUILD INDEX
-   ===================================================== */
+function updateResponsiveMode() {
+    body.classList.toggle("phone-portrait", isPhonePortrait());
+    body.classList.toggle("phone-landscape", isPhoneLandscape());
+}
+
+function layoutTypographicIndex() {
+    if (!indexGrid || !indexScroller || !indexProjectRows.length) return;
+
+    updateResponsiveMode();
+
+    const total = indexProjectRows.length;
+    const computed = getComputedStyle(document.documentElement);
+    const fontSize = parseFloat(computed.getPropertyValue("--font-size")) || 13;
+    const lineHeightMultiplier = parseFloat(computed.getPropertyValue("--line-height")) || 1.15;
+    const lineHeight = fontSize * lineHeightMultiplier;
+    const gridComputed = getComputedStyle(indexGrid);
+    const edgeGap = parseFloat(gridComputed.getPropertyValue("--index-list-edge-gap")) || lineHeight;
+    const minimumGap = lineHeight;
+
+    body.classList.remove("index-needs-scroll");
+
+    indexProjectRows.forEach(state => {
+        state.row.style.removeProperty("grid-column");
+        state.row.style.removeProperty("grid-row");
+    });
+
+    /* Both phone orientations: one text column. */
+    if (isPhoneLayout()) {
+        indexGrid.style.removeProperty("--index-row-count");
+        indexGrid.style.removeProperty("--index-column-count");
+
+        const availableHeight = Math.max(1, indexScroller.clientHeight - edgeGap * 2);
+        const rowHeights = indexProjectRows.map(state => Math.max(state.row.scrollHeight, lineHeight * 2));
+        const occupiedHeight = rowHeights.reduce((sum, value) => sum + value, 0);
+        const gapCount = Math.max(0, total - 1);
+        const idealGap = gapCount ? (availableHeight - occupiedHeight) / gapCount : 0;
+        const needsScroll = gapCount > 0 && idealGap < minimumGap;
+        const rowGap = gapCount ? (needsScroll ? minimumGap : Math.max(minimumGap, idealGap)) : 0;
+
+        indexGrid.style.setProperty("--index-phone-gap", `${rowGap}px`);
+        body.classList.toggle("index-needs-scroll", needsScroll);
+        return;
+    }
+
+    /* Desktop/tablet: minimum two columns when width permits. */
+    const usableWidth = Math.max(1, indexScroller.clientWidth);
+    const widestProjectText = Math.max(1, ...indexProjectRows.map(state => Math.max(state.titleEl.scrollWidth, state.dateEl.scrollWidth)));
+    const columnGap = Math.max(22, Math.min(72, usableWidth * 0.06));
+    const preferredColumnWidth = widestProjectText + Math.max(18, fontSize * 1.25);
+    const maxColumnsByWidth = Math.max(1, Math.floor((usableWidth + columnGap) / (preferredColumnWidth + columnGap)));
+    const minimumColumns = total > 1 && maxColumnsByWidth >= 2 ? 2 : 1;
+    const columnCount = Math.max(minimumColumns, Math.min(total, maxColumnsByWidth));
+    const rowCount = Math.ceil(total / columnCount);
+    const itemHeight = lineHeight * 2;
+    const availableHeight = Math.max(1, indexScroller.clientHeight - edgeGap * 2);
+    const occupiedHeight = rowCount * itemHeight;
+    const gapCount = Math.max(0, rowCount - 1);
+    const idealGap = gapCount ? (availableHeight - occupiedHeight) / gapCount : 0;
+    const needsScroll = gapCount > 0 && idealGap < minimumGap;
+    const rowGap = gapCount ? (needsScroll ? minimumGap : Math.max(minimumGap, idealGap)) : 0;
+
+    indexGrid.style.setProperty("--index-row-count", String(rowCount));
+    indexGrid.style.setProperty("--index-column-count", String(columnCount));
+    indexGrid.style.setProperty("--index-column-gap", `${columnGap}px`);
+    indexGrid.style.setProperty("--index-row-gap", `${rowGap}px`);
+    body.classList.toggle("index-needs-scroll", needsScroll);
+
+    /* Column-major placement: incomplete final column keeps normal gaps and empty space stays at bottom. */
+    indexProjectRows.forEach((state, itemIndex) => {
+        const columnIndex = Math.floor(itemIndex / rowCount);
+        const localRow = itemIndex % rowCount;
+        state.row.style.gridColumn = String(columnIndex + 1);
+        state.row.style.gridRow = String(localRow + 1);
+    });
+}
+
+function stopIndexPreview() {
+    if (!indexPreviewVideo) return;
+    indexPreviewVideo.pause();
+    indexPreviewVideo.removeAttribute("src");
+    indexPreviewVideo.removeAttribute("poster");
+    indexPreviewVideo.load();
+}
+
+function selectIndexProject(rowState) {
+    if (!rowState) return;
+    const previousSelection = selectedIndexProject;
+    selectedIndexProject = rowState;
+
+    indexProjectRows.forEach(state => {
+        if (state === rowState) {
+            state.titleCase.upper();
+            state.dateCase.upper();
+        } else {
+            state.titleCase.lower();
+            state.dateCase.lower();
+        }
+    });
+
+    const project = rowState.project;
+    const filename = project.videos[0];
+    const nextSrc = previewVideoUrl(filename);
+    const nextPoster = posterVideoUrl(filename);
+
+    if (indexPreviewVideo.dataset.filename !== filename) {
+        indexPreviewVideo.pause();
+        indexPreviewVideo.dataset.filename = filename;
+        indexPreviewVideo.poster = nextPoster;
+        indexPreviewVideo.src = nextSrc;
+        indexPreviewVideo.muted = true;
+        indexPreviewVideo.loop = true;
+        indexPreviewVideo.playsInline = true;
+        indexPreviewVideo.preload = "metadata";
+        indexPreviewVideo.load();
+        indexPreviewVideo.play().catch(() => {});
+    }
+
+    indexPreview.classList.add("visible");
+    indexPreview.setAttribute("aria-hidden", "false");
+    indexProjectAction.setAttribute("aria-hidden", "false");
+
+    const nextCountText = getFilmCountText(project.videos.length);
+    if (previousSelection && previousSelection !== rowState && indexProjectCount.textContent) {
+        morphSequential(indexProjectCount, nextCountText, STATE_MORPH_DURATION).catch(() => {});
+    } else {
+        renderBaseTypography(indexProjectCount, nextCountText);
+        indexProjectCount.dataset.rawText = nextCountText;
+    }
+
+    if (indexViewAllCase) indexViewAllCase.lower();
+}
+
+function resetIndexSelection() {
+    selectedIndexProject = null;
+    indexProjectRows.forEach(state => { state.titleCase.lower(); state.dateCase.lower(); });
+    indexPreview.classList.remove("visible");
+    indexPreview.setAttribute("aria-hidden", "true");
+    indexProjectAction.setAttribute("aria-hidden", "true");
+    stopIndexPreview();
+    indexProjectCount.textContent = "";
+    indexProjectCount.dataset.rawText = "";
+    if (indexViewAllCase) indexViewAllCase.lower();
+}
 
 function buildIndex() {
-
-    indexGrid.innerHTML =
-        "";
-
-
-    const geometry =
-        getIndexGeometry();
-
-
-    getChronologicalProjects()
-        .forEach(
-            ({
-                project,
-                originalIndex
-            }) => {
-
-                const button =
-                    document.createElement(
-                        "button"
-                    );
-
-
-                button.type =
-                    "button";
-
-
-                button.className =
-                    "project-card";
-
-
-                /*
-                    Stable placeholder before metadata.
-
-                    It intentionally resembles a medium
-                    portrait card rather than using an
-                    arbitrary percentage of viewport.
-                */
-
-                const fallbackWidth =
-                    Math.round(
-                        geometry.mediaHeight *
-                        0.72
-                    );
-
-
-                button.style.width =
-                    `${fallbackWidth}px`;
-
-
-                button.style.flex =
-                    `0 0 ${fallbackWidth}px`;
-
-
-                button.style.minWidth =
-                    `${fallbackWidth}px`;
-
-
-                const wrap =
-                    document.createElement(
-                        "span"
-                    );
-
-
-                wrap.className =
-                    "card-video-wrap";
-
-
-                wrap.style.width =
-                    `${fallbackWidth}px`;
-
-
-                wrap.style.height =
-                    `${geometry.mediaHeight}px`;
-
-
-                const preview =
-                    createPreviewVideo(
-                        project.videos[0],
-                        {
-                            /*
-                                Index uses the tiny derived preview.
-                                Eager metadata gives stable dimensions
-                                immediately; actual playback is still
-                                controlled by IntersectionObserver.
-                            */
-                            eagerMetadata:
-                                true
-                        }
-                    );
-
-
-                wrap.appendChild(
-                    preview
-                );
-
-
-                preview.addEventListener(
-                    "loadedmetadata",
-                    () => {
-
-                        syncIndexCardSize(
-                            preview,
-                            button,
-                            wrap
-                        );
-
-                    }
-                );
-
-
-                if (
-                    preview.readyState >=
-                    1
-                ) {
-
-                    syncIndexCardSize(
-                        preview,
-                        button,
-                        wrap
-                    );
-
-                }
-
-
-                const copy =
-                    document.createElement(
-                        "span"
-                    );
-
-
-                copy.className =
-                    "card-copy";
-
-
-                const title =
-                    document.createElement(
-                        "span"
-                    );
-
-
-                title.className =
-                    "card-title";
-
-
-                title.textContent =
-                    project.title
-                        .toLowerCase();
-
-
-                const date =
-                    document.createElement(
-                        "span"
-                    );
-
-
-                date.className =
-                    "card-date";
-
-
-                date.textContent =
-                    (
-                        project.date ||
-                        ""
-                    ).toLowerCase();
-
-
-                copy.append(
-                    title,
-                    date
-                );
-
-
-                button.append(
-                    wrap,
-                    copy
-                );
-
-
-                const titleCase =
-                    createCaseController(
-                        title,
-                        project.title
-                    );
-
-
-                const dateCase =
-                    createCaseController(
-                        date,
-                        project.date || ""
-                    );
-
-
-                button.addEventListener(
-                    "mouseenter",
-                    () => {
-
-                        if (
-                            !hasHover()
-                        ) {
-
-                            return;
-
-                        }
-
-
-                        titleCase.upper();
-
-                        dateCase.upper();
-
-                    }
-                );
-
-
-                button.addEventListener(
-                    "mouseleave",
-                    () => {
-
-                        if (
-                            !hasHover()
-                        ) {
-
-                            return;
-
-                        }
-
-
-                        titleCase.lower();
-
-                        dateCase.lower();
-
-                    }
-                );
-
-
-                button.addEventListener(
-                    "click",
-                    async event => {
-
-                        if (
-                            indexDragMoved
-                        ) {
-
-                            event.preventDefault();
-
-                            event.stopPropagation();
-
-                            return;
-
-                        }
-
-
-                        event.preventDefault();
-
-                        event.stopPropagation();
-
-
-                        await exitIndexToProject(
-                            originalIndex
-                        );
-
-                    }
-                );
-
-
-                indexGrid.appendChild(
-                    button
-                );
-
-
-                observePreview(
-                    preview
-                );
-
+    indexGrid.innerHTML = "";
+    indexProjectRows = [];
+    selectedIndexProject = null;
+
+    getChronologicalProjects().forEach(({ project, originalIndex }) => {
+        const row = document.createElement("button");
+        row.type = "button";
+        row.className = "index-project-row";
+
+        const titleEl = document.createElement("span");
+        titleEl.className = "index-project-title";
+        const dateEl = document.createElement("span");
+        dateEl.className = "index-project-date";
+
+        const titleCase = createCaseController(titleEl, project.title);
+        const dateCase = createCaseController(dateEl, project.date || "");
+
+        row.append(titleEl, dateEl);
+        indexGrid.appendChild(row);
+
+        const rowState = { row, titleEl, dateEl, titleCase, dateCase, project, originalIndex };
+        indexProjectRows.push(rowState);
+
+        row.addEventListener("mouseenter", () => {
+            if (!hasHover()) return;
+            selectIndexProject(rowState);
+        });
+
+        row.addEventListener("focus", () => {
+            if (!hasHover()) return;
+            selectIndexProject(rowState);
+        });
+
+        row.addEventListener("click", async event => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            /* Desktop/tablet with fine pointer: one click. Phones: first tap selects, second tap opens. */
+            if (!isPhoneLayout()) {
+                selectIndexProject(rowState);
+                await new Promise(resolve => requestAnimationFrame(resolve));
+                await openSelectedIndexProjectAll();
+                return;
             }
-        );
 
+            if (selectedIndexProject === rowState) {
+                await openSelectedIndexProjectAll();
+            } else {
+                selectIndexProject(rowState);
+            }
+        });
+    });
 
-    layoutIndexViewport();
-
+    requestAnimationFrame(layoutTypographicIndex);
 }
-
-
-/* =====================================================
-   RESIZE INDEX CARDS
-   ===================================================== */
 
 function resizeIndexCards() {
-
-    layoutIndexViewport();
-
-
-    document
-        .querySelectorAll(
-            ".project-card"
-        )
-        .forEach(
-            card => {
-
-                const preview =
-                    card.querySelector(
-                        "video"
-                    );
-
-
-                const wrap =
-                    card.querySelector(
-                        ".card-video-wrap"
-                    );
-
-
-                if (
-                    preview &&
-                    wrap &&
-                    preview.videoWidth &&
-                    preview.videoHeight
-                ) {
-
-                    syncIndexCardSize(
-                        preview,
-                        card,
-                        wrap
-                    );
-
-                }
-
-            }
-        );
-
+    requestAnimationFrame(layoutTypographicIndex);
 }
-
-
-/* =====================================================
-   INDEX WORD
-   ===================================================== */
-
-function renderIndexWord(
-    state
-) {
-
-    indexWordState =
-        state;
-
-
-    const positions =
-        getMorphPositions(
-            indexWord
-        );
-
-
-    const activePositions =
-        new Set(
-            positions.slice(
-                0,
-                state
-            )
-        );
-
-
-    renderInteractiveTypography(
-        indexButton,
-        renderCaseFromActivePositions(
-            indexWord,
-            activePositions
-        ),
-        activePositions
-    );
-
-}
-
-
-/* =====================================================
-   INDEX MORPH
-   ===================================================== */
-
-function morphIndexTo(
-    target
-) {
-
-    if (
-        indexWordFrame !==
-        null
-    ) {
-
-        cancelAnimationFrame(
-            indexWordFrame
-        );
-
-    }
-
-
-    const initial =
-        indexWordState;
-
-
-    if (
-        initial ===
-        target
-    ) {
-
-        renderIndexWord(
-            target
-        );
-
-
-        return Promise.resolve();
-
-    }
-
-
-    const start =
-        performance.now();
-
-
-    return new Promise(
-        resolve => {
-
-            function frame(
-                now
-            ) {
-
-                const progress =
-                    Math.min(
-                        1,
-                        (
-                            now -
-                            start
-                        ) /
-                        INDEX_TRANSITION_DURATION
-                    );
-
-
-                const state =
-                    Math.round(
-                        initial +
-                        (
-                            target -
-                            initial
-                        ) *
-                        progress
-                    );
-
-
-                renderIndexWord(
-                    state
-                );
-
-
-                if (
-                    progress <
-                    1
-                ) {
-
-                    indexWordFrame =
-                        requestAnimationFrame(
-                            frame
-                        );
-
-                }
-
-                else {
-
-                    renderIndexWord(
-                        target
-                    );
-
-
-                    indexWordFrame =
-                        null;
-
-
-                    resolve();
-
-                }
-
-            }
-
-
-            indexWordFrame =
-                requestAnimationFrame(
-                    frame
-                );
-
-        }
-    );
-
-}
-
-
-/* =====================================================
-   INDEX HOVER
-   ===================================================== */
-
-indexButton.addEventListener(
-    "mouseenter",
-    () => {
-
-        if (
-            isPhoneLayout()
-        ) {
-
-            return;
-
-        }
-
-
-        morphIndexTo(
-            indexMode
-                ? 0
-                : indexWord.length
-        );
-
-    }
-);
-
-
-indexButton.addEventListener(
-    "mouseleave",
-    () => {
-
-        if (
-            isPhoneLayout()
-        ) {
-
-            return;
-
-        }
-
-
-        morphIndexTo(
-            indexMode
-                ? indexWord.length
-                : 0
-        );
-
-    }
-);
-
-
-/* =====================================================
-   INDEX POSITION
-   ===================================================== */
 
 function saveIndexPosition() {
-
-    savedIndexScrollLeft =
-        indexScroller.scrollLeft;
-
+    savedIndexScrollTop = indexScroller.scrollTop;
 }
-
 
 function restoreIndexPosition() {
-
-    requestAnimationFrame(
-        () => {
-
-            indexScroller.scrollLeft =
-                savedIndexScrollLeft;
-
-        }
-    );
-
+    requestAnimationFrame(() => { indexScroller.scrollTop = savedIndexScrollTop; });
 }
 
+function renderIndexWord(state) {
+    indexWordState = state;
+    const positions = getMorphPositions(indexWord);
+    const activePositions = new Set(positions.slice(0, state));
+    renderInteractiveTypography(
+        indexButton,
+        renderCaseFromActivePositions(indexWord, activePositions),
+        activePositions
+    );
+}
 
-/* =====================================================
-   ENTER INDEX
-   ===================================================== */
+function morphIndexTo(target) {
+    if (indexWordFrame !== null) cancelAnimationFrame(indexWordFrame);
+    const initial = indexWordState;
+    if (initial === target) { renderIndexWord(target); return Promise.resolve(); }
+    const start = performance.now();
+    return new Promise(resolve => {
+        function frame(now) {
+            const progress = Math.min(1, (now - start) / INDEX_TRANSITION_DURATION);
+            const state = Math.round(initial + (target - initial) * progress);
+            renderIndexWord(state);
+            if (progress < 1) indexWordFrame = requestAnimationFrame(frame);
+            else { renderIndexWord(target); indexWordFrame = null; resolve(); }
+        }
+        indexWordFrame = requestAnimationFrame(frame);
+    });
+}
 
-async function enterIndex() {
+indexButton.addEventListener("mouseenter", () => {
+    if (isPhoneLayout()) return;
+    morphIndexTo(indexMode ? 0 : indexWord.length);
+});
 
-    if (
-        indexMode ||
-        interfaceAnimating
-    ) {
+indexButton.addEventListener("mouseleave", () => {
+    if (isPhoneLayout()) return;
+    morphIndexTo(indexMode ? indexWord.length : 0);
+});
 
-        return;
-
-    }
-
-
-    interfaceAnimating =
-        true;
-
-
-    autoplayBeforeIndex =
-        !video.paused;
-
-
+async function enterIndex({ preserveSelection = false } = {}) {
+    if (indexMode || interfaceAnimating) return;
+    interfaceAnimating = true;
+    autoplayBeforeIndex = !video.paused;
     video.pause();
 
+    if (projectAllMode) await leaveProjectAll({ resume: false });
 
-    if (
-        projectAllMode
-    ) {
-
-        await leaveProjectAll(
-            {
-                resume:
-                    false
-            }
-        );
-
-    }
-
-
-    /*
-        Recalculate before displaying.
-        Important after orientation changes.
-    */
-
-    resizeIndexCards();
-
-
-    indexMode =
-        true;
-
-
-    body.classList.add(
-        "index-mode"
-    );
-
-
-    indexView.classList.add(
-        "visible"
-    );
-
-
-    warmVisibleIndexPosters();
-
-
+    updateResponsiveMode();
+    indexMode = true;
+    body.classList.add("index-mode");
+    indexView.classList.add("visible");
+    layoutTypographicIndex();
     restoreIndexPosition();
 
+    if (!preserveSelection) resetIndexSelection();
+    else if (selectedIndexProject) selectIndexProject(selectedIndexProject);
 
-    requestAnimationFrame(
-        () => {
-
-            /*
-                On desktop the current visible rail can initialise
-                immediately.
-
-                Mobile is observer-only: no arbitrary first 2 / 3
-                videos are forced to download if they are not the
-                actual visible cards after a saved scroll position.
-            */
-
-            if (
-                !isPhoneLayout()
-            ) {
-
-                activatePreviewsIn(
-                    indexGrid
-                );
-
-            }
-
-        }
-    );
-
-
-    /*
-        INDEX word morph is cosmetic. The visible project rail should
-        already accept clicks while the word finishes morphing.
-    */
-    morphIndexTo(
-        indexWord.length
-    );
-
-
-    interfaceAnimating =
-        false;
-
+    morphIndexTo(indexWord.length);
+    interfaceAnimating = false;
 }
-
-
-/* =====================================================
-   RETURN INDEX
-   ===================================================== */
 
 async function returnFromIndex() {
-
-    if (
-        !indexMode ||
-        interfaceAnimating
-    ) {
-
-        return;
-
-    }
-
-
-    interfaceAnimating =
-        true;
-
-
+    if (!indexMode || interfaceAnimating) return;
+    interfaceAnimating = true;
     saveIndexPosition();
+    resetIndexSelection();
+    await morphIndexTo(0);
+    indexView.classList.remove("visible");
+    indexMode = false;
+    body.classList.remove("index-mode", "index-needs-scroll");
 
-
-    await morphIndexTo(
-        0
-    );
-
-
-    stopAllPreviews();
-
-
-    indexView.classList.remove(
-        "visible"
-    );
-
-
-    indexMode =
-        false;
-
-
-    body.classList.remove(
-        "index-mode"
-    );
-
-
-    if (
-        autoplayBeforeIndex
-    ) {
-
-        video
-            .play()
-            .catch(
-                () => {}
-            );
-
-    }
-
-
-    interfaceAnimating =
-        false;
-
+    if (autoplayBeforeIndex) video.play().catch(() => {});
+    interfaceAnimating = false;
 }
 
+async function openSelectedIndexProjectAll() {
+    if (!indexMode || !selectedIndexProject || interfaceAnimating || projectViewAnimating) return;
 
-/* =====================================================
-   INDEX -> PROJECT
-   ===================================================== */
-
-async function exitIndexToProject(
-    targetProjectIndex
-) {
-
-    if (
-        !indexMode ||
-        interfaceAnimating
-    ) {
-
-        return;
-
-    }
-
-
-    interfaceAnimating =
-        true;
-
-
+    interfaceAnimating = true;
     saveIndexPosition();
+    projectAllOpenedFromIndex = true;
+    indexSelectionBeforeProjectAll = selectedIndexProject;
 
+    const targetProjectIndex = selectedIndexProject.originalIndex;
+    currentProjectIndex = normalizeProjectIndex(targetProjectIndex);
+    currentVideoIndex = 0;
+    fullProjectMode = true;
+    fullProjectEndIndex = currentProject().videos.length - 1;
+    normalSequenceProjectIndex = null;
+    normalSequenceVideos = [];
+    normalSequencePosition = -1;
+    renderedProjectIndex = null;
+    syncProjectUrl("push");
 
-    await morphIndexTo(
-        0
-    );
+    /* Prepare selected film behind INDEX so no slide flash is visible. */
+    await loadCurrentVideo(false);
 
+    await morphIndexTo(0);
+    indexView.classList.remove("visible");
+    indexMode = false;
+    body.classList.remove("index-mode", "index-needs-scroll");
 
-    stopAllPreviews();
-
-
-    indexView.classList.remove(
-        "visible"
-    );
-
-
-    indexMode =
-        false;
-
-
-    body.classList.remove(
-        "index-mode"
-    );
-
-
-    currentProjectIndex =
-        targetProjectIndex;
-
-
-    currentVideoIndex =
-        0;
-
-
-    /*
-        INDEX opens the complete project from its first runtime video.
-        Only after the project ends do we return to max-2 rotation.
-    */
-    fullProjectMode =
-        true;
-
-
-    fullProjectEndIndex =
-        currentProject().videos.length - 1;
-
-
-    normalSequenceProjectIndex =
-        null;
-
-
-    normalSequenceVideos =
-        [];
-
-
-    normalSequencePosition =
-        -1;
-
-
-    syncProjectUrl(
-        "push"
-    );
-
-
-    renderedProjectIndex =
-        null;
-
-
-    await loadCurrentVideo(
-        true
-    );
-
-
-    interfaceAnimating =
-        false;
-
+    interfaceAnimating = false;
+    await enterProjectAll();
 }
 
-
-/* =====================================================
-   INDEX CLICK
-   ===================================================== */
-
-indexButton.addEventListener(
-    "click",
-    async event => {
-
-        event.stopPropagation();
-
-
-        if (
-            interfaceAnimating ||
-            projectViewAnimating
-        ) {
-
-            return;
-
-        }
-
-
-        if (
-            projectAllMode
-        ) {
-
-            await leaveProjectAll(
-                {
-                    resume:
-                        false
-                }
-            );
-
-
-            await enterIndex();
-
-
-            return;
-
-        }
-
-
-        if (
-            indexMode
-        ) {
-
-            await returnFromIndex();
-
-        }
-
-        else {
-
-            await enterIndex();
-
-        }
-
-    }
-);
-
-
-/* =====================================================
-   INDEX WHEEL
-   ===================================================== */
-
-indexScroller.addEventListener(
-    "wheel",
-    event => {
-
-        if (
-            !indexMode
-        ) {
-
-            return;
-
-        }
-
-
-        event.preventDefault();
-
-
-        const movement =
-            Math.abs(
-                event.deltaX
-            ) >
-            Math.abs(
-                event.deltaY
-            )
-                ? event.deltaX
-                : event.deltaY;
-
-
-        indexScroller.scrollLeft +=
-            movement *
-            INDEX_WHEEL_MULTIPLIER;
-
-    },
-    {
-        passive:
-            false
-    }
-);
-
-
-/* =====================================================
-   INDEX DRAG
-   ===================================================== */
-
-let indexDragging =
-    false;
-
-let indexDragStartX =
-    0;
-
-let indexDragStartScroll =
-    0;
-
-let indexDragDistance =
-    0;
-
-
-indexScroller.addEventListener(
-    "mousedown",
-    event => {
-
-        if (
-            event.button !==
-            0
-        ) {
-
-            return;
-
-        }
-
-
-        indexDragging =
-            true;
-
-
-        indexDragMoved =
-            false;
-
-
-        indexDragDistance =
-            0;
-
-
-        indexDragStartX =
-            event.clientX;
-
-
-        indexDragStartScroll =
-            indexScroller.scrollLeft;
-
-
-        indexScroller.classList.add(
-            "dragging"
-        );
-
-    }
-);
-
-
-window.addEventListener(
-    "mousemove",
-    event => {
-
-        if (
-            !indexDragging
-        ) {
-
-            return;
-
-        }
-
-
-        const delta =
-            event.clientX -
-            indexDragStartX;
-
-
-        indexDragDistance =
-            Math.max(
-                indexDragDistance,
-                Math.abs(
-                    delta
-                )
-            );
-
-
-        if (
-            indexDragDistance >
-            10
-        ) {
-
-            indexDragMoved =
-                true;
-
-        }
-
-
-        indexScroller.scrollLeft =
-            indexDragStartScroll -
-            delta;
-
-    }
-);
-
-
-window.addEventListener(
-    "mouseup",
-    () => {
-
-        if (
-            !indexDragging
-        ) {
-
-            return;
-
-        }
-
-
-        indexDragging =
-            false;
-
-
-        indexScroller.classList.remove(
-            "dragging"
-        );
-
-
-        if (
-            indexDragMoved
-        ) {
-
-            setTimeout(
-                () => {
-
-                    indexDragMoved =
-                        false;
-
-                },
-                0
-            );
-
-        }
-
-    }
-);
-
-
-/* =====================================================
-   INDEX KEYBOARD
-   ===================================================== */
-
-indexScroller.addEventListener(
-    "keydown",
-    event => {
-
-        if (
-            event.key ===
-            "ArrowRight"
-        ) {
-
-            event.preventDefault();
-
-
-            indexScroller.scrollBy(
-                {
-                    left:
-                        INDEX_KEY_STEP,
-
-                    behavior:
-                        "smooth"
-                }
-            );
-
-        }
-
-
-        else if (
-            event.key ===
-            "ArrowLeft"
-        ) {
-
-            event.preventDefault();
-
-
-            indexScroller.scrollBy(
-                {
-                    left:
-                        -INDEX_KEY_STEP,
-
-                    behavior:
-                        "smooth"
-                }
-            );
-
-        }
-
-    }
-);
-
-
-/* =====================================================
-   GLOBAL KEYBOARD
-   ===================================================== */
-
-document.addEventListener(
-    "keydown",
-    event => {
-
-        const target =
-            event.target;
-
-
-        if (
-            target &&
-            [
-                "INPUT",
-                "TEXTAREA",
-                "SELECT"
-            ].includes(
-                target.tagName
-            )
-        ) {
-
-            return;
-
-        }
-
-
-        if (
-            event.code ===
-            "Escape"
-        ) {
-
-            if (
-                projectAllMode
-            ) {
-
-                event.preventDefault();
-
-
-                leaveProjectAll(
-                    {
-                        resume:
-                            true
-                    }
-                );
-
-
-                return;
-
-            }
-
-
-            if (
-                indexMode
-            ) {
-
-                event.preventDefault();
-
-
-                returnFromIndex();
-
-
-                return;
-
-            }
-
-        }
-
-
-        if (
-            indexMode ||
-            projectAllMode
-        ) {
-
-            return;
-
-        }
-
-
-        if (
-            event.code ===
-            "Space"
-        ) {
-
-            event.preventDefault();
-
-            togglePlayback();
-
-        }
-
-
-        else if (
-            event.code ===
-            "ArrowRight"
-        ) {
-
-            event.preventDefault();
-
-            nextFilm();
-
-        }
-
-
-        else if (
-            event.code ===
-            "ArrowLeft"
-        ) {
-
-            event.preventDefault();
-
-            previousFilm();
-
-        }
-
-    }
-);
-
-
-/* =====================================================
-   MOBILE SWIPE
-   ===================================================== */
-
-video.addEventListener(
-    "touchstart",
-    event => {
-
-        if (
-            event.touches.length !==
-            1
-        ) {
-
-            return;
-
-        }
-
-
-        const touch =
-            event.touches[
-                0
-            ];
-
-
-        touchStartX =
-            touch.clientX;
-
-
-        touchStartY =
-            touch.clientY;
-
-
-        touchStartTime =
-            performance.now();
-
-
-        touchMoved =
-            false;
-
-    },
-    {
-        passive:
-            true
-    }
-);
-
-
-video.addEventListener(
-    "touchmove",
-    event => {
-
-        if (
-            event.touches.length !==
-            1
-        ) {
-
-            return;
-
-        }
-
-
-        const touch =
-            event.touches[
-                0
-            ];
-
-
-        if (
-            Math.abs(
-                touch.clientX -
-                touchStartX
-            ) >
-            10 ||
-            Math.abs(
-                touch.clientY -
-                touchStartY
-            ) >
-            10
-        ) {
-
-            touchMoved =
-                true;
-
-        }
-
-    },
-    {
-        passive:
-            true
-    }
-);
-
-
-video.addEventListener(
-    "touchend",
-    event => {
-
-        if (
-            !event.changedTouches.length
-        ) {
-
-            return;
-
-        }
-
-
-        const touch =
-            event.changedTouches[
-                0
-            ];
-
-
-        const dx =
-            touch.clientX -
-            touchStartX;
-
-
-        const dy =
-            touch.clientY -
-            touchStartY;
-
-
-        const elapsed =
-            performance.now() -
-            touchStartTime;
-
-
-        const swipe =
-            Math.abs(
-                dx
-            ) >=
-            50 &&
-            Math.abs(
-                dx
-            ) >
-            Math.abs(
-                dy
-            ) *
-            1.25 &&
-            elapsed <
-            700;
-
-
-        if (
-            swipe
-        ) {
-
-            if (
-                dx <
-                0
-            ) {
-
-                nextFilm();
-
-            }
-
-            else {
-
-                previousFilm();
-
-            }
-
-
-            setTimeout(
-                () => {
-
-                    touchMoved =
-                        false;
-
-                },
-                150
-            );
-
-
-            return;
-
-        }
-
-
-        setTimeout(
-            () => {
-
-                touchMoved =
-                    false;
-
-            },
-            150
-        );
-
-    },
-    {
-        passive:
-            true
-    }
-);
-
-
-/* =====================================================
-   INDEX PREWARM
-   ===================================================== */
-
-async function warmIndexPreviews() {
-
-    /*
-        Never prewarm the whole index.
-
-        The old desktop path could create requests for every
-        project's preview before the user had even opened INDEX.
-        On slower mobile connections this strategy is much worse.
-
-        We only prepare metadata for the first one or two cards
-        during idle time. Everything else is visibility-driven.
-    */
-
-    const previews =
-        [
-            ...indexGrid
-                .querySelectorAll(
-                    "video[data-src]"
-                )
-        ];
-
-
-    const count =
-        isPhoneLayout()
-            ? 3
-            : 5;
-
-
-    for (
-        let i = 0;
-        i < Math.min(
-            count,
-            previews.length
-        );
-        i++
-    ) {
-
-        const preview =
-            previews[i];
-
-
-        if (
-            !preview.getAttribute(
-                "src"
-            )
-        ) {
-
-            preview.src =
-                preview.dataset.src;
-
-
-            preview.preload =
-                "metadata";
-
-
-            preview.load();
-
-        }
-
-
-        await wait(
-            80
-        );
-
-    }
-
+async function returnProjectAllToIndex() {
+    if (!projectAllMode || projectViewAnimating || !projectAllOpenedFromIndex) return;
+
+    projectAllOpenedFromIndex = false;
+    await leaveProjectAll({ resume: false });
+
+    selectedIndexProject = indexSelectionBeforeProjectAll;
+    indexSelectionBeforeProjectAll = null;
+    await enterIndex({ preserveSelection: true });
 }
 
-
-/* =====================================================
-   LOAD PROJECTS
-   ===================================================== */
-
-async function loadProjects() {
-
-    try {
-
-        const response =
-            await fetch(
-                FILMS_JSON,
-                {
-                    /*
-                        Do not force a fresh network transfer on every
-                        mobile visit. Normal HTTP cache semantics make
-                        repeat opens substantially faster while still
-                        respecting the server's cache headers.
-                    */
-                    cache:
-                        "default"
-                }
-            );
-
-
-        if (
-            !response.ok
-        ) {
-
-            throw new Error(
-                "films.json could not be loaded"
-            );
-
-        }
-
-
-        const data =
-            await response.json();
-
-
-        projects =
-            data
-                .filter(
-                    project =>
-                        project &&
-                        typeof project.title ===
-                            "string" &&
-                        Array.isArray(
-                            project.videos
-                        ) &&
-                        project.videos.length
-                )
-                .map(
-                    prepareProject
-                );
-
-
-        if (
-            !projects.length
-        ) {
-
-            return;
-
-        }
-
-
-        buildIndex();
-
-
-        const deepLink =
-            getDeepLinkRequest();
-
-
-        const requestedProjectIndex =
-            findProjectIndexById(
-                deepLink.projectId
-            );
-
-
-        currentProjectIndex =
-            requestedProjectIndex >= 0
-                ? requestedProjectIndex
-                : 0;
-
-
-        const requestedProject =
-            currentProject();
-
-
-        let requestedRuntimeVideoIndex =
-            -1;
-
-
-        if (
-            requestedProjectIndex >= 0 &&
-            deepLink.videoNumber !==
-                null
-        ) {
-
-            requestedRuntimeVideoIndex =
-                getRuntimeVideoIndexFromOriginalNumber(
-                    requestedProject,
-                    deepLink.videoNumber
-                );
-
-        }
-
-
-        /*
-            A valid project + valid video opens the exact
-            original JSON video.
-
-            A project-only URL keeps the site's random
-            opening-video behaviour.
-
-            Invalid video numbers safely fall back to the
-            project's runtime first video.
-        */
-
-        currentVideoIndex =
-            requestedRuntimeVideoIndex >= 0
-                ? requestedRuntimeVideoIndex
-                : 0;
-
-
-        ensureSeenNormalVideos();
-
-
-        if (
-            requestedProjectIndex >= 0
-        ) {
-
-            /*
-                External/deep project links are deliberate project opens:
-                continue through the remaining videos, then return to max-2.
-            */
-            fullProjectMode =
-                true;
-
-
-            fullProjectEndIndex =
-                currentProject().videos.length - 1;
-
-        }
-
-        else {
-
-            buildNormalProjectSequence(
-                currentProjectIndex
-            );
-
-
-            normalSequencePosition =
-                0;
-
-
-            currentVideoIndex =
-                normalSequenceVideos[0];
-
-
-            markNormalVideoSeen(
-                currentProjectIndex,
-                currentVideoIndex
-            );
-
-        }
-
-
-        if (
-            deepLink.projectId &&
-            requestedProjectIndex < 0
-        ) {
-
-            const cleanUrl =
-                new URL(
-                    window.location.href
-                );
-
-
-            cleanUrl.searchParams.delete(
-                "project"
-            );
-
-
-            cleanUrl.searchParams.delete(
-                "video"
-            );
-
-
-            window.history.replaceState(
-                {},
-                "",
-                cleanUrl
-            );
-
-        }
-
-
-        else if (
-            requestedProjectIndex >= 0
-        ) {
-
-            /*
-                Normalize the URL.
-
-                - project-only links gain the exact video
-                  number chosen for this visit.
-                - invalid video numbers are replaced with
-                  the valid fallback video's number.
-            */
-
-            syncProjectUrl(
-                "replace"
-            );
-
-        }
-
-
-        setSoundLabelImmediately();
-
-
-        await loadCurrentVideo(
-            true
-        );
-
-
-        /*
-            Posters are cheap and should feel instant, so warm the
-            first visible cluster immediately. Preview MP4 metadata
-            remains an idle task.
-        */
-
-        warmVisibleIndexPosters();
-
-
-        const warmIndexWhenIdle =
-            () => {
-
-                warmIndexPreviews();
-
-            };
-
-
-        if (
-            "requestIdleCallback" in window
-        ) {
-
-            requestIdleCallback(
-                warmIndexWhenIdle,
-                {
-                    timeout:
-                        1800
-                }
-            );
-
-        }
-
-        else {
-
-            setTimeout(
-                warmIndexWhenIdle,
-                700
-            );
-
-        }
-
+indexPreviewVideo.addEventListener("click", async event => {
+    event.stopPropagation();
+    if (!selectedIndexProject) return;
+    await openSelectedIndexProjectAll();
+});
+
+indexViewAllCase = createCaseController(indexProjectViewAll, "view all");
+
+indexProjectViewAll.addEventListener("mouseenter", () => {
+    if (!hasHover() || !selectedIndexProject) return;
+    indexViewAllCase.upper();
+});
+indexProjectViewAll.addEventListener("mouseleave", () => {
+    if (!hasHover()) return;
+    indexViewAllCase.lower();
+});
+indexProjectViewAll.addEventListener("click", async event => {
+    event.stopPropagation();
+    if (!selectedIndexProject) return;
+    await indexViewAllCase.upper();
+    await openSelectedIndexProjectAll();
+});
+
+indexButton.addEventListener("click", async event => {
+    event.stopPropagation();
+    if (interfaceAnimating || projectViewAnimating) return;
+
+    if (projectAllMode) {
+        if (projectAllOpenedFromIndex) await returnProjectAllToIndex();
+        else { await leaveProjectAll({ resume: false }); await enterIndex(); }
+        return;
     }
 
-    catch (
-        error
-    ) {
+    if (indexMode) await returnFromIndex();
+    else await enterIndex();
+});
 
-        console.error(
-            error
-        );
-
-    }
-
+/* New top-right INDEX / bottom metadata geometry for film slide. */
+function getPhonePortraitSlideBounds() {
+    const infoRect = info.getBoundingClientRect();
+    const controlsRect = controls.getBoundingClientRect();
+    const top = infoRect.bottom + 18;
+    const bottom = Math.max(top + 80, controlsRect.top - 12);
+    return { top, bottom, height: Math.max(0, bottom - top) };
 }
 
+function getPhoneLandscapeArea() {
+    const computed = getComputedStyle(document.documentElement);
+    const side = parseFloat(computed.getPropertyValue("--side")) || 24;
+    const infoRect = info.getBoundingClientRect();
+    const controlsRect = controls.getBoundingClientRect();
+    const top = Math.max(10, infoRect.bottom + 8);
+    const bottom = Math.max(top + 70, controlsRect.top - 10);
+    const left = side;
+    const right = window.innerWidth - side;
+    return {
+        left, right, top, bottom,
+        width: Math.max(1, right - left),
+        height: Math.max(1, bottom - top)
+    };
+}
+
+/* Old film geometry called this because INDEX used to sit under SOUND. It is intentionally a no-op now. */
+function syncIndexToSoundCenter() {}
+function warmVisibleIndexPosters() {}
 
 /* =====================================================
-   BROWSER HISTORY / DEEP LINK NAVIGATION
+   INDEX SCROLL / AYBAK BOUNDARY
    ===================================================== */
 
-window.addEventListener(
-    "popstate",
-    async () => {
+const INDEX_BOUNDARY_WHEEL_THRESHOLD = 48;
+const INDEX_NEW_GESTURE_GAP = 190;
 
-        if (
-            !projects.length
-        ) {
+function indexCanScrollVertically() {
+    return (indexScroller.scrollHeight - indexScroller.clientHeight) > 2;
+}
+function indexIsAtBottom() {
+    return (indexScroller.scrollTop + indexScroller.clientHeight) >= (indexScroller.scrollHeight - 2);
+}
 
-            return;
+indexScroller.addEventListener("wheel", event => {
+    if (!indexMode || aybakEndCardActive) return;
+    if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+    event.preventDefault();
 
-        }
+    const now = performance.now();
+    const newGesture = (now - indexLastWheelTime) > INDEX_NEW_GESTURE_GAP;
+    indexLastWheelTime = now;
+    const canScroll = indexCanScrollVertically();
+    const atBottomBefore = indexIsAtBottom();
 
+    if (canScroll && (!atBottomBefore || event.deltaY < 0)) {
+        indexScroller.scrollTop += event.deltaY;
+        return;
+    }
 
-        const deepLink =
-            getDeepLinkRequest();
+    if (event.deltaY > 0 && atBottomBefore && newGesture) {
+        setAybakEndCard(true);
+    }
+}, { passive: false });
 
+/* =====================================================
+   AYBAK END CARD
+   ===================================================== */
 
-        const requestedProjectIndex =
-            findProjectIndexById(
-                deepLink.projectId
-            );
+function fitAybakEndCardWord() {
+    const canvas = document.getElementById("aybak-end-card-word");
+    if (!canvas || !aybakEndCard) return;
 
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    if (!viewportWidth || !viewportHeight) return;
 
-        const targetProjectIndex =
-            requestedProjectIndex >= 0
-                ? requestedProjectIndex
-                : 0;
+    const dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+    canvas.width = Math.round(viewportWidth * dpr);
+    canvas.height = Math.round(viewportHeight * dpr);
+    canvas.style.width = `${viewportWidth}px`;
+    canvas.style.height = `${viewportHeight}px`;
 
+    const context = canvas.getContext("2d");
+    if (!context) return;
 
-        const targetProject =
-            projects[
-                targetProjectIndex
-            ];
+    const word = "AYBAK";
+    const trackingEm = -0.045;
+    const sampleSize = 1000;
+    const sampleTracking = sampleSize * trackingEm;
+    const pad = 220;
 
+    const measureCanvas = document.createElement("canvas");
+    measureCanvas.width = 6200;
+    measureCanvas.height = 1800;
+    const measureContext = measureCanvas.getContext("2d", { willReadFrequently: true });
+    if (!measureContext) return;
 
-        let targetVideoIndex =
-            0;
+    measureContext.clearRect(0,0,measureCanvas.width,measureCanvas.height);
+    measureContext.fillStyle = "#fff";
+    measureContext.font = `${sampleSize}px \"Times New Roman\", Times, serif`;
+    measureContext.textBaseline = "alphabetic";
 
+    let x = pad;
+    const baseline = 1220;
+    for (const letter of word) {
+        measureContext.fillText(letter, x, baseline);
+        x += measureContext.measureText(letter).width + sampleTracking;
+    }
 
-        if (
-            requestedProjectIndex >= 0 &&
-            deepLink.videoNumber !==
-                null
-        ) {
-
-            const resolved =
-                getRuntimeVideoIndexFromOriginalNumber(
-                    targetProject,
-                    deepLink.videoNumber
-                );
-
-
-            if (
-                resolved >= 0
-            ) {
-
-                targetVideoIndex =
-                    resolved;
-
+    const pixels = measureContext.getImageData(0,0,measureCanvas.width,measureCanvas.height).data;
+    let minX = measureCanvas.width, maxX = -1, minY = measureCanvas.height, maxY = -1;
+    for (let yy=0; yy<measureCanvas.height; yy++) {
+        for (let xx=0; xx<measureCanvas.width; xx++) {
+            const alpha = pixels[(yy * measureCanvas.width + xx) * 4 + 3];
+            if (alpha > 8) {
+                if (xx < minX) minX = xx;
+                if (xx > maxX) maxX = xx;
+                if (yy < minY) minY = yy;
+                if (yy > maxY) maxY = yy;
             }
-
         }
+    }
+    if (maxX < minX || maxY < minY) return;
 
+    const contactAnchor = aybakEndCard.querySelector(".aybak-end-card-contact");
+    const sectionAnchor = aybakEndCard.querySelector(".aybak-end-card-section");
+    const contactRect = contactAnchor ? contactAnchor.getBoundingClientRect() : null;
+    const sectionRect = sectionAnchor ? sectionAnchor.getBoundingClientRect() : null;
+    const computedSide = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--side")) || 0;
+    const computedTop = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--top")) || 0;
 
-        if (
-            targetProjectIndex ===
-                currentProjectIndex &&
-            targetVideoIndex ===
-                currentVideoIndex &&
-            !indexMode &&
-            !projectAllMode
-        ) {
+    const targetInkLeft = contactRect ? contactRect.left : computedSide;
+    const targetInkRight = sectionRect ? sectionRect.right : viewportWidth - computedSide;
+    const targetInkWidth = Math.max(1, targetInkRight - targetInkLeft);
+    const sampleInkWidth = Math.max(1, maxX - minX + 1);
+    const scale = targetInkWidth / sampleInkWidth;
+    const fontSize = sampleSize * scale;
+    const tracking = fontSize * trackingEm;
 
-            return;
+    /* bottom gap equals the top gap used by contact / section switch */
+    const targetBottomGap = computedTop;
+    const sampleInkBottomFromBaseline = maxY - baseline;
+    const baselineY = viewportHeight - targetBottomGap - sampleInkBottomFromBaseline * scale;
+    const originX = targetInkLeft - minX * scale;
 
-        }
+    context.setTransform(dpr,0,0,dpr,0,0);
+    context.clearRect(0,0,viewportWidth,viewportHeight);
+    context.fillStyle = "#fff";
+    context.font = `${fontSize}px \"Times New Roman\", Times, serif`;
+    context.textBaseline = "alphabetic";
 
+    let drawX = originX;
+    for (const letter of word) {
+        context.fillText(letter, drawX, baselineY);
+        drawX += context.measureText(letter).width + tracking;
+    }
+}
 
+const AYBAK_WHEEL_THRESHOLD = 48;
+const AYBAK_SWIPE_THRESHOLD = 52;
+
+function setAybakEndCard(active) {
+    aybakEndCardActive = Boolean(active);
+    body.classList.toggle("aybak-end-card-active", aybakEndCardActive);
+    document.documentElement.classList.toggle("aybak-end-card-active", aybakEndCardActive);
+    aybakEndCard.setAttribute("aria-hidden", aybakEndCardActive ? "false" : "true");
+
+    if (aybakEndCardActive) {
+        video.pause();
         stopAllPreviews();
-
-
-        indexMode =
-            false;
-
-
-        projectAllMode =
-            false;
-
-
-        body.classList.remove(
-            "index-mode",
-            "project-all-mode"
-        );
-
-
-        indexView.classList.remove(
-            "visible"
-        );
-
-
-        currentProjectIndex =
-            targetProjectIndex;
-
-
-        currentVideoIndex =
-            targetVideoIndex;
-
-
-        renderedProjectIndex =
-            null;
-
-
-        await loadCurrentVideo(
-            true
-        );
-
+        requestAnimationFrame(fitAybakEndCardWord);
+    } else if (!indexMode && !projectAllMode) {
+        video.play().catch(() => {});
     }
-);
+
+    aybakWheelAccumulator = 0;
+}
+
+/* Anywhere on the page can open AYBAK. Only a scroll that starts inside a genuinely
+   scrollable index list is handed to the list first. */
+window.addEventListener("wheel", event => {
+    if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+    if (!aybakEndCardActive && (interfaceAnimating || projectViewAnimating)) return;
+
+    if (!aybakEndCardActive && indexMode && indexScroller.contains(event.target) && indexCanScrollVertically()) {
+        return;
+    }
+
+    event.preventDefault();
+    clearTimeout(aybakWheelResetTimer);
+    aybakWheelAccumulator += event.deltaY;
+    aybakWheelResetTimer = setTimeout(() => { aybakWheelAccumulator = 0; }, 140);
+
+    if (!aybakEndCardActive && aybakWheelAccumulator >= AYBAK_WHEEL_THRESHOLD) {
+        setAybakEndCard(true);
+        return;
+    }
+    if (aybakEndCardActive && aybakWheelAccumulator <= -AYBAK_WHEEL_THRESHOLD) {
+        setAybakEndCard(false);
+    }
+}, { passive: false });
+
+window.addEventListener("touchstart", event => {
+    if (!event.changedTouches.length) return;
+    const touch = event.changedTouches[0];
+    aybakTouchStartX = touch.clientX;
+    aybakTouchStartY = touch.clientY;
+    aybakTouchStartedInIndexScroller = Boolean(indexMode && indexScroller.contains(event.target) && indexCanScrollVertically());
+    aybakTouchIndexAtBottomStart = aybakTouchStartedInIndexScroller && indexIsAtBottom();
+}, { passive: true });
+
+window.addEventListener("touchend", event => {
+    if (aybakTouchStartX === null || aybakTouchStartY === null || !event.changedTouches.length) return;
+    const touch = event.changedTouches[0];
+    const deltaX = touch.clientX - aybakTouchStartX;
+    const deltaY = touch.clientY - aybakTouchStartY;
+    const startedInScroller = aybakTouchStartedInIndexScroller;
+    const indexWasAtBottom = aybakTouchIndexAtBottomStart;
+    aybakTouchStartX = null;
+    aybakTouchStartY = null;
+    aybakTouchStartedInIndexScroller = false;
+    aybakTouchIndexAtBottomStart = false;
+
+    if (Math.abs(deltaY) <= Math.abs(deltaX) || Math.abs(deltaY) < AYBAK_SWIPE_THRESHOLD) return;
+    if (!aybakEndCardActive && (interfaceAnimating || projectViewAnimating)) return;
+
+    if (!aybakEndCardActive && startedInScroller) {
+        if (indexWasAtBottom && deltaY < 0) setAybakEndCard(true);
+        return;
+    }
+
+    if (!aybakEndCardActive && deltaY < 0) setAybakEndCard(true);
+    else if (aybakEndCardActive && deltaY > 0) setAybakEndCard(false);
+}, { passive: true });
+
+window.addEventListener("keydown", event => {
+    if (!aybakEndCardActive && ["ArrowDown","PageDown","End"].includes(event.key)) {
+        event.preventDefault(); setAybakEndCard(true); return;
+    }
+    if (aybakEndCardActive && ["ArrowUp","PageUp","Home","Escape"].includes(event.key)) {
+        event.preventDefault(); setAybakEndCard(false);
+    }
+});
+
+aybakEndCard.addEventListener("click", event => { event.stopPropagation(); });
+
+window.addEventListener("resize", () => {
+    updateResponsiveMode();
+    if (indexMode) requestAnimationFrame(layoutTypographicIndex);
+    if (aybakEndCardActive) requestAnimationFrame(fitAybakEndCardWord);
+}, { passive: true });
+
+window.addEventListener("orientationchange", () => {
+    setTimeout(() => {
+        updateResponsiveMode();
+        if (indexMode) layoutTypographicIndex();
+        fitAybakEndCardWord();
+    }, 100);
+});
+
+updateResponsiveMode();
+requestAnimationFrame(fitAybakEndCardWord);
 
 
 /* =====================================================
@@ -10324,28 +8735,6 @@ renderIndexWord(
 loadProjects();
 
 
-
-window.addEventListener(
-    "resize",
-    () => {
-
-        syncIndexToSoundCenter();
-
-    }
-);
-
-
-window.addEventListener(
-    "orientationchange",
-    () => {
-
-        setTimeout(
-            syncIndexToSoundCenter,
-            80
-        );
-
-    }
-);
 
 </script>
 
