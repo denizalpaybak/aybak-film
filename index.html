@@ -1816,6 +1816,92 @@ body.aybak-end-card-active {
 }
 
 
+
+
+/* =====================================================
+   V27 — CORNER META + MAXIMUM PORTRAIT PLAYER
+   ===================================================== */
+
+/*
+    The lower metadata is a permanent viewport bar:
+    - title/date share Denizalp's left axis
+    - view all/count share INDEX's right axis
+    - lower inset equals the upper inset (--top)
+    It stays in exactly the same place in Slide and View All.
+*/
+#project-meta,
+body.phone-landscape #project-meta,
+body.phone-portrait #project-meta {
+    position: fixed !important;
+    left: var(--side) !important;
+    right: var(--side) !important;
+    bottom: var(--top) !important;
+    top: auto !important;
+    width: auto !important;
+    margin: 0 !important;
+    align-self: auto !important;
+    transform: none !important;
+}
+
+#project-title,
+#project-date {
+    justify-self: start !important;
+    text-align: left !important;
+}
+
+#view-all-button,
+#project-counter {
+    justify-self: end !important;
+    text-align: right !important;
+    padding-left: 0 !important;
+}
+
+/* Slide: view all on first line, film count below. */
+body:not(.project-all-mode) #view-all-button {
+    grid-row: 1 !important;
+}
+body:not(.project-all-mode) #project-counter {
+    grid-row: 2 !important;
+}
+
+/* View All: all (x films) on first line, close below. */
+body.project-all-mode #project-counter {
+    grid-row: 1 !important;
+}
+body.project-all-mode #view-all-button {
+    grid-row: 2 !important;
+}
+
+/*
+    Portrait control row remains tied to the video width.
+    Its only vertical gap from the film is one text line.
+*/
+body.phone-portrait #controls {
+    width: 100% !important;
+    margin-top:
+        calc(
+            var(--font-size) *
+            var(--line-height)
+        ) !important;
+}
+
+/*
+    View All occupies every safe pixel between the top logo area
+    and the fixed lower metadata.
+*/
+body.phone-portrait #project-all-view {
+    left: var(--side) !important;
+    right: var(--side) !important;
+}
+
+/* Black-card safe-area hardening. */
+html.aybak-end-card-active,
+body.aybak-end-card-active,
+body.aybak-end-card-active::before {
+    background: #000 !important;
+}
+
+
 </style>
 
 </head>
@@ -5700,51 +5786,88 @@ function fitMainVideo() {
         isPhonePortrait()
     ) {
 
-        const bounds =
-            getPhonePortraitSlideBounds();
-
-
-        const maxMediaWidth =
-            vw -
-            side * 2;
-
-
-        /*
-            projectMeta is now fixed to the viewport bottom and therefore
-            does not consume height inside #video-block. Reserve only the
-            controls plus the two one-line gaps around that controls row.
-        */
-        const lineGap =
-            (
-                parseFloat(
-                    getComputedStyle(
-                        document.documentElement
-                    ).getPropertyValue(
-                        "--font-size"
-                    )
-                ) || 13
-            ) *
-            (
-                parseFloat(
-                    getComputedStyle(
-                        document.documentElement
-                    ).getPropertyValue(
-                        "--line-height"
-                    )
-                ) || 1.15
+        const computedRoot =
+            getComputedStyle(
+                document.documentElement
             );
 
 
-        const interfaceHeight =
-            controls.offsetHeight +
-            lineGap * 2;
+        const fontSize =
+            parseFloat(
+                computedRoot.getPropertyValue(
+                    "--font-size"
+                )
+            ) || 13;
+
+
+        const lineHeight =
+            parseFloat(
+                computedRoot.getPropertyValue(
+                    "--line-height"
+                )
+            ) || 1.15;
+
+
+        const lineGap =
+            fontSize *
+            lineHeight;
+
+
+        const logoRect =
+            logo.getBoundingClientRect();
+
+
+        const metaRect =
+            projectMeta.getBoundingClientRect();
+
+
+        /*
+            Exact available slide field:
+
+            logo
+            1 text-line breathing room
+            VIDEO
+            1 text-line
+            previous / sound / next
+            1 text-line
+            fixed metadata
+
+            Width is always the full safe width first. Only genuinely
+            portrait media is reduced when the vertical collision limit
+            requires it.
+        */
+        const mediaTop =
+            logoRect.bottom +
+            lineGap;
+
+
+        const controlsHeight =
+            Math.max(
+                controls.offsetHeight,
+                fontSize * lineHeight
+            );
+
+
+        const controlsBottom =
+            metaRect.top -
+            lineGap;
 
 
         const maxMediaHeight =
             Math.max(
-                100,
-                bounds.height -
-                interfaceHeight
+                80,
+                controlsBottom -
+                controlsHeight -
+                lineGap -
+                mediaTop
+            );
+
+
+        const maxMediaWidth =
+            Math.max(
+                80,
+                vw -
+                side * 2
             );
 
 
@@ -5757,6 +5880,10 @@ function fitMainVideo() {
             ratio;
 
 
+        /*
+            Start from maximum safe width. If that would collide
+            vertically, reduce proportionally until it fits.
+        */
         if (
             mediaHeight >
             maxMediaHeight
@@ -5769,46 +5896,6 @@ function fitMainVideo() {
             mediaWidth =
                 mediaHeight *
                 ratio;
-
-        }
-
-
-        /*
-            Allow portrait video to become large, while
-            INDEX still remains safely below controls.
-        */
-
-        if (
-            ratio <
-            1
-        ) {
-
-            mediaHeight =
-                Math.min(
-                    maxMediaHeight,
-                    vh * 0.82
-                );
-
-
-            mediaWidth =
-                mediaHeight *
-                ratio;
-
-
-            if (
-                mediaWidth >
-                maxMediaWidth
-            ) {
-
-                mediaWidth =
-                    maxMediaWidth;
-
-
-                mediaHeight =
-                    mediaWidth /
-                    ratio;
-
-            }
 
         }
 
@@ -5833,6 +5920,22 @@ function fitMainVideo() {
             `${mediaHeight}px`;
 
 
+        mediaHolder.style.left =
+            "";
+
+
+        mediaHolder.style.right =
+            "";
+
+
+        mediaHolder.style.top =
+            "";
+
+
+        mediaHolder.style.bottom =
+            "";
+
+
         video.style.width =
             `${mediaWidth}px`;
 
@@ -5841,6 +5944,11 @@ function fitMainVideo() {
             `${mediaHeight}px`;
 
 
+        /*
+            Bottom-align the video+controls block to the metadata.
+            This makes the second bar exactly one text line below
+            the controls, regardless of viewport height.
+        */
         requestAnimationFrame(
             () => {
 
@@ -5850,22 +5958,17 @@ function fitMainVideo() {
                         .height;
 
 
-                const free =
+                const desiredBottom =
+                    metaRect.top -
+                    lineGap;
+
+
+                const top =
                     Math.max(
-                        0,
-                        bounds.height -
+                        mediaTop,
+                        desiredBottom -
                         blockHeight
                     );
-
-
-                /*
-                    Keep only a tiny optical centering allowance. The goal
-                    is to use the available portrait field as fully as
-                    possible without colliding with the fixed metadata.
-                */
-                const top =
-                    bounds.top +
-                    free * 0.10;
 
 
                 videoBlock.style.left =
@@ -7766,15 +7869,38 @@ function syncProjectAllBounds() {
         ) || 48;
 
 
+    const rootStyle =
+        getComputedStyle(
+            document.documentElement
+        );
+
+
+    const portraitLineGap =
+        (
+            parseFloat(
+                rootStyle.getPropertyValue(
+                    "--font-size"
+                )
+            ) || 13
+        ) *
+        (
+            parseFloat(
+                rootStyle.getPropertyValue(
+                    "--line-height"
+                )
+            ) || 1.15
+        );
+
+
     const topGap =
         isPhonePortrait()
-            ? 6
+            ? portraitLineGap
             : 14;
 
 
     const bottomGap =
         isPhonePortrait()
-            ? 6
+            ? portraitLineGap
             : 14;
 
 
