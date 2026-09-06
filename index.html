@@ -1488,10 +1488,7 @@ body.aybak-end-card-active {
 
 #aybak-end-card {
     position: fixed;
-    left: calc(-1 * env(safe-area-inset-left));
-    right: calc(-1 * env(safe-area-inset-right));
-    top: calc(-1 * env(safe-area-inset-top));
-    bottom: calc(-1 * env(safe-area-inset-bottom));
+    inset: 0;
     z-index: 10000;
     display: block;
     overflow: hidden;
@@ -2444,37 +2441,28 @@ function fitAybakEndCardWord() {
         return;
     }
 
+    /*
+        Match the landing-page geometry exactly:
+        - the end card itself is the real viewport, never an oversized safe-area box
+        - A / K visible ink edges sit on the same left / right axes as the top copy
+        - native Acumin kerning only
+        - lower edge follows the rendered project-meta bottom margin
+    */
     const viewportWidth =
         Math.max(
             1,
+            document.documentElement.clientWidth ||
+            window.innerWidth ||
             aybakEndCard.clientWidth
         );
 
     const viewportHeight =
         Math.max(
             1,
+            document.documentElement.clientHeight ||
+            window.innerHeight ||
             aybakEndCard.clientHeight
         );
-
-    const contactAnchor =
-        aybakEndCard.querySelector(
-            ".aybak-end-card-contact"
-        );
-
-    const sectionAnchor =
-        aybakEndCard.querySelector(
-            ".aybak-end-card-section"
-        );
-
-    const contactRect =
-        contactAnchor
-            ? contactAnchor.getBoundingClientRect()
-            : null;
-
-    const sectionRect =
-        sectionAnchor
-            ? sectionAnchor.getBoundingClientRect()
-            : null;
 
     const computedStyle =
         getComputedStyle(
@@ -2495,25 +2483,13 @@ function fitAybakEndCardWord() {
             )
         ) || 0;
 
-    /*
-        Horizontal ink edges follow the same two axes as the
-        upper-left identity and upper-right PHOTOGRAPHY label.
-    */
     const targetInkLeft =
-        contactRect
-            ? contactRect.left
-            : computedSide;
+        computedSide;
 
     const targetInkRight =
-        sectionRect
-            ? sectionRect.right
-            : viewportWidth - computedSide;
+        viewportWidth -
+        computedSide;
 
-    /*
-        The lower AYBAK margin follows the actual lower metadata margin.
-        This is intentionally measured from the rendered project metadata,
-        rather than assuming mobile and desktop share the same variable.
-    */
     const projectMetaElement =
         document.getElementById(
             "project-meta"
@@ -2525,10 +2501,15 @@ function fitAybakEndCardWord() {
             : null;
 
     const bottomGap =
-        projectMetaRect
+        projectMetaRect &&
+        Number.isFinite(
+            projectMetaRect.bottom
+        ) &&
+        projectMetaRect.bottom > 0
             ? Math.max(
                 0,
-                window.innerHeight - projectMetaRect.bottom
+                viewportHeight -
+                projectMetaRect.bottom
             )
             : Math.max(
                 0,
@@ -2541,9 +2522,6 @@ function fitAybakEndCardWord() {
     const sampleSize =
         1000;
 
-    const padding =
-        360;
-
     const measureCanvas =
         document.createElement(
             "canvas"
@@ -2554,175 +2532,57 @@ function fitAybakEndCardWord() {
             "2d"
         );
 
+    measureContext.textBaseline =
+        "alphabetic";
+
+    measureContext.font =
+        `600 ${sampleSize}px "acumin-pro-wide", Arial, Helvetica, sans-serif`;
+
     if (
         "fontKerning" in measureContext
     ) {
         measureContext.fontKerning =
-            "normal";
+            "auto";
     }
 
-    measureContext.font =
-        `600 ${sampleSize}px "acumin-pro-wide", sans-serif`;
-
-    const measured =
+    const metrics =
         measureContext.measureText(
             word
         );
 
-    const metricLeft =
+    const inkLeft =
         Number.isFinite(
-            measured.actualBoundingBoxLeft
+            metrics.actualBoundingBoxLeft
         )
-            ? measured.actualBoundingBoxLeft
+            ? metrics.actualBoundingBoxLeft
             : 0;
 
-    const metricRight =
+    const inkRight =
         Number.isFinite(
-            measured.actualBoundingBoxRight
+            metrics.actualBoundingBoxRight
         )
-            ? measured.actualBoundingBoxRight
-            : measured.width;
+            ? metrics.actualBoundingBoxRight
+            : metrics.width;
 
-    const ascent =
-        Math.ceil(
-            Number.isFinite(
-                measured.actualBoundingBoxAscent
-            )
-                ? measured.actualBoundingBoxAscent
-                : sampleSize
-        );
-
-    const descent =
-        Math.ceil(
-            Number.isFinite(
-                measured.actualBoundingBoxDescent
-            )
-                ? measured.actualBoundingBoxDescent
-                : sampleSize * 0.25
-        );
-
-    measureCanvas.width =
-        Math.ceil(
-            measured.width +
-            padding * 2
-        );
-
-    measureCanvas.height =
-        Math.ceil(
-            ascent +
-            descent +
-            padding * 2
-        );
-
-    const sampleContext =
-        measureCanvas.getContext(
-            "2d"
-        );
-
-    if (
-        "fontKerning" in sampleContext
-    ) {
-        sampleContext.fontKerning =
-            "normal";
-    }
-
-    sampleContext.font =
-        `600 ${sampleSize}px "acumin-pro-wide", sans-serif`;
-
-    sampleContext.textBaseline =
-        "alphabetic";
-
-    sampleContext.fillStyle =
-        "#fff";
-
-    const sampleOriginX =
-        padding + metricLeft;
-
-    const sampleBaselineY =
-        padding + ascent;
-
-    sampleContext.fillText(
-        word,
-        sampleOriginX,
-        sampleBaselineY
-    );
-
-    const pixels =
-        sampleContext.getImageData(
-            0,
-            0,
-            measureCanvas.width,
-            measureCanvas.height
-        );
-
-    let minX =
-        measureCanvas.width;
-
-    let maxX =
-        -1;
-
-    let maxY =
-        -1;
-
-    for (
-        let y = 0;
-        y < measureCanvas.height;
-        y++
-    ) {
-        for (
-            let x = 0;
-            x < measureCanvas.width;
-            x++
-        ) {
-            const alpha =
-                pixels.data[
-                    (y * measureCanvas.width + x) * 4 + 3
-                ];
-
-            if (
-                alpha > 8
-            ) {
-                minX =
-                    Math.min(
-                        minX,
-                        x
-                    );
-
-                maxX =
-                    Math.max(
-                        maxX,
-                        x
-                    );
-
-                maxY =
-                    Math.max(
-                        maxY,
-                        y
-                    );
-            }
-        }
-    }
-
-    if (
-        maxX < minX ||
-        maxY < 0
-    ) {
-        return;
-    }
-
-    const sampleInkLeft =
-        minX - sampleOriginX;
+    const inkDescent =
+        Number.isFinite(
+            metrics.actualBoundingBoxDescent
+        )
+            ? metrics.actualBoundingBoxDescent
+            : 0;
 
     const sampleInkWidth =
-        maxX - minX + 1;
-
-    const sampleInkBottom =
-        maxY - sampleBaselineY;
+        Math.max(
+            1,
+            inkLeft +
+            inkRight
+        );
 
     const targetInkWidth =
         Math.max(
             1,
-            targetInkRight - targetInkLeft
+            targetInkRight -
+            targetInkLeft
         );
 
     const fontSize =
@@ -2735,13 +2595,15 @@ function fitAybakEndCardWord() {
         sampleSize;
 
     const originX =
-        targetInkLeft -
-        sampleInkLeft * scale;
+        targetInkLeft +
+        inkLeft *
+        scale;
 
     const baselineY =
         viewportHeight -
         bottomGap -
-        sampleInkBottom * scale;
+        inkDescent *
+        scale;
 
     const pixelRatio =
         Math.max(
@@ -2753,7 +2615,8 @@ function fitAybakEndCardWord() {
         Math.max(
             1,
             Math.round(
-                viewportWidth * pixelRatio
+                viewportWidth *
+                pixelRatio
             )
         );
 
@@ -2761,7 +2624,8 @@ function fitAybakEndCardWord() {
         Math.max(
             1,
             Math.round(
-                viewportHeight * pixelRatio
+                viewportHeight *
+                pixelRatio
             )
         );
 
@@ -2792,13 +2656,6 @@ function fitAybakEndCardWord() {
         viewportHeight
     );
 
-    if (
-        "fontKerning" in context
-    ) {
-        context.fontKerning =
-            "normal";
-    }
-
     context.textBaseline =
         "alphabetic";
 
@@ -2806,9 +2663,15 @@ function fitAybakEndCardWord() {
         "#fff";
 
     context.font =
-        `600 ${fontSize}px "acumin-pro-wide", sans-serif`;
+        `600 ${fontSize}px "acumin-pro-wide", Arial, Helvetica, sans-serif`;
 
-    /* Natural Acumin kerning only: no tracking / pair overrides. */
+    if (
+        "fontKerning" in context
+    ) {
+        context.fontKerning =
+            "auto";
+    }
+
     context.fillText(
         word,
         originX,
