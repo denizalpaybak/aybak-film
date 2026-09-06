@@ -2726,6 +2726,9 @@ function setAybakEndCard(
         nextActive
     ) {
 
+        clearDesktopProjectAdvance();
+
+
         /*
             AYBAK is always the inverse of the surface beneath it:
             dark surface -> white AYBAK page / black copy
@@ -7002,7 +7005,19 @@ video.addEventListener(
 
 video.addEventListener(
     "ended",
-    nextFilm
+    () => {
+        if (
+            !passiveProjectAdvanceEnabled ||
+            !isPhoneLayout() ||
+            projectAllMode ||
+            indexMode ||
+            aybakEndCardActive
+        ) {
+            return;
+        }
+
+        nextFilm();
+    }
 );
 
 
@@ -8732,6 +8747,8 @@ async function enterProjectAll() {
     projectViewAnimating =
         false;
 
+    scheduleDesktopProjectAdvance();
+
 }
 
 
@@ -8741,7 +8758,10 @@ async function enterProjectAll() {
    ===================================================== */
 
 async function switchProjectAllProject(
-    direction
+    direction,
+    {
+        passive = false
+    } = {}
 ) {
 
     if (
@@ -8758,6 +8778,11 @@ async function switchProjectAllProject(
     projectViewAnimating =
         true;
 
+    clearDesktopProjectAdvance();
+
+    if (!passive) {
+        noteUiInteraction();
+    }
 
     stopAllPreviews();
 
@@ -8895,6 +8920,10 @@ async function switchProjectAllProject(
 
     projectViewAnimating =
         false;
+
+    if (passiveProjectAdvanceEnabled) {
+        scheduleDesktopProjectAdvance();
+    }
 
 }
 
@@ -9331,166 +9360,175 @@ projectCounter.addEventListener(
    PROJECT TITLE — SLIDE <-> VIEW ALL
    ===================================================== */
 
-async function activateProjectTitleAction() {
+let projectTitleHoverToken =
+    0;
 
+async function setProjectTitleHoverCase(
+    hovered
+) {
+    if (
+        projectViewAnimating ||
+        indexMode
+    ) {
+        return;
+    }
+
+    const token =
+        ++projectTitleHoverToken;
+
+    const project =
+        currentProject();
+
+    const toUpper =
+        projectAllMode
+            ? !hovered
+            : hovered;
+
+    /*
+        Title + date start at the same time and use the same duration,
+        so both lines finish together.
+    */
+    await Promise.all(
+        [
+            animateCase(
+                projectTitle,
+                project.title,
+                toUpper,
+                CASE_DURATION
+            ),
+
+            animateCase(
+                projectDate,
+                project.date || "",
+                toUpper,
+                CASE_DURATION
+            )
+        ]
+    );
+
+    if (token !== projectTitleHoverToken) {
+        return;
+    }
+}
+
+async function activateProjectTitleAction() {
     if (
         projectTitleActionBusy ||
         projectViewAnimating ||
         indexMode
     ) {
-
         return;
-
     }
 
-
-    projectTitleActionBusy =
-        true;
-
+    projectTitleActionBusy = true;
+    noteUiInteraction();
 
     const project =
         currentProject();
 
+    if (!hasHover()) {
+        const toUpper =
+            !projectAllMode;
 
-    if (
-        projectAllMode
-    ) {
+        await Promise.all(
+            [
+                animateCase(
+                    projectTitle,
+                    project.title,
+                    toUpper,
+                    CASE_DURATION
+                ),
 
-        await animateCase(
-            projectTitle,
-            project.title,
-            false
+                animateCase(
+                    projectDate,
+                    project.date || "",
+                    toUpper,
+                    CASE_DURATION
+                )
+            ]
         );
 
+        await wait(
+            MOBILE_NAV_HOLD
+        );
+    }
 
-        if (
-            !hasHover()
-        ) {
-
-            await wait(
-                MOBILE_NAV_HOLD
-            );
-
-        }
-
-
+    if (projectAllMode) {
         await leaveProjectAll(
-            {
-                resume: true
-            }
+            { resume: true }
         );
-
     }
-
     else {
-
-        await animateCase(
-            projectTitle,
-            project.title,
-            true
-        );
-
-
-        if (
-            !hasHover()
-        ) {
-
-            await wait(
-                MOBILE_NAV_HOLD
-            );
-
-        }
-
-
         await enterProjectAll();
-
     }
 
-
-    projectTitleActionBusy =
-        false;
-
+    projectTitleActionBusy = false;
 }
-
 
 projectTitle.setAttribute(
     "role",
     "button"
 );
 
-
 projectTitle.setAttribute(
     "tabindex",
     "0"
 );
 
-
 projectTitle.addEventListener(
     "mouseenter",
     () => {
-
         if (
             !hasHover() ||
             projectTitleActionBusy ||
             projectViewAnimating ||
             indexMode
         ) {
-
             return;
-
         }
 
-
-        activateProjectTitleAction();
-
+        setProjectTitleHoverCase(true);
     }
 );
 
+projectTitle.addEventListener(
+    "mouseleave",
+    () => {
+        if (
+            !hasHover() ||
+            projectTitleActionBusy ||
+            projectViewAnimating ||
+            indexMode
+        ) {
+            return;
+        }
+
+        setProjectTitleHoverCase(false);
+    }
+);
 
 projectTitle.addEventListener(
     "click",
     event => {
-
         event.stopPropagation();
-
-
-        if (
-            hasHover()
-        ) {
-
-            return;
-
-        }
-
-
         activateProjectTitleAction();
-
     }
 );
-
 
 projectTitle.addEventListener(
     "keydown",
     event => {
-
         if (
             event.code !== "Enter" &&
             event.code !== "Space"
         ) {
-
             return;
-
         }
 
-
         event.preventDefault();
-
-
         activateProjectTitleAction();
-
     }
 );
-
 
 /* =====================================================
    INDEX ORDER
@@ -9607,6 +9645,70 @@ let projectAllSwipeStartY =
 
 let projectAllSwipeStartTime =
     0;
+
+
+/* =====================================================
+   PASSIVE PROJECT ADVANCE
+   ===================================================== */
+
+const DESKTOP_PROJECT_PREVIEW_DURATION =
+    PREVIEW_DURATION * 1000;
+
+let passiveProjectAdvanceEnabled =
+    true;
+
+let desktopProjectAdvanceTimer =
+    null;
+
+function clearDesktopProjectAdvance() {
+    if (desktopProjectAdvanceTimer !== null) {
+        clearTimeout(desktopProjectAdvanceTimer);
+        desktopProjectAdvanceTimer = null;
+    }
+}
+
+function noteUiInteraction() {
+    passiveProjectAdvanceEnabled = false;
+    clearDesktopProjectAdvance();
+}
+
+function scheduleDesktopProjectAdvance() {
+    clearDesktopProjectAdvance();
+
+    if (
+        !passiveProjectAdvanceEnabled ||
+        !isDesktop() ||
+        !projectAllMode ||
+        indexMode ||
+        aybakEndCardActive
+    ) {
+        return;
+    }
+
+    desktopProjectAdvanceTimer =
+        setTimeout(
+            async () => {
+                desktopProjectAdvanceTimer = null;
+
+                if (
+                    !passiveProjectAdvanceEnabled ||
+                    !isDesktop() ||
+                    !projectAllMode ||
+                    indexMode ||
+                    aybakEndCardActive ||
+                    projectViewAnimating
+                ) {
+                    return;
+                }
+
+                await switchProjectAllProject(
+                    1,
+                    { passive: true }
+                );
+            },
+            DESKTOP_PROJECT_PREVIEW_DURATION
+        );
+}
 
 
 let indexBoundaryWheelAccumulator =
@@ -11347,6 +11449,44 @@ indexScroller.addEventListener(
 );
 
 
+
+/* =====================================================
+   USER INTERACTION STOPS PASSIVE ADVANCE
+   ===================================================== */
+
+document.addEventListener(
+    "pointerdown",
+    event => {
+        const target =
+            event.target;
+
+        if (
+            !target ||
+            !target.closest
+        ) {
+            return;
+        }
+
+        const interactive =
+            target.closest(
+                [
+                    "button",
+                    "a",
+                    "#project-title",
+                    "#project-date",
+                    "#film-video",
+                    ".index-project-row",
+                    ".project-all-item"
+                ].join(",")
+            );
+
+        if (interactive) {
+            noteUiInteraction();
+        }
+    },
+    true
+);
+
 /* =====================================================
    GLOBAL KEYBOARD
    ===================================================== */
@@ -11357,6 +11497,20 @@ document.addEventListener(
 
         const target =
             event.target;
+
+        if (
+            [
+                "ArrowLeft",
+                "ArrowRight",
+                "ArrowUp",
+                "ArrowDown",
+                "Space",
+                "Enter",
+                "Escape"
+            ].includes(event.code)
+        ) {
+            noteUiInteraction();
+        }
 
 
         if (
@@ -11393,6 +11547,20 @@ document.addEventListener(
 
             return;
 
+        }
+
+
+        if (
+            event.code ===
+            "ArrowDown"
+        ) {
+            event.preventDefault();
+
+            setAybakEndCard(
+                true
+            );
+
+            return;
         }
 
 
@@ -11632,6 +11800,9 @@ projectAllView.addEventListener(
             return;
 
         }
+
+
+        noteUiInteraction();
 
 
         if (
