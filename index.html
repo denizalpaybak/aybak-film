@@ -1949,6 +1949,36 @@ body.aybak-end-card-active.aybak-end-card-light .aybak-end-card-link:active {
 }
 
 
+
+
+/* =====================================================
+   V30 — PROJECT TITLE ACTION / VIEW ALL PROJECT NAV
+   ===================================================== */
+
+#project-title {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body.project-all-mode #project-counter,
+body.project-all-mode #view-all-button {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+
+/* View All project navigation: NEXT above, PREVIOUS below. */
+body.project-all-mode #project-counter {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+}
+
+body.project-all-mode #view-all-button {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+}
+
+
 </style>
 
 </head>
@@ -3415,10 +3445,11 @@ function forceProjectThemeOppositeIndex() {
 /*
     NORMAL FILM ROTATION
 
-    In the ordinary slide flow, each project contributes at most
-    two videos per pass. The chosen videos are random, unseen videos
-    are prioritised, and playback follows the project's own runtime
-    order.
+    In the ordinary slide flow, each project contributes exactly
+    one randomly selected video per pass. Unseen videos are prioritised.
+
+    A deliberate video opened from VIEW ALL still switches temporarily
+    to the project's full-project run, preserving that existing behaviour.
 
     Opening a project from INDEX or selecting a video from VIEW ALL
     temporarily switches to a full-project run. After that project
@@ -3426,7 +3457,7 @@ function forceProjectThemeOppositeIndex() {
 */
 
 const NORMAL_PROJECT_VIDEO_LIMIT =
-    2;
+    1;
 
 let seenNormalVideos =
     [];
@@ -6855,11 +6886,53 @@ function previousFilm() {
 
 
     if (
-        currentVideoIndex >
-        0
+        fullProjectMode
     ) {
 
-        currentVideoIndex--;
+        if (
+            currentVideoIndex >
+            0
+        ) {
+
+            currentVideoIndex--;
+
+        }
+
+        else {
+
+            fullProjectMode =
+                false;
+
+
+            fullProjectEndIndex =
+                null;
+
+
+            currentProjectIndex =
+                normalizeProjectIndex(
+                    currentProjectIndex - 1
+                );
+
+
+            buildNormalProjectSequence(
+                currentProjectIndex
+            );
+
+
+            normalSequencePosition =
+                0;
+
+
+            currentVideoIndex =
+                normalSequenceVideos[0];
+
+
+            markNormalVideoSeen(
+                currentProjectIndex,
+                currentVideoIndex
+            );
+
+        }
 
     }
 
@@ -6871,10 +6944,23 @@ function previousFilm() {
             );
 
 
+        buildNormalProjectSequence(
+            currentProjectIndex
+        );
+
+
+        normalSequencePosition =
+            0;
+
+
         currentVideoIndex =
-            projects[
-                currentProjectIndex
-            ].videos.length - 1;
+            normalSequenceVideos[0];
+
+
+        markNormalVideoSeen(
+            currentProjectIndex,
+            currentVideoIndex
+        );
 
     }
 
@@ -8472,7 +8558,7 @@ viewAllButton.addEventListener(
         animateCase(
             viewAllButton,
             projectAllMode
-                ? "close"
+                ? "previous"
                 : "view all",
             true
         );
@@ -8502,7 +8588,7 @@ viewAllButton.addEventListener(
         animateCase(
             viewAllButton,
             projectAllMode
-                ? "close"
+                ? "previous"
                 : "view all",
             false
         );
@@ -8543,6 +8629,14 @@ async function enterProjectAll() {
         currentProject();
 
 
+    projectAllEntryProjectIndex =
+        currentProjectIndex;
+
+
+    projectAllProjectChanged =
+        false;
+
+
     buildProjectAllGrid();
 
 
@@ -8555,20 +8649,35 @@ async function enterProjectAll() {
     );
 
 
+    projectCounter.setAttribute(
+        "role",
+        "button"
+    );
+
+
+    projectCounter.setAttribute(
+        "tabindex",
+        "0"
+    );
+
+
+    projectCounter.setAttribute(
+        "aria-label",
+        "next project"
+    );
+
+
+    viewAllButton.setAttribute(
+        "aria-label",
+        "previous project"
+    );
+
+
     requestAnimationFrame(
         () => {
 
             layoutProjectAllGrid();
 
-
-            /*
-                Desktop may initialise the visible View All set
-                immediately.
-
-                On phones we deliberately do NOT wake every MP4.
-                IntersectionObserver starts only previews actually
-                inside / immediately next to the visible composition.
-            */
 
             if (
                 !isPhoneLayout()
@@ -8582,15 +8691,6 @@ async function enterProjectAll() {
 
         }
     );
-
-
-    const buttonTarget =
-        (
-            hasHover() &&
-            viewButtonHovered
-        )
-            ? "CLOSE"
-            : "close";
 
 
     await Promise.all(
@@ -8610,15 +8710,18 @@ async function enterProjectAll() {
 
             morphSequential(
                 projectCounter,
-                getAllCounterText(
-                    project.videos.length
-                ),
+                "next",
                 STATE_MORPH_DURATION
             ),
 
             morphSequential(
                 viewAllButton,
-                buttonTarget,
+                (
+                    hasHover() &&
+                    viewButtonHovered
+                )
+                    ? "PREVIOUS"
+                    : "previous",
                 STATE_MORPH_DURATION
             )
 
@@ -8631,6 +8734,210 @@ async function enterProjectAll() {
 
 }
 
+
+
+/* =====================================================
+   VIEW ALL — PROJECT NAVIGATION
+   ===================================================== */
+
+async function switchProjectAllProject(
+    direction
+) {
+
+    if (
+        !projectAllMode ||
+        projectViewAnimating ||
+        !projects.length
+    ) {
+
+        return;
+
+    }
+
+
+    projectViewAnimating =
+        true;
+
+
+    stopAllPreviews();
+
+
+    currentProjectIndex =
+        normalizeProjectIndex(
+            currentProjectIndex +
+            (
+                direction >= 0
+                    ? 1
+                    : -1
+            )
+        );
+
+
+    /*
+        View All project navigation still prepares the single random
+        slide film that will be used if the user later returns to Slide.
+    */
+    fullProjectMode =
+        false;
+
+
+    fullProjectEndIndex =
+        null;
+
+
+    buildNormalProjectSequence(
+        currentProjectIndex
+    );
+
+
+    normalSequencePosition =
+        0;
+
+
+    currentVideoIndex =
+        normalSequenceVideos[0];
+
+
+    markNormalVideoSeen(
+        currentProjectIndex,
+        currentVideoIndex
+    );
+
+
+    projectAllProjectChanged =
+        true;
+
+
+    syncProjectThemeForCurrentProject();
+
+
+    const project =
+        currentProject();
+
+
+    renderedProjectIndex =
+        currentProjectIndex;
+
+
+    syncProjectUrl(
+        "push"
+    );
+
+
+    buildProjectAllGrid();
+
+
+    renderBaseTypography(
+        projectTitle,
+        project.title.toUpperCase()
+    );
+
+
+    projectTitle.dataset.rawText =
+        project.title.toUpperCase();
+
+
+    renderBaseTypography(
+        projectDate,
+        (
+            project.date ||
+            ""
+        ).toUpperCase()
+    );
+
+
+    projectDate.dataset.rawText =
+        (
+            project.date ||
+            ""
+        ).toUpperCase();
+
+
+    renderBaseTypography(
+        projectCounter,
+        "next"
+    );
+
+
+    projectCounter.dataset.rawText =
+        "next";
+
+
+    renderBaseTypography(
+        viewAllButton,
+        "previous"
+    );
+
+
+    viewAllButton.dataset.rawText =
+        "previous";
+
+
+    requestAnimationFrame(
+        () => {
+
+            layoutProjectAllGrid();
+
+
+            if (
+                !isPhoneLayout()
+            ) {
+
+                activatePreviewsIn(
+                    projectAllGrid
+                );
+
+            }
+
+        }
+    );
+
+
+    projectViewAnimating =
+        false;
+
+}
+
+
+async function activateProjectAllDirection(
+    direction,
+    element,
+    baseText
+) {
+
+    if (
+        projectViewAnimating ||
+        !projectAllMode
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        !hasHover()
+    ) {
+
+        await animateCase(
+            element,
+            baseText,
+            true
+        );
+
+
+        await wait(
+            MOBILE_NAV_HOLD
+        );
+
+    }
+
+
+    await switchProjectAllProject(
+        direction
+    );
+
+}
 
 /* =====================================================
    LEAVE VIEW ALL
@@ -8677,8 +8984,8 @@ async function leaveProjectAll(
 
 
         /*
-            A deliberate VIEW ALL selection means: show every remaining
-            video in this project before returning to max-2 rotation.
+            A deliberate VIEW ALL thumbnail selection keeps the existing
+            full-project slide run.
         */
         fullProjectMode =
             true;
@@ -8707,15 +9014,6 @@ async function leaveProjectAll(
     }
 
 
-    const buttonTarget =
-        (
-            hasHover() &&
-            viewButtonHovered
-        )
-            ? "VIEW ALL"
-            : "view all";
-
-
     await Promise.all(
         [
 
@@ -8742,7 +9040,7 @@ async function leaveProjectAll(
 
             morphSequential(
                 viewAllButton,
-                buttonTarget,
+                "view all",
                 STATE_MORPH_DURATION
             )
 
@@ -8759,12 +9057,44 @@ async function leaveProjectAll(
     );
 
 
+    projectCounter.removeAttribute(
+        "role"
+    );
+
+
+    projectCounter.removeAttribute(
+        "tabindex"
+    );
+
+
+    projectCounter.removeAttribute(
+        "aria-label"
+    );
+
+
+    viewAllButton.removeAttribute(
+        "aria-label"
+    );
+
+
     projectAllGrid.innerHTML =
         "";
 
 
     projectViewAnimating =
         false;
+
+
+    const changedProject =
+        projectAllProjectChanged;
+
+
+    projectAllProjectChanged =
+        false;
+
+
+    projectAllEntryProjectIndex =
+        null;
 
 
     if (
@@ -8801,6 +9131,23 @@ async function leaveProjectAll(
 
 
     if (
+        selectedIndex ===
+            null &&
+        changedProject
+    ) {
+
+        await loadCurrentVideo(
+            resume &&
+            autoplayBeforeProjectAll
+        );
+
+
+        return;
+
+    }
+
+
+    if (
         resume &&
         autoplayBeforeProjectAll
     ) {
@@ -8814,7 +9161,6 @@ async function leaveProjectAll(
     }
 
 }
-
 
 /* =====================================================
    VIEW ALL CLICK
@@ -8840,20 +9186,307 @@ viewAllButton.addEventListener(
             projectAllMode
         ) {
 
-            await leaveProjectAll(
-                {
-                    resume:
-                        true
-                }
+            await activateProjectAllDirection(
+                -1,
+                viewAllButton,
+                "previous"
             );
 
         }
 
         else {
 
+            if (
+                !hasHover()
+            ) {
+
+                await animateCase(
+                    viewAllButton,
+                    "view all",
+                    true
+                );
+
+
+                await wait(
+                    MOBILE_NAV_HOLD
+                );
+
+            }
+
+
             await enterProjectAll();
 
         }
+
+    }
+);
+
+projectCounter.addEventListener(
+    "mouseenter",
+    () => {
+
+        if (
+            !hasHover() ||
+            !projectAllMode ||
+            projectViewAnimating
+        ) {
+
+            return;
+
+        }
+
+
+        animateCase(
+            projectCounter,
+            "next",
+            true
+        );
+
+    }
+);
+
+
+projectCounter.addEventListener(
+    "mouseleave",
+    () => {
+
+        if (
+            !hasHover() ||
+            !projectAllMode ||
+            projectViewAnimating
+        ) {
+
+            return;
+
+        }
+
+
+        animateCase(
+            projectCounter,
+            "next",
+            false
+        );
+
+    }
+);
+
+
+projectCounter.addEventListener(
+    "click",
+    async event => {
+
+        if (
+            !projectAllMode
+        ) {
+
+            return;
+
+        }
+
+
+        event.stopPropagation();
+
+
+        await activateProjectAllDirection(
+            1,
+            projectCounter,
+            "next"
+        );
+
+    }
+);
+
+
+projectCounter.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            !projectAllMode ||
+            (
+                event.code !== "Enter" &&
+                event.code !== "Space"
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        event.preventDefault();
+
+
+        projectCounter.click();
+
+    }
+);
+
+
+
+
+
+
+/* =====================================================
+   PROJECT TITLE — SLIDE <-> VIEW ALL
+   ===================================================== */
+
+async function activateProjectTitleAction() {
+
+    if (
+        projectTitleActionBusy ||
+        projectViewAnimating ||
+        indexMode
+    ) {
+
+        return;
+
+    }
+
+
+    projectTitleActionBusy =
+        true;
+
+
+    const project =
+        currentProject();
+
+
+    if (
+        projectAllMode
+    ) {
+
+        await animateCase(
+            projectTitle,
+            project.title,
+            false
+        );
+
+
+        if (
+            !hasHover()
+        ) {
+
+            await wait(
+                MOBILE_NAV_HOLD
+            );
+
+        }
+
+
+        await leaveProjectAll(
+            {
+                resume: true
+            }
+        );
+
+    }
+
+    else {
+
+        await animateCase(
+            projectTitle,
+            project.title,
+            true
+        );
+
+
+        if (
+            !hasHover()
+        ) {
+
+            await wait(
+                MOBILE_NAV_HOLD
+            );
+
+        }
+
+
+        await enterProjectAll();
+
+    }
+
+
+    projectTitleActionBusy =
+        false;
+
+}
+
+
+projectTitle.setAttribute(
+    "role",
+    "button"
+);
+
+
+projectTitle.setAttribute(
+    "tabindex",
+    "0"
+);
+
+
+projectTitle.addEventListener(
+    "mouseenter",
+    () => {
+
+        if (
+            !hasHover() ||
+            projectTitleActionBusy ||
+            projectViewAnimating ||
+            indexMode
+        ) {
+
+            return;
+
+        }
+
+
+        activateProjectTitleAction();
+
+    }
+);
+
+
+projectTitle.addEventListener(
+    "click",
+    event => {
+
+        event.stopPropagation();
+
+
+        if (
+            hasHover()
+        ) {
+
+            return;
+
+        }
+
+
+        activateProjectTitleAction();
+
+    }
+);
+
+
+projectTitle.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.code !== "Enter" &&
+            event.code !== "Space"
+        ) {
+
+            return;
+
+        }
+
+
+        event.preventDefault();
+
+
+        activateProjectTitleAction();
 
     }
 );
@@ -8955,6 +9588,26 @@ let projectAllOpenedFromIndex =
 
 let indexSelectionBeforeProjectAll =
     null;
+
+
+let projectAllEntryProjectIndex =
+    null;
+
+let projectAllProjectChanged =
+    false;
+
+let projectTitleActionBusy =
+    false;
+
+let projectAllSwipeStartX =
+    null;
+
+let projectAllSwipeStartY =
+    null;
+
+let projectAllSwipeStartTime =
+    0;
+
 
 let indexBoundaryWheelAccumulator =
     0;
@@ -10786,8 +11439,49 @@ document.addEventListener(
 
 
         if (
-            indexMode ||
             projectAllMode
+        ) {
+
+            if (
+                event.code ===
+                "ArrowRight"
+            ) {
+
+                event.preventDefault();
+
+
+                activateProjectAllDirection(
+                    1,
+                    projectCounter,
+                    "next"
+                );
+
+            }
+
+            else if (
+                event.code ===
+                "ArrowLeft"
+            ) {
+
+                event.preventDefault();
+
+
+                activateProjectAllDirection(
+                    -1,
+                    viewAllButton,
+                    "previous"
+                );
+
+            }
+
+
+            return;
+
+        }
+
+
+        if (
+            indexMode
         ) {
 
             return;
@@ -10830,6 +11524,141 @@ document.addEventListener(
 
         }
 
+    }
+);
+
+
+
+
+/* =====================================================
+   VIEW ALL — MOBILE PROJECT SWIPE
+   ===================================================== */
+
+projectAllView.addEventListener(
+    "touchstart",
+    event => {
+
+        if (
+            !projectAllMode ||
+            event.touches.length !== 1
+        ) {
+
+            return;
+
+        }
+
+
+        const touch =
+            event.touches[0];
+
+
+        projectAllSwipeStartX =
+            touch.clientX;
+
+
+        projectAllSwipeStartY =
+            touch.clientY;
+
+
+        projectAllSwipeStartTime =
+            performance.now();
+
+    },
+    {
+        passive: true
+    }
+);
+
+
+projectAllView.addEventListener(
+    "touchend",
+    event => {
+
+        if (
+            !projectAllMode ||
+            projectAllSwipeStartX === null ||
+            !event.changedTouches.length
+        ) {
+
+            return;
+
+        }
+
+
+        const touch =
+            event.changedTouches[0];
+
+
+        const dx =
+            touch.clientX -
+            projectAllSwipeStartX;
+
+
+        const dy =
+            touch.clientY -
+            projectAllSwipeStartY;
+
+
+        const elapsed =
+            performance.now() -
+            projectAllSwipeStartTime;
+
+
+        projectAllSwipeStartX =
+            null;
+
+
+        projectAllSwipeStartY =
+            null;
+
+
+        const horizontalSwipe =
+            Math.abs(
+                dx
+            ) >= 52 &&
+            Math.abs(
+                dx
+            ) >
+            Math.abs(
+                dy
+            ) * 1.25 &&
+            elapsed < 750;
+
+
+        if (
+            !horizontalSwipe
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            dx < 0
+        ) {
+
+            activateProjectAllDirection(
+                1,
+                projectCounter,
+                "next"
+            );
+
+        }
+
+        else {
+
+            activateProjectAllDirection(
+                -1,
+                viewAllButton,
+                "previous"
+            );
+
+        }
+
+    },
+    {
+        passive: true
     }
 );
 
@@ -11327,6 +12156,19 @@ async function loadProjects() {
         await loadCurrentVideo(
             true
         );
+
+
+        /*
+            Phones keep the Slide landing.
+            Desktop/tablet starts directly in View All.
+        */
+        if (
+            isDesktop()
+        ) {
+
+            await enterProjectAll();
+
+        }
 
 
         /*
