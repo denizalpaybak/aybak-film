@@ -1867,6 +1867,88 @@ body.aybak-end-card-active {
 }
 
 
+
+
+/* =====================================================
+   V29 — ALTERNATING PROJECT / INVERSE INDEX THEMES
+   ===================================================== */
+
+html.surface-dark,
+body.surface-dark {
+    background: #000 !important;
+    color: #fff !important;
+}
+
+body.surface-dark #index-view {
+    background: #000 !important;
+    color: #fff !important;
+}
+
+body.surface-dark #controls button,
+body.surface-dark #index-button,
+body.surface-dark .project-card,
+body.surface-dark .index-project-title,
+body.surface-dark .index-project-date,
+body.surface-dark #index-project-view-all,
+body.surface-dark #index-project-count {
+    color: #fff !important;
+}
+
+body.surface-dark #view-all-button,
+body.surface-dark #project-counter,
+body.surface-dark #project-title,
+body.surface-dark #project-date {
+    color: #fff !important;
+}
+
+/*
+    The visible video itself is centered on the viewport.
+    Controls remain video-width and one text line below it.
+*/
+#video-block {
+    align-items: stretch !important;
+}
+
+#controls,
+body.phone-portrait #controls,
+body.phone-landscape #controls {
+    width: 100% !important;
+    margin-top:
+        calc(
+            var(--font-size) *
+            var(--line-height)
+        ) !important;
+}
+
+/*
+    AYBAK is always the inverse of the surface it is opened from.
+    Default card: black background / white copy.
+    Light card: white background / black copy.
+*/
+html.aybak-end-card-active.aybak-end-card-light,
+body.aybak-end-card-active.aybak-end-card-light {
+    background: #fff !important;
+}
+
+body.aybak-end-card-active.aybak-end-card-light #aybak-end-card {
+    background: #fff !important;
+    color: #000 !important;
+}
+
+body.aybak-end-card-active.aybak-end-card-light #aybak-end-card::before {
+    background: #fff !important;
+}
+
+body.aybak-end-card-active.aybak-end-card-light .aybak-end-card-copy,
+body.aybak-end-card-active.aybak-end-card-light .aybak-end-card-copy a,
+body.aybak-end-card-active.aybak-end-card-light .aybak-end-card-link,
+body.aybak-end-card-active.aybak-end-card-light .aybak-end-card-link:hover,
+body.aybak-end-card-active.aybak-end-card-light .aybak-end-card-link:focus,
+body.aybak-end-card-active.aybak-end-card-light .aybak-end-card-link:active {
+    color: #000 !important;
+}
+
+
 </style>
 
 </head>
@@ -2154,6 +2236,9 @@ let aybakEndCardActive =
     false;
 
 let aybakResumeVideo =
+    false;
+
+let aybakEndCardLight =
     false;
 
 let aybakTouchStartX =
@@ -2549,7 +2634,9 @@ function fitAybakEndCardWord() {
         "alphabetic";
 
     context.fillStyle =
-        "#fff";
+        aybakEndCardLight
+            ? "#000"
+            : "#fff";
 
     const finalTracking =
         trackingEm *
@@ -2608,11 +2695,36 @@ function setAybakEndCard(
     if (
         nextActive
     ) {
+
+        /*
+            AYBAK is always the inverse of the surface beneath it:
+            dark surface -> white AYBAK page / black copy
+            light surface -> black AYBAK page / white copy
+        */
+        aybakEndCardLight =
+            isCurrentSurfaceDark();
+
+
+        body.classList.toggle(
+            "aybak-end-card-light",
+            aybakEndCardLight
+        );
+
+
+        document.documentElement.classList.toggle(
+            "aybak-end-card-light",
+            aybakEndCardLight
+        );
+
+
         aybakResumeVideo =
             !video.paused &&
             !indexMode &&
             !projectAllMode;
+
+
         video.pause();
+
     }
 
     aybakEndCardActive =
@@ -3182,6 +3294,122 @@ let autoplayBeforeProjectAll =
 
 let resumeAfterVisibility =
     false;
+
+
+/* =====================================================
+   PROJECT / SURFACE THEME
+   ===================================================== */
+
+/*
+    First opened project is light.
+    The project theme flips ONLY when the project changes,
+    never when another film inside the same project is shown.
+*/
+let projectThemeDark =
+    false;
+
+let themedProjectIndex =
+    null;
+
+let surfaceThemeDark =
+    false;
+
+
+function setSurfaceTheme(
+    dark
+) {
+
+    surfaceThemeDark =
+        Boolean(
+            dark
+        );
+
+
+    body.classList.toggle(
+        "surface-dark",
+        surfaceThemeDark
+    );
+
+
+    document.documentElement.classList.toggle(
+        "surface-dark",
+        surfaceThemeDark
+    );
+
+}
+
+
+function isCurrentSurfaceDark() {
+
+    return surfaceThemeDark;
+
+}
+
+
+function syncProjectThemeForCurrentProject() {
+
+    if (
+        themedProjectIndex ===
+        null
+    ) {
+
+        /* First opened project: white background / black copy. */
+        themedProjectIndex =
+            currentProjectIndex;
+
+
+        projectThemeDark =
+            false;
+
+    }
+
+    else if (
+        themedProjectIndex !==
+        currentProjectIndex
+    ) {
+
+        projectThemeDark =
+            !projectThemeDark;
+
+
+        themedProjectIndex =
+            currentProjectIndex;
+
+    }
+
+
+    /*
+        While INDEX is visible it owns the surface theme.
+        loadCurrentVideo() may run behind INDEX before opening a project.
+    */
+    if (
+        !indexMode
+    ) {
+
+        setSurfaceTheme(
+            projectThemeDark
+        );
+
+    }
+
+}
+
+
+function forceProjectThemeOppositeIndex() {
+
+    /*
+        A project opened from INDEX always takes the inverse of the
+        currently visible INDEX surface.
+    */
+    projectThemeDark =
+        !surfaceThemeDark;
+
+
+    themedProjectIndex =
+        currentProjectIndex;
+
+}
+
 
 
 /*
@@ -5754,130 +5982,72 @@ function fitMainVideo() {
 
 
     /*
-        Permanent vertical rhythm:
+        The MEDIA itself — not the video+controls group — is centered
+        vertically on the viewport.
 
-        logo
-        1 line
-        VIDEO
-        1 line
-        previous / sound / next
-        1 line
-        fixed title/date + view-all/count
-
-        Metadata itself is no longer part of #video-block.
+        The only hard relationships are:
+        - video stays clear of the top identity
+        - controls sit exactly one line below the video
+        - controls never collide with the fixed lower metadata
     */
+    const centerY =
+        vh / 2;
+
+
     const topBoundary =
         logoRect.bottom +
         lineGap;
 
 
-    const videoBlockBottom =
+    const videoBottomLimit =
         metaRect.top -
+        lineGap -
+        controlsHeight -
         lineGap;
 
 
-    const maxMediaHeightFromUi =
+    const topHalfRoom =
         Math.max(
-            80,
-            videoBlockBottom -
-            topBoundary -
-            controlsHeight -
-            lineGap
+            20,
+            centerY -
+            topBoundary
         );
 
 
-    let maxMediaWidth;
-    let maxMediaHeight;
-    let centerX;
+    const bottomHalfRoom =
+        Math.max(
+            20,
+            videoBottomLimit -
+            centerY
+        );
 
 
-    if (
+    const maxCenteredHeight =
+        Math.max(
+            40,
+            2 *
+            Math.min(
+                topHalfRoom,
+                bottomHalfRoom
+            )
+        );
+
+
+    const maxMediaWidth =
         isPhoneLayout()
-    ) {
-
-        /*
-            Mobile starts at the FULL safe viewport width.
-            Only vertical collision is allowed to make it narrower.
-        */
-        maxMediaWidth =
-            Math.max(
+            ? Math.max(
                 80,
                 vw -
                 side * 2
-            );
-
-
-        maxMediaHeight =
-            maxMediaHeightFromUi;
-
-
-        centerX =
-            vw / 2;
-
-    }
-
-    else {
-
-        /*
-            Keep the working desktop horizontal sizing logic.
-            The hidden white-page contact/photography anchors remain
-            only as geometry references, exactly as before.
-        */
-        const infoRect =
-            info.getBoundingClientRect();
-
-
-        const switchRect =
-            sectionSwitch.getBoundingClientRect();
-
-
-        const safeGap =
-            Math.max(
-                24,
-                side * 0.5
-            );
-
-
-        const safeLeft =
-            Math.max(
-                side,
-                infoRect.right + safeGap
-            );
-
-
-        const safeRight =
-            Math.min(
-                vw - side,
-                switchRect.left - safeGap
-            );
-
-
-        const safeWidth =
-            Math.max(
+            )
+            : Math.max(
                 120,
-                safeRight - safeLeft
+                Math.min(
+                    vw * 0.76,
+                    vw -
+                    side * 2
+                )
             );
-
-
-        centerX =
-            safeLeft +
-            safeWidth / 2;
-
-
-        maxMediaWidth =
-            Math.min(
-                vw * 0.76,
-                safeWidth
-            );
-
-
-        maxMediaHeight =
-            Math.min(
-                vh * 0.72,
-                maxMediaHeightFromUi
-            );
-
-    }
 
 
     let mediaWidth =
@@ -5891,11 +6061,11 @@ function fitMainVideo() {
 
     if (
         mediaHeight >
-        maxMediaHeight
+        maxCenteredHeight
     ) {
 
         mediaHeight =
-            maxMediaHeight;
+            maxCenteredHeight;
 
 
         mediaWidth =
@@ -5905,9 +6075,6 @@ function fitMainVideo() {
     }
 
 
-    /*
-        Never exceed the safe width after a height-driven calculation.
-    */
     if (
         mediaWidth >
         maxMediaWidth
@@ -5973,54 +6140,27 @@ function fitMainVideo() {
 
 
     /*
-        Bottom-anchor the video+controls block so the controls and
-        fixed metadata are ALWAYS exactly one line apart.
+        Exact viewport centering of the VIDEO.
+        #video-block starts at the video's top edge; controls follow
+        normally underneath it.
     */
+    videoBlock.style.left =
+        "50%";
+
+
+    videoBlock.style.top =
+        `${Math.round(
+            centerY -
+            mediaHeight / 2
+        )}px`;
+
+
+    videoBlock.style.transform =
+        "translateX(-50%)";
+
+
     requestAnimationFrame(
-        () => {
-
-            const blockHeight =
-                videoBlock
-                    .getBoundingClientRect()
-                    .height;
-
-
-            const metaTop =
-                projectMeta
-                    .getBoundingClientRect()
-                    .top;
-
-
-            const desiredBottom =
-                metaTop -
-                lineGap;
-
-
-            const top =
-                Math.max(
-                    topBoundary,
-                    desiredBottom -
-                    blockHeight
-                );
-
-
-            videoBlock.style.left =
-                `${centerX}px`;
-
-
-            videoBlock.style.top =
-                `${Math.round(
-                    top
-                )}px`;
-
-
-            videoBlock.style.transform =
-                "translateX(-50%)";
-
-
-            syncIndexToSoundCenter();
-
-        }
+        syncIndexToSoundCenter
     );
 
 }
@@ -6045,6 +6185,9 @@ async function loadCurrentVideo(
         return;
 
     }
+
+
+    syncProjectThemeForCurrentProject();
 
 
     video.pause();
@@ -9979,6 +10122,15 @@ async function enterIndex(
         "index-mode"
     );
 
+
+    /*
+        INDEX is always the inverse of the current project.
+    */
+    setSurfaceTheme(
+        !projectThemeDark
+    );
+
+
     indexView.classList.add(
         "visible"
     );
@@ -10062,6 +10214,12 @@ async function returnFromIndex() {
         "index-mode"
     );
 
+
+    setSurfaceTheme(
+        projectThemeDark
+    );
+
+
     if (
         autoplayBeforeIndex
     ) {
@@ -10109,6 +10267,10 @@ async function openSelectedIndexProjectAll() {
             selectedIndexProject.originalIndex
         );
 
+
+    forceProjectThemeOppositeIndex();
+
+
     currentVideoIndex =
         0;
 
@@ -10139,6 +10301,12 @@ async function openSelectedIndexProjectAll() {
     body.classList.remove(
         "index-mode"
     );
+
+
+    setSurfaceTheme(
+        projectThemeDark
+    );
+
 
     interfaceAnimating =
         false;
