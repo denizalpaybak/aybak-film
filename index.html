@@ -2036,6 +2036,20 @@ body,
 
 }
 
+
+
+/* =====================================================
+   V35 — PAIRED TWO-LINE VIEW ALL CONTROLS
+   ===================================================== */
+
+#view-all-button,
+#project-counter,
+#index-project-view-all,
+#index-project-count {
+    cursor: pointer !important;
+    -webkit-tap-highlight-color: transparent;
+}
+
 </style>
 
 </head>
@@ -8646,6 +8660,106 @@ function buildProjectAllGrid() {
 }
 
 
+
+function getSlideViewAllCountText() {
+
+    return getProjectFilmCountText(
+        currentProject().videos.length
+    );
+
+}
+
+
+function slideViewAllPairContains(
+    target
+) {
+
+    return (
+        target ===
+            viewAllButton ||
+        target ===
+            projectCounter ||
+        viewAllButton.contains(
+            target
+        ) ||
+        projectCounter.contains(
+            target
+        )
+    );
+
+}
+
+
+async function animateSlideViewAllPair(
+    toUpper
+) {
+
+    if (
+        projectAllMode
+    ) {
+
+        return;
+
+    }
+
+
+    await Promise.all(
+        [
+
+            animateCase(
+                viewAllButton,
+                "view all",
+                toUpper
+            ),
+
+            animateCase(
+                projectCounter,
+                getSlideViewAllCountText(),
+                toUpper
+            )
+
+        ]
+    );
+
+}
+
+
+async function activateSlideViewAllPair() {
+
+    if (
+        projectViewAnimating ||
+        projectAllMode
+    ) {
+
+        return;
+
+    }
+
+
+    noteUiInteraction();
+
+
+    if (
+        !hasHover()
+    ) {
+
+        await animateSlideViewAllPair(
+            true
+        );
+
+
+        await wait(
+            MOBILE_NAV_HOLD
+        );
+
+    }
+
+
+    await enterProjectAll();
+
+}
+
+
 /* =====================================================
    VIEW ALL HOVER
    ===================================================== */
@@ -8668,13 +8782,25 @@ viewAllButton.addEventListener(
             true;
 
 
-        animateCase(
-            viewAllButton,
+        if (
             projectAllMode
-                ? "previous project"
-                : "view all",
-            true
-        );
+        ) {
+
+            animateCase(
+                viewAllButton,
+                "previous project",
+                true
+            );
+
+        }
+
+        else {
+
+            animateSlideViewAllPair(
+                true
+            );
+
+        }
 
     }
 );
@@ -8682,7 +8808,7 @@ viewAllButton.addEventListener(
 
 viewAllButton.addEventListener(
     "mouseleave",
-    () => {
+    event => {
 
         if (
             !hasHover() ||
@@ -8698,13 +8824,38 @@ viewAllButton.addEventListener(
             false;
 
 
-        animateCase(
-            viewAllButton,
+        if (
+            !projectAllMode &&
+            event.relatedTarget &&
+            slideViewAllPairContains(
+                event.relatedTarget
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        if (
             projectAllMode
-                ? "previous project"
-                : "view all",
-            false
-        );
+        ) {
+
+            animateCase(
+                viewAllButton,
+                "previous project",
+                false
+            );
+
+        }
+
+        else {
+
+            animateSlideViewAllPair(
+                false
+            );
+
+        }
 
     }
 );
@@ -9327,6 +9478,9 @@ viewAllButton.addEventListener(
             projectAllMode
         ) {
 
+            noteUiInteraction();
+
+
             await activateProjectAllDirection(
                 -1,
                 viewAllButton,
@@ -9337,30 +9491,48 @@ viewAllButton.addEventListener(
 
         else {
 
-            if (
-                !hasHover()
-            ) {
-
-                await animateCase(
-                    viewAllButton,
-                    "view all",
-                    true
-                );
-
-
-                await wait(
-                    MOBILE_NAV_HOLD
-                );
-
-            }
-
-
-            await enterProjectAll();
+            await activateSlideViewAllPair();
 
         }
 
     }
 );
+
+
+viewAllButton.setAttribute(
+    "role",
+    "button"
+);
+
+
+viewAllButton.setAttribute(
+    "tabindex",
+    "0"
+);
+
+
+viewAllButton.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.code !== "Enter" &&
+            event.code !== "Space"
+        ) {
+
+            return;
+
+        }
+
+
+        event.preventDefault();
+
+
+        viewAllButton.click();
+
+    }
+);
+
 
 projectCounter.setAttribute(
     "role",
@@ -9402,11 +9574,7 @@ projectCounter.addEventListener(
 
         else {
 
-            animateCase(
-                projectCounter,
-                getProjectFilmCountText(
-                    currentProject().videos.length
-                ),
+            animateSlideViewAllPair(
                 true
             );
 
@@ -9418,11 +9586,24 @@ projectCounter.addEventListener(
 
 projectCounter.addEventListener(
     "mouseleave",
-    () => {
+    event => {
 
         if (
             !hasHover() ||
             projectViewAnimating
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            !projectAllMode &&
+            event.relatedTarget &&
+            slideViewAllPairContains(
+                event.relatedTarget
+            )
         ) {
 
             return;
@@ -9444,11 +9625,7 @@ projectCounter.addEventListener(
 
         else {
 
-            animateCase(
-                projectCounter,
-                getProjectFilmCountText(
-                    currentProject().videos.length
-                ),
+            animateSlideViewAllPair(
                 false
             );
 
@@ -9474,12 +9651,12 @@ projectCounter.addEventListener(
         }
 
 
-        noteUiInteraction();
-
-
         if (
             projectAllMode
         ) {
+
+            noteUiInteraction();
+
 
             await activateProjectAllDirection(
                 1,
@@ -9487,33 +9664,13 @@ projectCounter.addEventListener(
                 "next project"
             );
 
-
-            return;
-
         }
 
+        else {
 
-        if (
-            !hasHover()
-        ) {
-
-            await animateCase(
-                projectCounter,
-                getProjectFilmCountText(
-                    currentProject().videos.length
-                ),
-                true
-            );
-
-
-            await wait(
-                MOBILE_NAV_HOLD
-            );
+            await activateSlideViewAllPair();
 
         }
-
-
-        await enterProjectAll();
 
     }
 );
@@ -11293,56 +11450,227 @@ indexViewAllCase =
     );
 
 
-indexProjectViewAll.addEventListener(
-    "mouseenter",
-    () => {
+function getIndexSelectedCountText() {
 
-        if (
-            !hasHover() ||
-            !selectedIndexProject
-        ) {
-            return;
-        }
+    if (
+        !selectedIndexProject
+    ) {
 
-        indexViewAllCase.upper();
+        return "";
 
     }
-);
 
 
-indexProjectViewAll.addEventListener(
-    "mouseleave",
-    () => {
+    return getFilmCountText(
+        selectedIndexProject
+            .project
+            .videos
+            .length
+    );
 
-        if (
-            !hasHover()
-        ) {
-            return;
-        }
+}
 
-        indexViewAllCase.lower();
+
+function indexViewAllPairContains(
+    target
+) {
+
+    return (
+        target ===
+            indexProjectViewAll ||
+        target ===
+            indexProjectCount ||
+        indexProjectViewAll.contains(
+            target
+        ) ||
+        indexProjectCount.contains(
+            target
+        )
+    );
+
+}
+
+
+async function animateIndexViewAllPair(
+    toUpper
+) {
+
+    if (
+        !selectedIndexProject
+    ) {
+
+        return;
 
     }
-);
 
 
-indexProjectViewAll.addEventListener(
-    "click",
-    async event => {
+    await Promise.all(
+        [
 
-        event.stopPropagation();
+            toUpper
+                ? indexViewAllCase.upper()
+                : indexViewAllCase.lower(),
 
-        if (
-            !selectedIndexProject
-        ) {
-            return;
-        }
+            animateCase(
+                indexProjectCount,
+                getIndexSelectedCountText(),
+                toUpper
+            )
 
-        await indexViewAllCase.upper();
-        await openSelectedIndexProjectAll();
+        ]
+    );
+
+}
+
+
+async function activateIndexViewAllPair() {
+
+    if (
+        !selectedIndexProject ||
+        interfaceAnimating ||
+        projectViewAnimating
+    ) {
+
+        return;
 
     }
-);
+
+
+    noteUiInteraction();
+
+
+    if (
+        !hasHover()
+    ) {
+
+        await animateIndexViewAllPair(
+            true
+        );
+
+
+        await wait(
+            MOBILE_NAV_HOLD
+        );
+
+    }
+
+
+    await openSelectedIndexProjectAll();
+
+}
+
+
+for (
+    const element of
+    [
+        indexProjectViewAll,
+        indexProjectCount
+    ]
+) {
+
+    element.setAttribute(
+        "role",
+        "button"
+    );
+
+
+    element.setAttribute(
+        "tabindex",
+        "0"
+    );
+
+
+    element.addEventListener(
+        "mouseenter",
+        () => {
+
+            if (
+                !hasHover() ||
+                !selectedIndexProject
+            ) {
+
+                return;
+
+            }
+
+
+            animateIndexViewAllPair(
+                true
+            );
+
+        }
+    );
+
+
+    element.addEventListener(
+        "mouseleave",
+        event => {
+
+            if (
+                !hasHover()
+            ) {
+
+                return;
+
+            }
+
+
+            if (
+                event.relatedTarget &&
+                indexViewAllPairContains(
+                    event.relatedTarget
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            animateIndexViewAllPair(
+                false
+            );
+
+        }
+    );
+
+
+    element.addEventListener(
+        "click",
+        async event => {
+
+            event.stopPropagation();
+
+
+            await activateIndexViewAllPair();
+
+        }
+    );
+
+
+    element.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.code !== "Enter" &&
+                event.code !== "Space"
+            ) {
+
+                return;
+
+            }
+
+
+            event.preventDefault();
+
+
+            element.click();
+
+        }
+    );
+
+}
 
 
 /* =====================================================
