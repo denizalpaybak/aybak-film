@@ -5639,6 +5639,24 @@ async function updateMetadata(
 
 
     if (
+        !projectAllMode
+    ) {
+
+        renderBaseTypography(
+            viewAllButton,
+            project.videos.length === 1
+                ? "view"
+                : "view all"
+        );
+
+
+        viewAllButton.dataset.rawText =
+            viewAllButton.textContent;
+
+    }
+
+
+    if (
         renderedProjectIndex !==
         projectIndex
     ) {
@@ -7957,22 +7975,24 @@ function getProjectAllRatios() {
 /*
     VIEW ALL no longer uses equal-size CSS grid cells.
 
-    Equal cells waste a lot of mobile space because a contained
-    landscape video sitting inside a tall cell can only use a small
-    fraction of that cell's width. Instead, we test every contiguous
-    row grouping while preserving the film order.
+    Equal cells waste space when the viewport shape and the films'
+    aspect ratios do not match. We therefore test both horizontal-strip
+    and vertical-strip packings while preserving film order.
 
-    Inside a row all thumbnails share one visible height and keep
-    their real aspect ratio. A row therefore behaves like a strip of
-    contact-sheet frames rather than a set of empty boxes.
+    A three-film project can now become either:
 
-    Example with three landscape clips on a portrait phone:
+        [ large ]
+        [ small ][ small ]
 
-        old: 3 equal-height grid rows -> narrow videos in the middle
-        new: 1 full-width clip + 2 half-width clips
+    or:
 
-    The chosen arrangement is the one that gives the greatest total
-    visible video area inside the available View All field.
+        [ large ][ small ]
+                 [ small ]
+
+    depending on which arrangement uses more of the actual View All field.
+
+    The chosen arrangement is always the candidate with the greatest
+    total visible video area for the current viewport.
 */
 
 function getProjectAllGap() {
@@ -8070,63 +8090,12 @@ function getContiguousRowPartitions(
 }
 
 
-function calculateProjectAllLayout() {
-
-    const rect =
-        projectAllView
-            .getBoundingClientRect();
-
-
-    const ratios =
-        getProjectAllRatios();
-
-
-    const count =
-        ratios.length;
-
-
-    if (
-        !count ||
-        rect.width <= 0 ||
-        rect.height <= 0
-    ) {
-
-        return null;
-
-    }
-
-
-    const gap =
-        getProjectAllGap();
-
-
-    /*
-        Exhaustive row grouping is tiny for portfolio-sized projects,
-        but keep a safe fallback if a future project contains many clips.
-    */
-    const partitions =
-        count <= 12
-            ? getContiguousRowPartitions(
-                count
-            )
-            : [
-                Array.from(
-                    {
-                        length:
-                            Math.ceil(
-                                count / 3
-                            )
-                    },
-                    (_, rowIndex) => [
-                        rowIndex * 3,
-                        Math.min(
-                            count,
-                            rowIndex * 3 + 3
-                        )
-                    ]
-                )
-            ];
-
+function calculateProjectAllRowCandidate(
+    rect,
+    ratios,
+    partitions,
+    gap
+) {
 
     let best =
         null;
@@ -8173,18 +8142,15 @@ function calculateProjectAllLayout() {
                             );
 
 
-                        const fullWidthHeight =
-                            availableRowWidth /
-                            ratioSum;
-
-
                         return {
                             start,
                             end,
                             ratios:
                                 rowRatios,
                             horizontalGaps,
-                            fullWidthHeight
+                            fullWidthHeight:
+                                availableRowWidth /
+                                ratioSum
                         };
 
                     }
@@ -8231,7 +8197,7 @@ function calculateProjectAllLayout() {
                 0;
 
 
-            let smallestHeight =
+            let smallestSide =
                 Infinity;
 
 
@@ -8243,20 +8209,25 @@ function calculateProjectAllLayout() {
                         scale;
 
 
-                    smallestHeight =
-                        Math.min(
-                            smallestHeight,
-                            height
-                        );
-
-
                     row.ratios.forEach(
                         ratio => {
 
-                            occupiedArea +=
+                            const width =
                                 ratio *
-                                height *
                                 height;
+
+
+                            occupiedArea +=
+                                width *
+                                height;
+
+
+                            smallestSide =
+                                Math.min(
+                                    smallestSide,
+                                    width,
+                                    height
+                                );
 
                         }
                     );
@@ -8265,23 +8236,21 @@ function calculateProjectAllLayout() {
             );
 
 
-            /*
-                Area is the main goal. The tiny secondary term avoids
-                pathological solutions containing an almost microscopic row
-                when two layouts have practically identical visible area.
-            */
             const score =
                 occupiedArea +
-                smallestHeight *
+                smallestSide *
                 0.01;
 
 
             if (
                 !best ||
-                score > best.score
+                score >
+                    best.score
             ) {
 
                 best = {
+                    mode:
+                        "rows",
                     rows:
                         rowData,
                     scale,
@@ -8331,7 +8300,7 @@ function calculateProjectAllLayout() {
 
     const items =
         new Array(
-            count
+            ratios.length
         );
 
 
@@ -8343,7 +8312,7 @@ function calculateProjectAllLayout() {
                 best.scale;
 
 
-            const visibleWidths =
+            const widths =
                 row.ratios.map(
                     ratio =>
                         ratio *
@@ -8352,7 +8321,7 @@ function calculateProjectAllLayout() {
 
 
             const rowWidth =
-                visibleWidths.reduce(
+                widths.reduce(
                     (
                         sum,
                         width
@@ -8373,7 +8342,7 @@ function calculateProjectAllLayout() {
                 );
 
 
-            visibleWidths.forEach(
+            widths.forEach(
                 (
                     width,
                     localIndex
@@ -8411,8 +8380,427 @@ function calculateProjectAllLayout() {
 
 
     return {
-        items
+        items,
+        score:
+            best.score,
+        mode:
+            best.mode
     };
+
+}
+
+
+function calculateProjectAllColumnCandidate(
+    rect,
+    ratios,
+    partitions,
+    gap
+) {
+
+    let best =
+        null;
+
+
+    partitions.forEach(
+        columns => {
+
+            const columnData =
+                columns.map(
+                    ([start, end]) => {
+
+                        const columnRatios =
+                            ratios.slice(
+                                start,
+                                end
+                            );
+
+
+                        const verticalGaps =
+                            gap *
+                            Math.max(
+                                0,
+                                columnRatios.length - 1
+                            );
+
+
+                        const availableColumnHeight =
+                            Math.max(
+                                1,
+                                rect.height -
+                                verticalGaps
+                            );
+
+
+                        const inverseRatioSum =
+                            columnRatios.reduce(
+                                (
+                                    sum,
+                                    ratio
+                                ) =>
+                                    sum +
+                                    1 / ratio,
+                                0
+                            );
+
+
+                        return {
+                            start,
+                            end,
+                            ratios:
+                                columnRatios,
+                            verticalGaps,
+                            fullHeightWidth:
+                                availableColumnHeight /
+                                inverseRatioSum
+                        };
+
+                    }
+                );
+
+
+            const horizontalGaps =
+                gap *
+                Math.max(
+                    0,
+                    columnData.length - 1
+                );
+
+
+            const availableWidth =
+                Math.max(
+                    1,
+                    rect.width -
+                    horizontalGaps
+                );
+
+
+            const naturalWidth =
+                columnData.reduce(
+                    (
+                        sum,
+                        column
+                    ) =>
+                        sum +
+                        column.fullHeightWidth,
+                    0
+                );
+
+
+            const scale =
+                Math.min(
+                    1,
+                    availableWidth /
+                    naturalWidth
+                );
+
+
+            let occupiedArea =
+                0;
+
+
+            let smallestSide =
+                Infinity;
+
+
+            columnData.forEach(
+                column => {
+
+                    const width =
+                        column.fullHeightWidth *
+                        scale;
+
+
+                    column.ratios.forEach(
+                        ratio => {
+
+                            const height =
+                                width /
+                                ratio;
+
+
+                            occupiedArea +=
+                                width *
+                                height;
+
+
+                            smallestSide =
+                                Math.min(
+                                    smallestSide,
+                                    width,
+                                    height
+                                );
+
+                        }
+                    );
+
+                }
+            );
+
+
+            const score =
+                occupiedArea +
+                smallestSide *
+                0.01;
+
+
+            if (
+                !best ||
+                score >
+                    best.score
+            ) {
+
+                best = {
+                    mode:
+                        "columns",
+                    columns:
+                        columnData,
+                    scale,
+                    gap,
+                    score,
+                    horizontalGaps
+                };
+
+            }
+
+        }
+    );
+
+
+    if (
+        !best
+    ) {
+
+        return null;
+
+    }
+
+
+    const usedWidth =
+        best.columns.reduce(
+            (
+                sum,
+                column
+            ) =>
+                sum +
+                column.fullHeightWidth *
+                best.scale,
+            0
+        ) +
+        best.horizontalGaps;
+
+
+    let x =
+        Math.max(
+            0,
+            (
+                rect.width -
+                usedWidth
+            ) / 2
+        );
+
+
+    const items =
+        new Array(
+            ratios.length
+        );
+
+
+    best.columns.forEach(
+        column => {
+
+            const width =
+                column.fullHeightWidth *
+                best.scale;
+
+
+            const heights =
+                column.ratios.map(
+                    ratio =>
+                        width /
+                        ratio
+                );
+
+
+            const columnHeight =
+                heights.reduce(
+                    (
+                        sum,
+                        height
+                    ) =>
+                        sum + height,
+                    0
+                ) +
+                column.verticalGaps;
+
+
+            let y =
+                Math.max(
+                    0,
+                    (
+                        rect.height -
+                        columnHeight
+                    ) / 2
+                );
+
+
+            heights.forEach(
+                (
+                    height,
+                    localIndex
+                ) => {
+
+                    const index =
+                        column.start +
+                        localIndex;
+
+
+                    items[index] = {
+                        left:
+                            x,
+                        top:
+                            y,
+                        width,
+                        height
+                    };
+
+
+                    y +=
+                        height +
+                        best.gap;
+
+                }
+            );
+
+
+            x +=
+                width +
+                best.gap;
+
+        }
+    );
+
+
+    return {
+        items,
+        score:
+            best.score,
+        mode:
+            best.mode
+    };
+
+}
+
+
+function calculateProjectAllLayout() {
+
+    const rect =
+        projectAllView
+            .getBoundingClientRect();
+
+
+    const ratios =
+        getProjectAllRatios();
+
+
+    const count =
+        ratios.length;
+
+
+    if (
+        !count ||
+        rect.width <= 0 ||
+        rect.height <= 0
+    ) {
+
+        return null;
+
+    }
+
+
+    const gap =
+        getProjectAllGap();
+
+
+    /*
+        For normal portfolio-sized projects we exhaustively test every
+        contiguous grouping in BOTH directions while preserving film order.
+
+        Rows can produce:
+            [ large ]
+            [ small ][ small ]
+
+        Columns can produce:
+            [ large ][ small ]
+                     [ small ]
+
+        The arrangement with the greatest actually visible video area wins.
+        This makes View All respond to the real viewport shape rather than
+        committing to a row-only contact sheet.
+    */
+    const partitions =
+        count <= 12
+            ? getContiguousRowPartitions(
+                count
+            )
+            : [
+                Array.from(
+                    {
+                        length:
+                            Math.ceil(
+                                count / 3
+                            )
+                    },
+                    (_, groupIndex) => [
+                        groupIndex * 3,
+                        Math.min(
+                            count,
+                            groupIndex * 3 + 3
+                        )
+                    ]
+                )
+            ];
+
+
+    const rowCandidate =
+        calculateProjectAllRowCandidate(
+            rect,
+            ratios,
+            partitions,
+            gap
+        );
+
+
+    const columnCandidate =
+        calculateProjectAllColumnCandidate(
+            rect,
+            ratios,
+            partitions,
+            gap
+        );
+
+
+    if (
+        !rowCandidate
+    ) {
+
+        return columnCandidate;
+
+    }
+
+
+    if (
+        !columnCandidate
+    ) {
+
+        return rowCandidate;
+
+    }
+
+
+    return columnCandidate.score >
+        rowCandidate.score
+            ? columnCandidate
+            : rowCandidate;
 
 }
 
@@ -9342,7 +9730,7 @@ async function leaveProjectAll(
 
             morphSequential(
                 viewAllButton,
-                "view all",
+                getSlideViewAllLabelText(),
                 STATE_MORPH_DURATION
             )
 
@@ -10007,29 +10395,74 @@ let projectAllSwipeStartTime =
    PASSIVE PROJECT ADVANCE
    ===================================================== */
 
-const DESKTOP_PROJECT_PREVIEW_DURATION =
-    PREVIEW_DURATION * 1000;
+/*
+    Desktop View All no longer changes project after a blind six-second
+    timeout. Different preview files may become playable at different
+    moments, so a fixed timer could skip a project before slower previews
+    had even started.
+
+    The project now advances after EVERY preview in the current View All
+    has completed its first playback cycle. The preview videos may keep
+    looping normally; we simply record the first completed cycle of each.
+
+    A generous fallback exists only for a genuinely broken media request,
+    so one failed file cannot freeze passive navigation forever.
+*/
+
+const DESKTOP_PROJECT_PREVIEW_FAILSAFE =
+    30000;
+
 
 let passiveProjectAdvanceEnabled =
     true;
 
+
 let desktopProjectAdvanceTimer =
     null;
 
+
+let desktopProjectAdvanceWatchToken =
+    0;
+
+
 function clearDesktopProjectAdvance() {
-    if (desktopProjectAdvanceTimer !== null) {
-        clearTimeout(desktopProjectAdvanceTimer);
-        desktopProjectAdvanceTimer = null;
+
+    desktopProjectAdvanceWatchToken++;
+
+
+    if (
+        desktopProjectAdvanceTimer !==
+        null
+    ) {
+
+        clearTimeout(
+            desktopProjectAdvanceTimer
+        );
+
+
+        desktopProjectAdvanceTimer =
+            null;
+
     }
+
 }
+
 
 function noteUiInteraction() {
-    passiveProjectAdvanceEnabled = false;
+
+    passiveProjectAdvanceEnabled =
+        false;
+
+
     clearDesktopProjectAdvance();
+
 }
 
+
 function scheduleDesktopProjectAdvance() {
+
     clearDesktopProjectAdvance();
+
 
     if (
         !passiveProjectAdvanceEnabled ||
@@ -10038,32 +10471,259 @@ function scheduleDesktopProjectAdvance() {
         indexMode ||
         aybakEndCardActive
     ) {
+
         return;
+
     }
+
+
+    const token =
+        desktopProjectAdvanceWatchToken;
+
+
+    const previews =
+        [
+            ...projectAllGrid
+                .querySelectorAll(
+                    ".project-all-thumb video"
+                )
+        ];
+
+
+    if (
+        !previews.length
+    ) {
+
+        return;
+
+    }
+
+
+    const completed =
+        new Set();
+
+
+    let advanceStarted =
+        false;
+
+
+    const advance =
+        async () => {
+
+            if (
+                advanceStarted ||
+                token !==
+                    desktopProjectAdvanceWatchToken ||
+                !passiveProjectAdvanceEnabled ||
+                !isDesktop() ||
+                !projectAllMode ||
+                indexMode ||
+                aybakEndCardActive ||
+                projectViewAnimating
+            ) {
+
+                return;
+
+            }
+
+
+            advanceStarted =
+                true;
+
+
+            if (
+                desktopProjectAdvanceTimer !==
+                null
+            ) {
+
+                clearTimeout(
+                    desktopProjectAdvanceTimer
+                );
+
+
+                desktopProjectAdvanceTimer =
+                    null;
+
+            }
+
+
+            await switchProjectAllProject(
+                1,
+                {
+                    passive: true
+                }
+            );
+
+        };
+
+
+    const markComplete =
+        preview => {
+
+            if (
+                token !==
+                    desktopProjectAdvanceWatchToken ||
+                completed.has(
+                    preview
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            completed.add(
+                preview
+            );
+
+
+            if (
+                completed.size >=
+                previews.length
+            ) {
+
+                advance();
+
+            }
+
+        };
+
+
+    previews.forEach(
+        preview => {
+
+            let lastTime =
+                Number.isFinite(
+                    preview.currentTime
+                )
+                    ? preview.currentTime
+                    : 0;
+
+
+            const checkProgress =
+                () => {
+
+                    if (
+                        token !==
+                            desktopProjectAdvanceWatchToken
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const duration =
+                        preview.duration;
+
+
+                    const current =
+                        preview.currentTime;
+
+
+                    if (
+                        !Number.isFinite(
+                            duration
+                        ) ||
+                        duration <= 0 ||
+                        !Number.isFinite(
+                            current
+                        )
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const nearEndThreshold =
+                        Math.max(
+                            0.25,
+                            duration -
+                            Math.min(
+                                0.55,
+                                duration * 0.1
+                            )
+                        );
+
+
+                    /*
+                        Native loop can jump back to zero without reliably
+                        dispatching "ended", so detect either the final part
+                        of the clip OR the loop wrap itself.
+                    */
+                    if (
+                        current >=
+                            nearEndThreshold ||
+                        (
+                            lastTime >
+                                duration * 0.55 &&
+                            current <
+                                lastTime - 0.35
+                        )
+                    ) {
+
+                        markComplete(
+                            preview
+                        );
+
+                    }
+
+
+                    lastTime =
+                        current;
+
+                };
+
+
+            preview.addEventListener(
+                "timeupdate",
+                checkProgress
+            );
+
+
+            preview.addEventListener(
+                "ended",
+                () => {
+
+                    markComplete(
+                        preview
+                    );
+
+                }
+            );
+
+
+            /*
+                Ensure every tile participates even when its observer was
+                slightly late to activate after a layout rebuild.
+            */
+            activatePreview(
+                preview
+            );
+
+
+            checkProgress();
+
+        }
+    );
+
 
     desktopProjectAdvanceTimer =
         setTimeout(
-            async () => {
-                desktopProjectAdvanceTimer = null;
+            () => {
 
-                if (
-                    !passiveProjectAdvanceEnabled ||
-                    !isDesktop() ||
-                    !projectAllMode ||
-                    indexMode ||
-                    aybakEndCardActive ||
-                    projectViewAnimating
-                ) {
-                    return;
-                }
+                /*
+                    Failsafe only: normal navigation is driven by preview
+                    completion, not this timeout.
+                */
+                advance();
 
-                await switchProjectAllProject(
-                    1,
-                    { passive: true }
-                );
             },
-            DESKTOP_PROJECT_PREVIEW_DURATION
+            DESKTOP_PROJECT_PREVIEW_FAILSAFE
         );
+
 }
 
 
