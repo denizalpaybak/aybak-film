@@ -6203,6 +6203,20 @@ function fitMainVideo() {
    LOAD MAIN VIDEO
    ===================================================== */
 
+
+function syncMainVideoLoopMode() {
+
+    /*
+        Slide view always loops the currently shown film.
+        View All / Index do not need the main player to loop.
+    */
+    video.loop =
+        !projectAllMode &&
+        !indexMode;
+
+}
+
+
 async function loadCurrentVideo(
     autoplay =
         true
@@ -6222,6 +6236,9 @@ async function loadCurrentVideo(
 
 
     syncProjectThemeForCurrentProject();
+
+
+    syncMainVideoLoopMode();
 
 
     video.pause();
@@ -8637,6 +8654,10 @@ async function enterProjectAll() {
         !video.paused;
 
 
+    video.loop =
+        false;
+
+
     video.pause();
 
 
@@ -9084,6 +9105,9 @@ async function leaveProjectAll(
     body.classList.remove(
         "project-all-mode"
     );
+
+
+    syncMainVideoLoopMode();
 
 
     projectCounter.removeAttribute(
@@ -10878,6 +10902,10 @@ async function enterIndex(
     );
 
 
+    video.loop =
+        false;
+
+
     /*
         INDEX is always the inverse of the current project.
     */
@@ -10968,6 +10996,9 @@ async function returnFromIndex() {
     body.classList.remove(
         "index-mode"
     );
+
+
+    syncMainVideoLoopMode();
 
 
     setSurfaceTheme(
