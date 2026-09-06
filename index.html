@@ -3233,6 +3233,12 @@ const sectionSwitchText =
     );
 
 
+const aybakPhotographyLink =
+    document.querySelector(
+        "#aybak-end-card .aybak-end-card-link"
+    );
+
+
 const videoBlock =
     document.getElementById(
         "video-block"
@@ -5373,6 +5379,12 @@ installHoverCase(
 );
 
 
+installHoverCase(
+    aybakPhotographyLink,
+    () => "photography"
+);
+
+
 /* =====================================================
    LOGO
    ===================================================== */
@@ -5568,6 +5580,45 @@ logo.addEventListener(
 
 setLogoState(
     0
+);
+
+
+/* =====================================================
+   AYBAK END CARD — PHOTOGRAPHY LINK
+   ===================================================== */
+
+aybakPhotographyLink.addEventListener(
+    "click",
+    async event => {
+
+        if (
+            hasHover()
+        ) {
+
+            return;
+
+        }
+
+
+        event.preventDefault();
+
+
+        await animateCase(
+            aybakPhotographyLink,
+            "photography",
+            true
+        );
+
+
+        await wait(
+            MOBILE_NAV_HOLD
+        );
+
+
+        window.location.href =
+            PHOTOGRAPHY_URL;
+
+    }
 );
 
 
