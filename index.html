@@ -1979,6 +1979,37 @@ body.project-all-mode #view-all-button {
 }
 
 
+
+
+/* =====================================================
+   V33 — SMOOTHER PROJECT THEME TRANSITIONS
+   ===================================================== */
+
+html,
+body,
+#index-view,
+#project-all-view,
+#video-stage,
+#project-meta,
+#controls,
+#logo,
+#index-button {
+    transition:
+        background-color 220ms cubic-bezier(.22,.61,.36,1),
+        color 220ms cubic-bezier(.22,.61,.36,1);
+}
+
+#project-title,
+#project-date,
+#project-counter,
+#view-all-button,
+#controls button,
+#index-button,
+#logo {
+    transition:
+        color 220ms cubic-bezier(.22,.61,.36,1);
+}
+
 </style>
 
 </head>
@@ -4390,12 +4421,30 @@ function getFilmCountText(
 }
 
 
+function getProjectFilmCountText(
+    total
+) {
+
+    return (
+        String(total) +
+        " " +
+        (
+            total === 1
+                ? "film"
+                : "films"
+        ) +
+        " in this project"
+    );
+
+}
+
+
 function getCounterText(
     index,
     total
 ) {
 
-    return getFilmCountText(
+    return getProjectFilmCountText(
         total
     );
 
@@ -6880,6 +6929,9 @@ function nextFilm() {
     }
 
 
+    syncProjectThemeForCurrentProject();
+
+
     syncProjectUrl(
         "push"
     );
@@ -6983,6 +7035,9 @@ function previousFilm() {
         );
 
     }
+
+
+    syncProjectThemeForCurrentProject();
 
 
     syncProjectUrl(
@@ -8746,7 +8801,7 @@ async function enterProjectAll() {
 
             morphSequential(
                 projectCounter,
-                "next",
+                "next project",
                 STATE_MORPH_DURATION
             ),
 
@@ -8756,8 +8811,8 @@ async function enterProjectAll() {
                     hasHover() &&
                     viewButtonHovered
                 )
-                    ? "PREVIOUS"
-                    : "previous",
+                    ? "PREVIOUS PROJECT"
+                    : "previous project",
                 STATE_MORPH_DURATION
             )
 
@@ -8820,6 +8875,13 @@ async function switchProjectAllProject(
 
 
     /*
+        Flip the surface immediately, before rebuilding the
+        incoming project's grid and typography.
+    */
+    syncProjectThemeForCurrentProject();
+
+
+    /*
         View All project navigation still prepares the single random
         slide film that will be used if the user later returns to Slide.
     */
@@ -8854,7 +8916,7 @@ async function switchProjectAllProject(
         true;
 
 
-    syncProjectThemeForCurrentProject();
+    
 
 
     const project =
@@ -8901,22 +8963,22 @@ async function switchProjectAllProject(
 
     renderBaseTypography(
         projectCounter,
-        "next"
+        "next project"
     );
 
 
     projectCounter.dataset.rawText =
-        "next";
+        "next project";
 
 
     renderBaseTypography(
         viewAllButton,
-        "previous"
+        "previous project"
     );
 
 
     viewAllButton.dataset.rawText =
-        "previous";
+        "previous project";
 
 
     requestAnimationFrame(
@@ -9242,7 +9304,7 @@ viewAllButton.addEventListener(
             await activateProjectAllDirection(
                 -1,
                 viewAllButton,
-                "previous"
+                "previous project"
             );
 
         }
@@ -9291,7 +9353,7 @@ projectCounter.addEventListener(
 
         animateCase(
             projectCounter,
-            "next",
+            "next project",
             true
         );
 
@@ -9316,7 +9378,7 @@ projectCounter.addEventListener(
 
         animateCase(
             projectCounter,
-            "next",
+            "next project",
             false
         );
 
@@ -9343,7 +9405,7 @@ projectCounter.addEventListener(
         await activateProjectAllDirection(
             1,
             projectCounter,
-            "next"
+            "next project"
         );
 
     }
@@ -11668,7 +11730,7 @@ document.addEventListener(
                 activateProjectAllDirection(
                     -1,
                     viewAllButton,
-                    "previous"
+                    "previous project"
                 );
 
             }
@@ -11853,7 +11915,7 @@ projectAllView.addEventListener(
             activateProjectAllDirection(
                 -1,
                 viewAllButton,
-                "previous"
+                "previous project"
             );
 
         }
