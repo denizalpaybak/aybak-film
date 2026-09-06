@@ -8670,6 +8670,19 @@ function getSlideViewAllCountText() {
 }
 
 
+function getSlideViewAllLabelText() {
+
+    const total =
+        currentProject().videos.length;
+
+
+    return total === 1
+        ? "view 1 film"
+        : "view all";
+
+}
+
+
 function slideViewAllPairContains(
     target
 ) {
@@ -8708,7 +8721,7 @@ async function animateSlideViewAllPair(
 
             animateCase(
                 viewAllButton,
-                "view all",
+                getSlideViewAllLabelText(),
                 toUpper
             ),
 
@@ -10312,7 +10325,11 @@ function resetIndexSelection() {
     if (
         indexViewAllCase
     ) {
-        indexViewAllCase.lower();
+        animateCase(
+        indexProjectViewAll,
+        getIndexViewAllLabelText(),
+        false
+    );
     }
 
 }
@@ -10446,7 +10463,11 @@ function selectIndexProject(
     if (
         indexViewAllCase
     ) {
-        indexViewAllCase.lower();
+        animateCase(
+        indexProjectViewAll,
+        getIndexViewAllLabelText(),
+        false
+    );
     }
 
 }
@@ -11471,6 +11492,31 @@ function getIndexSelectedCountText() {
 }
 
 
+function getIndexViewAllLabelText() {
+
+    if (
+        !selectedIndexProject
+    ) {
+
+        return "view all";
+
+    }
+
+
+    const total =
+        selectedIndexProject
+            .project
+            .videos
+            .length;
+
+
+    return total === 1
+        ? "view 1 film"
+        : "view all";
+
+}
+
+
 function indexViewAllPairContains(
     target
 ) {
@@ -11507,9 +11553,11 @@ async function animateIndexViewAllPair(
     await Promise.all(
         [
 
-            toUpper
-                ? indexViewAllCase.upper()
-                : indexViewAllCase.lower(),
+            animateCase(
+                indexProjectViewAll,
+                getIndexViewAllLabelText(),
+                toUpper
+            ),
 
             animateCase(
                 indexProjectCount,
