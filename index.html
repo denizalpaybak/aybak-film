@@ -2446,6 +2446,9 @@ function fitAybakEndCardWord() {
             computedTop
         );
 
+    const FIRST_A_SCALE =
+        1.14;
+
     const sampleSize =
         1000;
 
@@ -2457,7 +2460,7 @@ function fitAybakEndCardWord() {
         sampleSize;
 
     const padding =
-        320;
+        420;
 
     const measureCanvas =
         document.createElement(
@@ -2469,28 +2472,134 @@ function fitAybakEndCardWord() {
             "2d"
         );
 
-    measureContext.font =
-        `400 ${sampleSize}px "Times New Roman", Times, serif`;
-
     const letters =
         Array.from(
             "AYBAK"
         );
 
-    const advances =
+    const letterScales =
         letters.map(
-            letter =>
-                measureContext.measureText(
+            (_, index) =>
+                index === 0
+                    ? FIRST_A_SCALE
+                    : 1
+        );
+
+    const metrics =
+        letters.map(
+            (letter, index) => {
+
+                measureContext.font =
+                    `400 ${sampleSize * letterScales[index]}px "Times New Roman", Times, serif`;
+
+                return measureContext.measureText(
                     letter
-                ).width
+                );
+
+            }
+        );
+
+    const advances =
+        metrics.map(
+            metric =>
+                metric.width
+        );
+
+    const basePositions = [];
+
+    let baseX =
+        0;
+
+    letters.forEach(
+        (_, index) => {
+
+            basePositions.push(
+                baseX
+            );
+
+            baseX +=
+                advances[index];
+
+            if (
+                index <
+                letters.length - 1
+            ) {
+                baseX +=
+                    trackingPx;
+            }
+
+        }
+    );
+
+    const firstMetric =
+        metrics[0];
+
+    const bMetric =
+        metrics[2];
+
+    const lastMetric =
+        metrics[
+            metrics.length - 1
+        ];
+
+    const baseInkLeft =
+        basePositions[0] -
+        (
+            Number.isFinite(
+                firstMetric.actualBoundingBoxLeft
+            )
+                ? firstMetric.actualBoundingBoxLeft
+                : 0
+        );
+
+    const baseInkRight =
+        basePositions[
+            metrics.length - 1
+        ] +
+        (
+            Number.isFinite(
+                lastMetric.actualBoundingBoxRight
+            )
+                ? lastMetric.actualBoundingBoxRight
+                : lastMetric.width
+        );
+
+    const baseBCenter =
+        basePositions[2] +
+        (
+            (
+                Number.isFinite(
+                    bMetric.actualBoundingBoxRight
+                )
+                    ? bMetric.actualBoundingBoxRight
+                    : bMetric.width
+            ) -
+            (
+                Number.isFinite(
+                    bMetric.actualBoundingBoxLeft
+                )
+                    ? bMetric.actualBoundingBoxLeft
+                    : 0
+            )
+        ) / 2;
+
+    const solvedFirstPairTightenPx =
+        baseInkLeft +
+        baseInkRight -
+        2 * baseBCenter;
+
+    const firstPairTightenPx =
+        Math.max(
+            -0.13 * sampleSize,
+            Math.min(
+                -0.02 * sampleSize,
+                solvedFirstPairTightenPx
+            )
         );
 
     const advance =
         advances.reduce(
-            (
-                sum,
-                width
-            ) =>
+            (sum, width) =>
                 sum + width,
             0
         ) +
@@ -2498,7 +2607,8 @@ function fitAybakEndCardWord() {
         Math.max(
             0,
             letters.length - 1
-        );
+        ) +
+        firstPairTightenPx;
 
     measureCanvas.width =
         Math.ceil(
@@ -2507,10 +2617,12 @@ function fitAybakEndCardWord() {
         );
 
     measureCanvas.height =
-        sampleSize +
-        padding * 2;
+        Math.ceil(
+            sampleSize * FIRST_A_SCALE +
+            padding * 2
+        );
 
-    const measureDrawContext =
+    const drawContext =
         measureCanvas.getContext(
             "2d",
             {
@@ -2518,13 +2630,10 @@ function fitAybakEndCardWord() {
             }
         );
 
-    measureDrawContext.font =
-        `400 ${sampleSize}px "Times New Roman", Times, serif`;
-
-    measureDrawContext.textBaseline =
+    drawContext.textBaseline =
         "alphabetic";
 
-    measureDrawContext.fillStyle =
+    drawContext.fillStyle =
         "#fff";
 
     const sampleOriginX =
@@ -2532,18 +2641,18 @@ function fitAybakEndCardWord() {
 
     const sampleBaselineY =
         padding +
-        sampleSize;
+        sampleSize * FIRST_A_SCALE;
 
     let sampleDrawX =
         sampleOriginX;
 
     letters.forEach(
-        (
-            letter,
-            index
-        ) => {
+        (letter, index) => {
 
-            measureDrawContext.fillText(
+            drawContext.font =
+                `400 ${sampleSize * letterScales[index]}px "Times New Roman", Times, serif`;
+
+            drawContext.fillText(
                 letter,
                 sampleDrawX,
                 sampleBaselineY
@@ -2558,13 +2667,20 @@ function fitAybakEndCardWord() {
             ) {
                 sampleDrawX +=
                     trackingPx;
+
+                if (
+                    index === 0
+                ) {
+                    sampleDrawX +=
+                        firstPairTightenPx;
+                }
             }
 
         }
     );
 
     const imageData =
-        measureDrawContext.getImageData(
+        drawContext.getImageData(
             0,
             0,
             measureCanvas.width,
@@ -2614,11 +2730,13 @@ function fitAybakEndCardWord() {
                         minX,
                         x
                     );
+
                 maxX =
                     Math.max(
                         maxX,
                         x
                     );
+
                 maxY =
                     Math.max(
                         maxY,
@@ -2728,9 +2846,6 @@ function fitAybakEndCardWord() {
         viewportHeight
     );
 
-    context.font =
-        `400 ${fontSize}px "Times New Roman", Times, serif`;
-
     context.textBaseline =
         "alphabetic";
 
@@ -2743,14 +2858,23 @@ function fitAybakEndCardWord() {
         trackingEm *
         fontSize;
 
+    const finalFirstPairTighten =
+        firstPairTightenPx /
+        sampleSize *
+        fontSize;
+
     let drawX =
         originX;
 
     letters.forEach(
-        (
-            letter,
-            index
-        ) => {
+        (letter, index) => {
+
+            const letterFontSize =
+                fontSize *
+                letterScales[index];
+
+            context.font =
+                `400 ${letterFontSize}px "Times New Roman", Times, serif`;
 
             context.fillText(
                 letter,
@@ -2769,13 +2893,19 @@ function fitAybakEndCardWord() {
             ) {
                 drawX +=
                     finalTracking;
+
+                if (
+                    index === 0
+                ) {
+                    drawX +=
+                        finalFirstPairTighten;
+                }
             }
 
         }
     );
 
 }
-
 
 function setAybakEndCard(
     active
