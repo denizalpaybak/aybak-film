@@ -2010,6 +2010,32 @@ body,
         color 220ms cubic-bezier(.22,.61,.36,1);
 }
 
+
+
+/* =====================================================
+   V34 — INTERACTIVE PROJECT COUNT / CLEAN DESKTOP BOOT
+   ===================================================== */
+
+#project-counter {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/*
+    Desktop starts in View All. Hide the temporary Slide surface while
+    the initial project data/video is prepared, so no oversized single
+    frame flashes before View All appears.
+*/
+@media (hover: hover) and (pointer: fine) {
+
+    html:not(.initial-surface-ready) #video-stage,
+    html:not(.initial-surface-ready) #project-meta {
+        visibility: hidden !important;
+    }
+
+}
+
 </style>
 
 </head>
@@ -8645,7 +8671,7 @@ viewAllButton.addEventListener(
         animateCase(
             viewAllButton,
             projectAllMode
-                ? "previous"
+                ? "previous project"
                 : "view all",
             true
         );
@@ -8675,7 +8701,7 @@ viewAllButton.addEventListener(
         animateCase(
             viewAllButton,
             projectAllMode
-                ? "previous"
+                ? "previous project"
                 : "view all",
             false
         );
@@ -9336,13 +9362,24 @@ viewAllButton.addEventListener(
     }
 );
 
+projectCounter.setAttribute(
+    "role",
+    "button"
+);
+
+
+projectCounter.setAttribute(
+    "tabindex",
+    "0"
+);
+
+
 projectCounter.addEventListener(
     "mouseenter",
     () => {
 
         if (
             !hasHover() ||
-            !projectAllMode ||
             projectViewAnimating
         ) {
 
@@ -9351,11 +9388,29 @@ projectCounter.addEventListener(
         }
 
 
-        animateCase(
-            projectCounter,
-            "next project",
-            true
-        );
+        if (
+            projectAllMode
+        ) {
+
+            animateCase(
+                projectCounter,
+                "next project",
+                true
+            );
+
+        }
+
+        else {
+
+            animateCase(
+                projectCounter,
+                getProjectFilmCountText(
+                    currentProject().videos.length
+                ),
+                true
+            );
+
+        }
 
     }
 );
@@ -9367,7 +9422,6 @@ projectCounter.addEventListener(
 
         if (
             !hasHover() ||
-            !projectAllMode ||
             projectViewAnimating
         ) {
 
@@ -9376,11 +9430,29 @@ projectCounter.addEventListener(
         }
 
 
-        animateCase(
-            projectCounter,
-            "next project",
-            false
-        );
+        if (
+            projectAllMode
+        ) {
+
+            animateCase(
+                projectCounter,
+                "next project",
+                false
+            );
+
+        }
+
+        else {
+
+            animateCase(
+                projectCounter,
+                getProjectFilmCountText(
+                    currentProject().videos.length
+                ),
+                false
+            );
+
+        }
 
     }
 );
@@ -9390,8 +9462,11 @@ projectCounter.addEventListener(
     "click",
     async event => {
 
+        event.stopPropagation();
+
+
         if (
-            !projectAllMode
+            projectViewAnimating
         ) {
 
             return;
@@ -9399,14 +9474,46 @@ projectCounter.addEventListener(
         }
 
 
-        event.stopPropagation();
+        noteUiInteraction();
 
 
-        await activateProjectAllDirection(
-            1,
-            projectCounter,
-            "next project"
-        );
+        if (
+            projectAllMode
+        ) {
+
+            await activateProjectAllDirection(
+                1,
+                projectCounter,
+                "next project"
+            );
+
+
+            return;
+
+        }
+
+
+        if (
+            !hasHover()
+        ) {
+
+            await animateCase(
+                projectCounter,
+                getProjectFilmCountText(
+                    currentProject().videos.length
+                ),
+                true
+            );
+
+
+            await wait(
+                MOBILE_NAV_HOLD
+            );
+
+        }
+
+
+        await enterProjectAll();
 
     }
 );
@@ -9417,11 +9524,8 @@ projectCounter.addEventListener(
     event => {
 
         if (
-            !projectAllMode ||
-            (
-                event.code !== "Enter" &&
-                event.code !== "Space"
-            )
+            event.code !== "Enter" &&
+            event.code !== "Space"
         ) {
 
             return;
@@ -9436,10 +9540,6 @@ projectCounter.addEventListener(
 
     }
 );
-
-
-
-
 
 
 /* =====================================================
@@ -12435,6 +12535,11 @@ async function loadProjects() {
         }
 
 
+        document.documentElement.classList.add(
+            "initial-surface-ready"
+        );
+
+
         /*
             Posters are cheap and should feel instant, so warm the
             first visible cluster immediately. Preview MP4 metadata
@@ -12774,6 +12879,19 @@ window.addEventListener(
         );
 
     }
+);
+
+
+
+window.setTimeout(
+    () => {
+
+        document.documentElement.classList.add(
+            "initial-surface-ready"
+        );
+
+    },
+    2000
 );
 
 </script>
