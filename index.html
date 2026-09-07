@@ -2384,6 +2384,27 @@ body.phone-landscape.index-mode:not(.index-needs-scroll) #index-scroller {
     mask-image: none;
 }
 </style>
+
+<style id="final-mobile-aybak-safe-area-fix">
+/* Keep iOS/Safari landscape safe areas black whenever the AYBAK surface is open. */
+html.aybak-end-card-active,
+body.aybak-end-card-active,
+html.aybak-end-card-active.aybak-end-card-light,
+body.aybak-end-card-active.aybak-end-card-light {
+    background: #000 !important;
+}
+
+body.aybak-end-card-active #aybak-end-card,
+body.aybak-end-card-active.aybak-end-card-light #aybak-end-card,
+body.aybak-end-card-active #aybak-end-card::before,
+body.aybak-end-card-active.aybak-end-card-light #aybak-end-card::before {
+    background: #000 !important;
+}
+
+body.aybak-end-card-active #aybak-end-card::before {
+    inset: -320px !important;
+}
+</style>
 </head>
 
 
