@@ -2405,6 +2405,23 @@ body.aybak-end-card-active #aybak-end-card::before {
     inset: -320px !important;
 }
 </style>
+
+<style id="final-ios-landscape-aybak-viewport-fill-v2">
+/* Match Photography's proven safe-area treatment exactly. */
+html.aybak-end-card-active,
+body.aybak-end-card-active {
+    background: #000 !important;
+}
+body.aybak-end-card-active #aybak-end-card {
+    left: calc(-1 * env(safe-area-inset-left)) !important;
+    right: calc(-1 * env(safe-area-inset-right)) !important;
+    top: calc(-1 * env(safe-area-inset-top)) !important;
+    bottom: calc(-1 * env(safe-area-inset-bottom)) !important;
+    width: auto !important;
+    height: auto !important;
+    background: #000 !important;
+}
+</style>
 </head>
 
 
@@ -5565,7 +5582,7 @@ function installHoverCase(
 
 
 function getAybakPhotographyWord() {
-    return isPhoneLayout()
+    return isPhoneLayout() && window.innerHeight >= window.innerWidth
         ? "photography."
         : "photography.denizalpaybak.com";
 }
