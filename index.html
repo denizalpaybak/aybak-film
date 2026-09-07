@@ -1478,6 +1478,35 @@ body.index-needs-scroll #index-grid {
 
 
 /* =====================================================
+   MOBILE INDEX SCROLL HINT
+   ===================================================== */
+
+#index-scroll-hint {
+    position: absolute;
+    left: var(--side);
+    bottom: calc(var(--index-bottom) + env(safe-area-inset-bottom));
+    z-index: 650;
+    display: none;
+    max-width: calc(100vw - (var(--side) * 2));
+    font-size: var(--font-size);
+    line-height: var(--line-height);
+    color: #000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 220ms ease;
+}
+
+body.phone-portrait.index-mode.index-needs-scroll:not(.index-scroll-hint-dismissed) #index-scroll-hint,
+body.phone-landscape.index-mode.index-needs-scroll:not(.index-scroll-hint-dismissed) #index-scroll-hint {
+    display: block;
+    opacity: 1;
+}
+
+body.index-scroll-hint-dismissed #index-scroll-hint {
+    opacity: 0;
+}
+
+/* =====================================================
    AYBAK END CARD
    ===================================================== */
 
@@ -2307,6 +2336,8 @@ body.aybak-end-card-active.aybak-end-card-light .aybak-end-card-link:active {
         <div id="index-grid"></div>
     </div>
 
+    <div id="index-scroll-hint" aria-hidden="true">↓ scroll the list for more projects</div>
+
     <div
         id="index-preview"
         aria-hidden="true"
@@ -2376,7 +2407,7 @@ body.aybak-end-card-active.aybak-end-card-light .aybak-end-card-link:active {
             class="aybak-end-card-link"
             href="https://photography.denizalpaybak.com/"
         >
-            photography
+            photography ↗
         </a>
     </div>
 
@@ -3248,6 +3279,11 @@ const indexView =
 const indexScroller =
     document.getElementById(
         "index-scroller"
+    );
+
+const indexScrollHint =
+    document.getElementById(
+        "index-scroll-hint"
     );
 
 
@@ -9546,7 +9582,8 @@ async function switchProjectAllProject(
 async function activateProjectAllDirection(
     direction,
     element,
-    baseText
+    baseText,
+    forceCaseAnimation = false
 ) {
 
     if (
@@ -9560,7 +9597,8 @@ async function activateProjectAllDirection(
 
 
     if (
-        !hasHover()
+        !hasHover() ||
+        forceCaseAnimation
     ) {
 
         await animateCase(
@@ -11882,6 +11920,8 @@ async function enterIndex(
     indexMode =
         true;
 
+    resetIndexScrollHint();
+
     body.classList.add(
         "index-mode"
     );
@@ -12414,6 +12454,27 @@ indexButton.addEventListener(
 );
 
 
+function resetIndexScrollHint() {
+    body.classList.remove(
+        "index-scroll-hint-dismissed"
+    );
+}
+
+function dismissIndexScrollHint() {
+    if (
+        !indexMode ||
+        !body.classList.contains(
+            "index-needs-scroll"
+        )
+    ) {
+        return;
+    }
+
+    body.classList.add(
+        "index-scroll-hint-dismissed"
+    );
+}
+
 /* =====================================================
    INDEX SCROLL / AYBAK BOUNDARY
    ===================================================== */
@@ -12562,6 +12623,17 @@ indexScroller.addEventListener(
 
 
 indexScroller.addEventListener(
+    "touchmove",
+    () => {
+        dismissIndexScrollHint();
+    },
+    {
+        passive: true
+    }
+);
+
+
+indexScroller.addEventListener(
     "touchstart",
     event => {
 
@@ -12648,6 +12720,8 @@ indexScroller.addEventListener(
 indexScroller.addEventListener(
     "scroll",
     () => {
+
+        dismissIndexScrollHint();
 
         if (
             indexMode
@@ -12835,7 +12909,8 @@ document.addEventListener(
                 activateProjectAllDirection(
                     1,
                     projectCounter,
-                    "next"
+                    "next project",
+                    true
                 );
 
             }
@@ -12851,7 +12926,8 @@ document.addEventListener(
                 activateProjectAllDirection(
                     -1,
                     viewAllButton,
-                    "previous project"
+                    "previous project",
+                    true
                 );
 
             }
@@ -13026,7 +13102,7 @@ projectAllView.addEventListener(
             activateProjectAllDirection(
                 1,
                 projectCounter,
-                "next"
+                "next project"
             );
 
         }
