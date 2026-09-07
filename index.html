@@ -1616,6 +1616,17 @@ body.aybak-end-card-active .aybak-end-card-copy {
     color: #fff;
 }
 
+/* Compact external-site arrow: kept separate from case morphs. */
+#aybak-end-card .section-switch-arrow {
+    display: inline-block;
+    margin-left: 0.12em;
+    font-size: 0.82em;
+    line-height: 1;
+    vertical-align: 0.02em;
+    transform: translateY(0.02em);
+    pointer-events: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
     #aybak-end-card,
     #aybak-end-card-word,
@@ -2407,7 +2418,7 @@ body.aybak-end-card-active.aybak-end-card-light .aybak-end-card-link:active {
             class="aybak-end-card-link"
             href="https://photography.denizalpaybak.com/"
         >
-            photography ↗
+            <span id="aybak-photography-link-text">photography</span><span class="section-switch-arrow" aria-hidden="true">↗</span>
         </a>
     </div>
 
@@ -3171,6 +3182,11 @@ const sectionSwitchText =
 const aybakPhotographyLink =
     document.querySelector(
         "#aybak-end-card .aybak-end-card-link"
+    );
+
+const aybakPhotographyLinkText =
+    document.getElementById(
+        "aybak-photography-link-text"
     );
 
 
@@ -5318,9 +5334,30 @@ installHoverCase(
 );
 
 
-installHoverCase(
-    aybakPhotographyLink,
-    () => "photography"
+aybakPhotographyLink.addEventListener(
+    "mouseenter",
+    () => {
+        if (hasHover()) {
+            animateCase(
+                aybakPhotographyLinkText,
+                "photography",
+                true
+            );
+        }
+    }
+);
+
+aybakPhotographyLink.addEventListener(
+    "mouseleave",
+    () => {
+        if (hasHover()) {
+            animateCase(
+                aybakPhotographyLinkText,
+                "photography",
+                false
+            );
+        }
+    }
 );
 
 
@@ -5543,7 +5580,7 @@ aybakPhotographyLink.addEventListener(
 
 
         await animateCase(
-            aybakPhotographyLink,
+            aybakPhotographyLinkText,
             "photography",
             true
         );
