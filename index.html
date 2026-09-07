@@ -2363,13 +2363,13 @@ body.phone-landscape.index-mode.index-needs-scroll:not(.index-scroll-hint-dismis
     -webkit-mask-image: linear-gradient(
         to bottom,
         #000 0,
-        #000 calc(100% - 48px),
+        #000 calc(100% - 72px),
         transparent 100%
     );
     mask-image: linear-gradient(
         to bottom,
         #000 0,
-        #000 calc(100% - 48px),
+        #000 calc(100% - 72px),
         transparent 100%
     );
     -webkit-mask-repeat: no-repeat;
@@ -2645,7 +2645,7 @@ body.phone-landscape.index-mode:not(.index-needs-scroll) #index-scroller {
             class="aybak-end-card-link"
             href="https://photography.denizalpaybak.com/"
         >
-            <span id="aybak-photography-link-text">photography</span>
+            <span id="aybak-photography-link-text">photography.denizalpaybak.com</span>
         </a>
     </div>
 
@@ -5567,7 +5567,7 @@ aybakPhotographyLink.addEventListener(
         if (hasHover()) {
             animateCase(
                 aybakPhotographyLinkText,
-                "photography",
+                "photography.denizalpaybak.com",
                 true
             );
         }
@@ -5580,7 +5580,7 @@ aybakPhotographyLink.addEventListener(
         if (hasHover()) {
             animateCase(
                 aybakPhotographyLinkText,
-                "photography",
+                "photography.denizalpaybak.com",
                 false
             );
         }
@@ -5808,7 +5808,7 @@ aybakPhotographyLink.addEventListener(
 
         await animateCase(
             aybakPhotographyLinkText,
-            "photography",
+            "photography.denizalpaybak.com",
             true
         );
 
@@ -13040,6 +13040,14 @@ indexScroller.addEventListener(
             indexIsAtBottom()
         ) {
             dismissIndexScrollHint();
+        }
+        else if (
+            indexMode &&
+            body.classList.contains("index-needs-scroll")
+        ) {
+            /* The continuation cue comes back as soon as there are projects
+               below again. Reaching the end is not a permanent dismissal. */
+            body.classList.remove("index-scroll-hint-dismissed");
         }
 
         if (
