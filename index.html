@@ -1481,30 +1481,43 @@ body.index-needs-scroll #index-grid {
    MOBILE INDEX SCROLL HINT
    ===================================================== */
 
+/* The hint temporarily occupies the last visible project slot. */
 #index-scroll-hint {
     position: absolute;
-    left: var(--side);
-    bottom: calc(var(--index-bottom) + env(safe-area-inset-bottom));
-    z-index: 650;
+    left: 0;
+    top: 0;
+    z-index: 2;
     display: none;
-    max-width: calc(100vw - (var(--side) * 2));
+    align-items: center;
+    gap: 0.34em;
+    width: max-content;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
     font-size: var(--font-size);
     line-height: var(--line-height);
     color: #000;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 220ms ease;
-}
-
-body.phone-portrait.index-mode.index-needs-scroll:not(.index-scroll-hint-dismissed) #index-scroll-hint,
-body.phone-landscape.index-mode.index-needs-scroll:not(.index-scroll-hint-dismissed) #index-scroll-hint {
-    display: block;
     opacity: 1;
+    pointer-events: none;
+    white-space: nowrap;
 }
 
-body.index-scroll-hint-dismissed #index-scroll-hint {
-    opacity: 0;
+body.phone-portrait.index-mode.index-needs-scroll:not(.index-scroll-hint-dismissed) .index-scroll-hint-host > #index-scroll-hint,
+body.phone-landscape.index-mode.index-needs-scroll:not(.index-scroll-hint-dismissed) .index-scroll-hint-host > #index-scroll-hint {
+    display: inline-flex;
 }
+
+.index-scroll-hint-host {
+    position: relative !important;
+}
+
+body.phone-portrait.index-mode.index-needs-scroll:not(.index-scroll-hint-dismissed) .index-scroll-hint-host > .index-project-title,
+body.phone-portrait.index-mode.index-needs-scroll:not(.index-scroll-hint-dismissed) .index-scroll-hint-host > .index-project-date,
+body.phone-landscape.index-mode.index-needs-scroll:not(.index-scroll-hint-dismissed) .index-scroll-hint-host > .index-project-title,
+body.phone-landscape.index-mode.index-needs-scroll:not(.index-scroll-hint-dismissed) .index-scroll-hint-host > .index-project-date {
+    visibility: hidden !important;
+}
+
 
 /* =====================================================
    AYBAK END CARD
@@ -1616,16 +1629,45 @@ body.aybak-end-card-active .aybak-end-card-copy {
     color: #fff;
 }
 
-/* Compact external-site arrow: kept separate from case morphs. */
-#aybak-end-card .section-switch-arrow {
+/* =====================================================
+   CONSISTENT SITE ARROWS
+   ===================================================== */
+
+.site-arrow {
     display: inline-block;
-    margin-left: 0.12em;
-    font-size: 0.82em;
-    line-height: 1;
-    vertical-align: 0.02em;
-    transform: translateY(0.02em);
+    flex: 0 0 auto;
+    width: 0.74em;
+    height: 0.74em;
+    overflow: visible;
+    color: currentColor;
     pointer-events: none;
 }
+
+.site-arrow path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.15;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+}
+
+.site-arrow--down {
+    transform: translateY(-0.01em);
+}
+
+.site-arrow--external {
+    transform: translateY(-0.015em);
+}
+
+#aybak-end-card .section-switch,
+#aybak-end-card .aybak-end-card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.34em;
+}
+
+
 
 @media (prefers-reduced-motion: reduce) {
     #aybak-end-card,
@@ -2347,7 +2389,9 @@ body.aybak-end-card-active.aybak-end-card-light .aybak-end-card-link:active {
         <div id="index-grid"></div>
     </div>
 
-    <div id="index-scroll-hint" aria-hidden="true">↓ scroll the list for more projects</div>
+    <div id="index-scroll-hint" aria-hidden="true">scroll the list for more projects <svg class="site-arrow site-arrow--down" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+<path d="M6 1.5V10.5M2.75 7.25L6 10.5L9.25 7.25"></path>
+</svg></div>
 
     <div
         id="index-preview"
@@ -2418,7 +2462,9 @@ body.aybak-end-card-active.aybak-end-card-light .aybak-end-card-link:active {
             class="aybak-end-card-link"
             href="https://photography.denizalpaybak.com/"
         >
-            <span id="aybak-photography-link-text">photography</span><span class="section-switch-arrow" aria-hidden="true">↗</span>
+            <span id="aybak-photography-link-text">photography</span><svg class="site-arrow site-arrow--external" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+<path d="M3 9L9 3M4 3H9V8"></path>
+</svg>
         </a>
     </div>
 
@@ -9540,23 +9586,24 @@ async function switchProjectAllProject(
     buildProjectAllGrid();
 
 
-    renderBaseTypography(
-        projectTitle,
-        project.title.toUpperCase()
+    await Promise.all(
+        [
+            morphSequential(
+                projectTitle,
+                project.title.toUpperCase(),
+                STATE_MORPH_DURATION
+            ),
+            morphSequential(
+                projectDate,
+                (project.date || "").toUpperCase(),
+                STATE_MORPH_DURATION
+            )
+        ]
     );
 
 
     projectTitle.dataset.rawText =
         project.title.toUpperCase();
-
-
-    renderBaseTypography(
-        projectDate,
-        (
-            project.date ||
-            ""
-        ).toUpperCase()
-    );
 
 
     projectDate.dataset.rawText =
@@ -11068,6 +11115,8 @@ function selectIndexProject(
     const previousSelection =
         selectedIndexProject;
 
+    dismissIndexScrollHint();
+
     selectedIndexProject =
         rowState;
 
@@ -11334,6 +11383,10 @@ function layoutTypographicIndex() {
         body.classList.toggle(
             "index-needs-scroll",
             needsScroll
+        );
+
+        requestAnimationFrame(
+            placeIndexScrollHintInLastVisibleSlot
         );
 
         indexScroller.scrollTop =
@@ -12491,7 +12544,100 @@ indexButton.addEventListener(
 );
 
 
+
+let indexScrollHintHostRow = null;
+
+function clearIndexScrollHintHost() {
+    if (indexScrollHintHostRow) {
+        indexScrollHintHostRow.classList.remove(
+            "index-scroll-hint-host"
+        );
+        indexScrollHintHostRow = null;
+    }
+}
+
+function placeIndexScrollHintInLastVisibleSlot() {
+    clearIndexScrollHintHost();
+
+    if (
+        !indexMode ||
+        !isPhoneLayout() ||
+        !body.classList.contains(
+            "index-needs-scroll"
+        ) ||
+        body.classList.contains(
+            "index-scroll-hint-dismissed"
+        ) ||
+        !indexScrollHint ||
+        !indexProjectRows.length
+    ) {
+        return;
+    }
+
+    const scrollerRect =
+        indexScroller.getBoundingClientRect();
+
+    const topLimit =
+        scrollerRect.top + 1;
+
+    const bottomLimit =
+        scrollerRect.bottom - 1;
+
+    let host =
+        null;
+
+    for (
+        const state
+        of indexProjectRows
+    ) {
+        const rect =
+            state.row.getBoundingClientRect();
+
+        if (
+            rect.top <
+            topLimit
+        ) {
+            continue;
+        }
+
+        if (
+            rect.top <
+            bottomLimit
+        ) {
+            host =
+                state.row;
+        }
+
+        if (
+            rect.bottom >
+            bottomLimit
+        ) {
+            break;
+        }
+    }
+
+    if (
+        !host
+    ) {
+        host =
+            indexProjectRows[0].row;
+    }
+
+    indexScrollHintHostRow =
+        host;
+
+    host.classList.add(
+        "index-scroll-hint-host"
+    );
+
+    host.appendChild(
+        indexScrollHint
+    );
+}
+
 function resetIndexScrollHint() {
+    clearIndexScrollHintHost();
+
     body.classList.remove(
         "index-scroll-hint-dismissed"
     );
@@ -12510,6 +12656,8 @@ function dismissIndexScrollHint() {
     body.classList.add(
         "index-scroll-hint-dismissed"
     );
+
+    clearIndexScrollHintHost();
 }
 
 /* =====================================================
@@ -12943,11 +13091,8 @@ document.addEventListener(
                 event.preventDefault();
 
 
-                activateProjectAllDirection(
-                    1,
-                    projectCounter,
-                    "next project",
-                    true
+                switchProjectAllProject(
+                    1
                 );
 
             }
@@ -12960,11 +13105,8 @@ document.addEventListener(
                 event.preventDefault();
 
 
-                activateProjectAllDirection(
-                    -1,
-                    viewAllButton,
-                    "previous project",
-                    true
+                switchProjectAllProject(
+                    -1
                 );
 
             }
@@ -13136,20 +13278,16 @@ projectAllView.addEventListener(
             dx < 0
         ) {
 
-            activateProjectAllDirection(
-                1,
-                projectCounter,
-                "next project"
+            switchProjectAllProject(
+                1
             );
 
         }
 
         else {
 
-            activateProjectAllDirection(
-                -1,
-                viewAllButton,
-                "previous project"
+            switchProjectAllProject(
+                -1
             );
 
         }
