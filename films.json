@@ -1,129 +1,102 @@
-
-  {
-    "id": "vogue-260113",
-    "title": "vogue türkiye x peugeot",
-    "date": "february 2026",
-    "indexOrder": 3,
-    "videos": [
-      "vogue_260113_film.mp4",
-      "vogue_260113_teaser_1.mp4",
-      "vogue_260113_teaser_3.mp4"
-    ],
-    "sortDate": "2026-02",
-    "field": "FILM",
-    "use": "ADVERTORIAL"
-  },
-  {
-    "id": "zeyneparcay-251217",
-    "title": "zeynep arcay",
-    "date": "fall 2026",
-    "indexOrder": 1,
-    "videos": [
-      "zeyneparcay_251217_1.mp4",
-      "zeyneparcay_251217_2.mp4",
-      "zeyneparcay_251217_3.mp4",
-      "zeyneparcay_251217_4.mp4"
-    ],
-    "sortDate": "2026-09",
-    "field": "FILM",
-    "use": "ADVERTISING"
-  },
-  {
-    "id": "nulook-251031",
-    "title": "nu-look magazine",
-    "date": "(#07) december 2025",
-    "indexOrder": 5,
-    "videos": [
-      "nulook_251031_4.mp4",
-      "nulook_251031_5.mp4"
-    ],
-    "sortDate": "2025-12",
-    "field": "FILM",
-    "use": "EDITORIAL"
-  },
-  {
-    "id": "vogue-260213",
-    "title": "vogue türkiye",
-    "date": "march 2026",
-    "indexOrder": 2,
-    "videos": [
-      "vogue_260213_1.mp4",
-      "vogue_260213_2.mp4",
-      "vogue_260213_3.mp4",
-      "vogue_260213_4.mp4"
-    ],
-    "sortDate": "2026-03",
-    "field": "FILM",
-    "use": "EDITORIAL"
-  },
-  {
-    "id": "zeyneparcay-250529",
-    "title": "zeynep arcay",
-    "date": "resort 2026",
-    "indexOrder": 4,
-    "videos": [
-      "zeyneparcay_250529_1.mp4",
-      "zeyneparcay_250529_2.mp4",
-      "zeyneparcay_250529_3.mp4"
-    ],
-    "sortDate": "2026-05",
-    "field": "FILM",
-    "use": "ADVERTISING"
-  },
-  {
-    "id": "nulook-240919",
-    "title": "nu-look magazine",
-    "date": "(#04) december 2024",
-    "indexOrder": 7,
-    "videos": [
-      "nulook_240919_3.mp4",
-      "nulook_240919_4.mp4",
-      "nulook_240919_5.mp4",
-      "nulook_240919_6.mp4"
-    ],
-    "sortDate": "2024-12",
-    "field": "FILM",
-    "use": "EDITORIAL"
-  },
-  {
-    "id": "lofficiel-241106",
-    "title": "l’officiel türkiye",
-    "date": "november 2024",
-    "indexOrder": 8,
-    "videos": [
-      "lofficiel_241106.mp4"
-    ],
-    "sortDate": "2024-11",
-    "field": "FILM",
-    "use": "EDITORIAL"
-  },
-  {
-    "id": "nulook-250206",
-    "title": "nu-look magazine",
-    "date": "(#05) april 2025",
-    "indexOrder": 6,
-    "videos": [
-      "nulook_250206_1.mp4",
-      "nulook_250206_2.mp4",
-      "nulook_250206_3.mp4"
-    ],
-    "sortDate": "2025-04",
-    "field": "FILM",
-    "use": "EDITORIAL"
-  },
-  {
-    "id": "sober-210323",
-    "title": "sober magazine",
-    "date": "(#02) may 2024",
-    "indexOrder": 9,
-    "videos": [
-      "sober_210323_video_1.mp4",
-      "sober_210323_video_2.mp4",
-      "sober_210323_video_3.mp4"
-    ],
-    "coverOverride": "sober_210323_video_1.mp4",
-    "sortDate": "2024-05",
-    "field": "FILM",
-    "use": "EDITORIAL"
-  }
+[
+    {
+        "id": "vogue-260113",
+        "title": "vogue türkiye x peugeot",
+        "date": "february 2026",
+        "indexOrder": 3,
+        "videos": [
+            "vogue_260113_film.mp4",
+            "vogue_260113_teaser_1.mp4",
+            "vogue_260113_teaser_3.mp4"
+        ]
+    },
+    {
+        "id": "zeyneparcay-251217",
+        "title": "zeynep arcay",
+        "date": "fall 2026",
+        "indexOrder": 1,
+        "videos": [
+            "zeyneparcay_251217_1.mp4",
+            "zeyneparcay_251217_2.mp4",
+            "zeyneparcay_251217_3.mp4",
+            "zeyneparcay_251217_4.mp4"
+        ]
+    },
+    {
+        "id": "nulook-251031",
+        "title": "nu-look magazine",
+        "date": "december 2025 (issue #07)",
+        "indexOrder": 5,
+        "videos": [
+            "nulook_251031_4.mp4",
+            "nulook_251031_5.mp4"
+        ]
+    },
+    {
+        "id": "vogue-260213",
+        "title": "vogue türkiye",
+        "date": "march 2026",
+        "indexOrder": 2,
+        "videos": [
+            "vogue_260213_1.mp4",
+            "vogue_260213_2.mp4",
+            "vogue_260213_3.mp4",
+            "vogue_260213_4.mp4"
+        ]
+    },
+    {
+        "id": "zeyneparcay-250529",
+        "title": "zeynep arcay",
+        "date": "resort 2026",
+        "indexOrder": 4,
+        "videos": [
+            "zeyneparcay_250529_1.mp4",
+            "zeyneparcay_250529_2.mp4",
+            "zeyneparcay_250529_3.mp4"
+        ]
+    },
+    {
+        "id": "nulook-240919",
+        "title": "nu-look magazine",
+        "date": "december 2024 (issue #04)",
+        "indexOrder": 7,
+        "videos": [
+            "nulook_240919_3.mp4",
+            "nulook_240919_4.mp4",
+            "nulook_240919_5.mp4",
+            "nulook_240919_6.mp4"
+        ]
+    },
+    {
+        "id": "lofficiel-241106",
+        "title": "l’officiel türkiye",
+        "date": "november 2024",
+        "indexOrder": 8,
+        "videos": [
+            "lofficiel_241106.mp4"
+        ]
+    },
+    {
+        "id": "nulook-250206",
+        "title": "nu-look magazine",
+        "date": "april 2025 (issue #05)",
+        "indexOrder": 6,
+        "videos": [
+            "nulook_250206_1.mp4",
+            "nulook_250206_2.mp4",
+            "nulook_250206_3.mp4"
+        ]
+    },
+    {
+        "id": "sober-210323",
+        "title": "sober magazine",
+        "date": "may 2024 (issue #02)",
+        "indexOrder": 9,
+        "videos": [
+            "sober_210323_video_1.mp4",
+            "sober_210323_video_2.mp4",
+            "sober_210323_video_3.mp4"
+        ],
+        "coverOverride": "sober_210323_video_1.mp4"
+    }
 ]
