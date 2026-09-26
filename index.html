@@ -4212,6 +4212,13 @@ function getDeepLinkRequest() {
         );
 
 
+    const viewAll =
+        params.get(
+            "view"
+        ) ===
+        "all";
+
+
     let videoNumber =
         null;
 
@@ -4245,7 +4252,8 @@ function getDeepLinkRequest() {
 
     return {
         projectId,
-        videoNumber
+        videoNumber,
+        viewAll
     };
 
 }
@@ -4439,12 +4447,17 @@ function syncProjectUrl(
         )
     );
 
+    url.searchParams.delete(
+        "view"
+    );
+
 
     const state = {
         projectId:
             project.id,
 
-        videoNumber
+        videoNumber,
+        viewAll: false
     };
 
 
@@ -4462,6 +4475,82 @@ function syncProjectUrl(
     }
 
     else {
+
+        window.history.replaceState(
+            state,
+            "",
+            url
+        );
+
+    }
+
+}
+
+
+function syncProjectAllUrl(
+    mode = "replace"
+) {
+
+    const project =
+        currentProject();
+
+
+    if (
+        !project ||
+        !project.id
+    ) {
+
+        return;
+
+    }
+
+
+    const url =
+        new URL(
+            window.location.href
+        );
+
+
+    url.searchParams.set(
+        "project",
+        project.id
+    );
+
+    url.searchParams.delete(
+        "video"
+    );
+
+    url.searchParams.set(
+        "view",
+        "all"
+    );
+
+
+    const state = {
+        projectId:
+            project.id,
+
+        viewAll: true
+    };
+
+
+    if (
+        mode ===
+        "push"
+    ) {
+
+        window.history.pushState(
+            state,
+            "",
+            url
+        );
+
+    }
+
+    else if (
+        mode !==
+        "none"
+    ) {
 
         window.history.replaceState(
             state,
@@ -9572,7 +9661,9 @@ viewAllButton.addEventListener(
    ENTER VIEW ALL
    ===================================================== */
 
-async function enterProjectAll() {
+async function enterProjectAll(
+    { urlMode = "push" } = {}
+) {
 
     if (
         projectAllMode ||
@@ -9617,6 +9708,18 @@ async function enterProjectAll() {
 
     projectAllMode =
         true;
+
+
+    if (
+        urlMode !==
+        "none"
+    ) {
+
+        syncProjectAllUrl(
+            urlMode
+        );
+
+    }
 
 
     body.classList.add(
@@ -9756,6 +9859,11 @@ async function switchProjectAllProject(
                     : -1
             )
         );
+
+
+    syncProjectAllUrl(
+        "push"
+    );
 
 
     /*
@@ -10005,6 +10113,18 @@ async function leaveProjectAll(
         normalSequencePosition =
             -1;
 
+
+        syncProjectUrl(
+            "push"
+        );
+
+    }
+
+
+    if (
+        selectedIndex ===
+        null
+    ) {
 
         syncProjectUrl(
             "push"
@@ -13856,6 +13976,11 @@ async function loadProjects() {
             deepLink.videoNumber !== null;
 
 
+        const hasViewAllDeepLink =
+            requestedProjectIndex >= 0 &&
+            deepLink.viewAll;
+
+
         if (
             hasExactDeepLink
         ) {
@@ -13964,10 +14089,27 @@ async function loadProjects() {
             );
 
 
+            cleanUrl.searchParams.delete(
+                "view"
+            );
+
+
             window.history.replaceState(
                 {},
                 "",
                 cleanUrl
+            );
+
+        }
+
+
+        else if (
+            requestedProjectIndex >= 0 &&
+            hasViewAllDeepLink
+        ) {
+
+            syncProjectAllUrl(
+                "replace"
             );
 
         }
@@ -14002,10 +14144,24 @@ async function loadProjects() {
 
 
         /*
-            Phones keep the Slide landing.
-            Desktop/tablet starts directly in View All.
+            A dedicated View All deep link always opens View All,
+            including on phones. It replaces the current URL rather
+            than creating a second browser-history entry.
+
+            Ordinary desktop/tablet entry keeps the site's existing
+            direct-to-View-All behaviour without changing the URL.
         */
         if (
+            hasViewAllDeepLink
+        ) {
+
+            await enterProjectAll(
+                { urlMode: "replace" }
+            );
+
+        }
+
+        else if (
             isDesktop() &&
             !(
                 hasExactDeepLink &&
@@ -14013,7 +14169,9 @@ async function loadProjects() {
             )
         ) {
 
-            await enterProjectAll();
+            await enterProjectAll(
+                { urlMode: "none" }
+            );
 
         }
 
@@ -14131,8 +14289,7 @@ window.addEventListener(
 
         if (
             requestedProjectIndex >= 0 &&
-            deepLink.videoNumber !==
-                null
+            deepLink.videoNumber !== null
         ) {
 
             const resolved =
@@ -14154,13 +14311,19 @@ window.addEventListener(
         }
 
 
+        const wantsViewAll =
+            requestedProjectIndex >= 0 &&
+            deepLink.viewAll;
+
+
         if (
             targetProjectIndex ===
                 currentProjectIndex &&
             targetVideoIndex ===
                 currentVideoIndex &&
-            !indexMode &&
-            !projectAllMode
+            wantsViewAll ===
+                projectAllMode &&
+            !indexMode
         ) {
 
             return;
@@ -14169,6 +14332,7 @@ window.addEventListener(
 
 
         stopAllPreviews();
+        clearDesktopProjectAdvance();
 
 
         indexMode =
@@ -14206,9 +14370,27 @@ window.addEventListener(
             true
         );
 
+
+        if (
+            wantsViewAll
+        ) {
+
+            fullProjectMode =
+                true;
+
+
+            fullProjectEndIndex =
+                currentProject().videos.length - 1;
+
+
+            await enterProjectAll(
+                { urlMode: "none" }
+            );
+
+        }
+
     }
 );
-
 
 /* =====================================================
    RESIZE / ORIENTATION
