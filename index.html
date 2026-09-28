@@ -2547,10 +2547,10 @@ body.aybak-end-card-active #aybak-end-card {
             <button
                 id="sound-button"
                 type="button"
-                aria-label="sound on"
+                aria-label="sound: off"
             >
                 <span id="sound-label">
-                    sound on
+                    sound: off
                 </span>
             </button>
 
@@ -6097,8 +6097,8 @@ async function updateMetadata(
 function getSoundBaseText() {
 
     return soundEnabled
-        ? "sound off"
-        : "sound on";
+        ? "sound: on"
+        : "sound: off";
 
 }
 
