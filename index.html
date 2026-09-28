@@ -10,7 +10,8 @@
 >
 
 <title>Denizalp Aybak — Film</title>
-
+<!-- Favicon Emojisi -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👹</text></svg>">
 <link rel="stylesheet" href="https://use.typekit.net/rmn7qgm.css">
 
 <link rel="preconnect" href="https://library.denizalpaybak.com" crossorigin>
@@ -555,6 +556,7 @@ body.project-all-mode #project-all-view {
    ===================================================== */
 
 #index-button {
+    display: none !important; /* Butonu tamamen gizler ama altyapı çalışmaya devam eder */
     position: fixed;
 
     left: var(--index-center-x);
@@ -1532,6 +1534,9 @@ body.aybak-end-card-active {
 }
 
 #aybak-end-card {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
     position: fixed;
     inset: 0;
     z-index: 10000;
